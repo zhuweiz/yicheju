@@ -43,6 +43,7 @@ import stock from '@/page/home/stock'
 import out_stock from '@/page/home/out_stock'
 import in_stock from '@/page/home/in_stock'
 import stock_order from '@/page/home/stock_order'
+import stock_enquiry from '@/page/home/stock_enquiry'
 import supplier from '@/page/home/supplier'
 
 
@@ -331,6 +332,14 @@ export default new Router({
               path: '/home/in_stock',
               name: 'in_stock',
               component: in_stock,
+              meta: {
+                title: '易车驹',
+                index: 0
+              }
+            }, {
+              path: '/home/stock_enquiry',
+              name: 'stock_enquiry',
+              component: stock_enquiry,
               meta: {
                 title: '易车驹',
                 index: 0

@@ -18,8 +18,8 @@ module.exports = {
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
     proxyTable: {
       '/api': {
-        // target: 'http://47.96.248.209:8888', //测试
-        target: 'http://47.99.212.29:8888', //生产
+        target: 'http://47.96.248.209:8888', //测试
+        // target: 'http://47.99.212.29:8888', //生产
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

@@ -26,7 +26,7 @@
     </div>
 
     <div style="width:100%;padding-top:15px;" class="orderTable" id="printBox">
-      <el-table :data="tableData" :max-height="maxHeight" style="width: 100%">
+      <el-table :data="tableData" :max-height="500" style="width: 100%">
         <el-table-column v-for="(item, index) in headerStrList" :key="index" :label="item">
           <template slot-scope="scope">
             <span  v-show="index == 0">{{index + 1}}</span>
@@ -329,10 +329,12 @@ export default {
       }
       getPurOrderSumReport(data).then(res => {
         let headerStrList = res.data.data.headerStrList
+        console.log(res)
         headerStrList.unshift('序号')
         headerStrList.push('操作')
         this.headerStrList = headerStrList
         this.tableData = res.data.data.dataVOList
+        
       })
     },
     handleSelectionChange(event) {

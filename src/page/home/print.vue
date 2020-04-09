@@ -61,14 +61,14 @@
 			      <el-table-column
 			        label="折扣">
 			        <template slot-scope="scope">
-			        <em v-if="data.discountItemRate"> {{data.discountItemRate * 0.1}}</em>
+			        <em v-if="data.discountItemRate"> {{data.discountItemRate }}</em>
 			        <em v-else>暂无折扣</em>
 			         </template>
 			      </el-table-column>
 			      <el-table-column
 			        label="折扣后">
 			        <template slot-scope="scope">
-			        <em v-if="data.discountItemRate">{{((data.discountItemRate* 0.1) * scope.row.standPrice).toFixed(1)}}</em>
+			        <em v-if="data.discountItemRate">{{(data.discountItemRate * scope.row.standPrice).toFixed(1)}}</em>
 			        <em v-else>{{scope.row.standPrice}}</em>
 			        </template>
 			      </el-table-column>
@@ -81,7 +81,7 @@
 			      <el-table-column
 			        label="小计">
 			        <template slot-scope="scope">
-			        <em v-if="data.discountItemRate">{{((data.discountItemRate* 0.1) * scope.row.standPrice * scope.row.counts).toFixed(1)}}</em>
+			        <em v-if="data.discountItemRate">{{(data.discountItemRate * scope.row.standPrice * scope.row.counts).toFixed(1)}}</em>
 			        <em v-else>{{scope.row.standPrice * scope.row.counts}}</em>
 			         </template>
 			      </el-table-column>
@@ -110,14 +110,14 @@
 			      <el-table-column
 			        label="折扣">
 			        <template slot-scope="scope">
-							<em v-if="data.discountPartRate"> {{data.discountPartRate * 0.1}}</em>
+							<em v-if="data.discountPartRate"> {{data.discountPartRate}}</em>
 			        <em v-else>暂无折扣</em>
 			         </template>
 			      </el-table-column>
 			      <el-table-column
 			        label="折后价">
 			         <template slot-scope="scope">
-			        <em v-if="data.discountPartRate">{{((data.discountItemRate* 0.1)  * scope.row.price).toFixed(1)}}</em>
+			        <em v-if="data.discountPartRate">{{(data.discountItemRate * scope.row.price).toFixed(1)}}</em>
 			        <em v-else>{{scope.row.price}}</em>
 			        </template>
 			      </el-table-column>
@@ -130,7 +130,7 @@
 			      <el-table-column
 			        label="小计">
 			         <template slot-scope="scope">
-			        <em v-if="data.discountPartRate">{{((data.discountItemRate* 0.1) * scope.row.price * scope.row.counts).toFixed(1)}}</em>
+			        <em v-if="data.discountPartRate">{{(data.discountItemRate * scope.row.price * scope.row.counts).toFixed(1)}}</em>
 			        <em v-else>{{scope.row.price * scope.row.counts}}</em>
 			         </template>
 			      </el-table-column>
@@ -166,7 +166,7 @@
 				  </div>
 			  <div class="p-tb-15"><p>备注：{{data.remark}}</p></div>
 			  <p>{{data.pcPrintRemark}}</p>
-			  <!-- <div class="flex just-end p-r-25 p-tb-20"><div>顾客签名：</div><p style="width:120px;border-bottom:2px solid #000;"></p></div> -->
+			  <div class="flex just-end p-r-25 p-tb-20"><div>顾客签名：</div><p style="width:120px;border-bottom:2px solid #000;"></p></div>
 			</el-row>
 			</el-card>
 		</div>
@@ -207,7 +207,7 @@ export default {
       	
       	this.zongshou += parseInt(item.standPrice);
         if(this.data.discountItemRate){
-					this.zhekou += parseFloat(((this.data.discountItemRate*0.1) * item.standPrice * item.counts).toFixed(1) )
+					this.zhekou += parseFloat((this.data.discountItemRate * item.standPrice * item.counts).toFixed(1) )
         }else{
         	this.zhekou += item.standPrice
 		}
@@ -218,10 +218,10 @@ export default {
 		  this.tableData2.push(items);
 		//   console.log(items)
 		  this.zongshou+=items.price
-			// console.log(items)
-			// console.log(this.data)
+			console.log(items)
+			console.log(this.data)
           if(this.data.discountPartRate){
-			  this.zhekou2 += parseFloat(((this.data.discountPartRate*0.1) * items.price * items.counts).toFixed(1))
+			  this.zhekou2 += parseFloat((this.data.discountPartRate * items.price * items.counts).toFixed(1))
           }else{
           	this.zhekou2 += items.price * items.counts
 		  }

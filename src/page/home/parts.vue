@@ -20,7 +20,8 @@ export default {
 		  {name:"库存",link:"/home/stock"},
 			{name:"调出",link:"/home/out_stock"},
       {name:"调入",link:"/home/in_stock"},
-      {name:"库存订单",link:"/home/stock_order"},
+	  {name:"库存订单",link:"/home/stock_order"},
+	  {name:"询价订单",link:"/home/stock_enquiry"},
       {name:"供应商",link:"/home/supplier"},
 	  ],
       orderNavActive: null,
@@ -35,7 +36,8 @@ export default {
 		else if(this.$route.path == "/home/out_stock"){this.orderNavActive = 1}
     else if(this.$route.path == "/home/in_stock"){this.orderNavActive = 2}
     else if(this.$route.path == "/home/stock_order"){this.orderNavActive = 3}
-    else if(this.$route.path == "/home/supplier"){this.orderNavActive = 4}
+	else if(this.$route.path == "/home/supplier"){this.orderNavActive = 4}
+	else if(this.$route.path == "/home/stock_enquiry"){this.orderNavActive = 5}
   },
   methods: {
     orderTab(i,link) {

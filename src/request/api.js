@@ -6,8 +6,8 @@ import {
   put,
   deletes
 } from './http'
-// const uplodeURL = 'http://47.96.248.209:8888/vehicle/file/uploadPicture';//测试
-const uplodeURL = 'http://47.99.212.29:8888/vehicle/file/uploadPicture';//正式
+const uplodeURL = 'http://47.96.248.209:8888/vehicle/file/uploadPicture';//测试
+// const uplodeURL = 'http://47.99.212.29:8888/vehicle/file/uploadPicture';//正式
 
 //登出
 const login = function (parmas) {
@@ -457,6 +457,36 @@ const enterprisefList = function (parmas) {
 const newlysave = function (parmas) {
   return posts("/vehicle/account/save", parmas)
 }
+//询价订单列表
+const purOrderList = function (parmas) {
+  return get("/vehicle/garageAskPrice/pcpurOrderList", parmas)
+}
+//确认收货订单配件
+const receiveGoods = function (parmas) {
+  return post("/vehicle/garageAskPrice/receiveGoods", parmas)
+}
+//取消收货订单配件
+const cancelAccessories = function (parmas) {
+  return post("/vehicle/garageAskPrice/cancelPurOrder", parmas)
+}
+//查询退换货订单
+const afterSalePartList = function (parmas) {
+  return get("/vehicle/afterSale/afterSalePartList", parmas)
+}
+
+//确认收货订单零配件
+const afterSaleReceive = function (parmas) {
+  return posts("/vehicle/afterSale/afterSaleReceive", parmas)
+}
+
+//确认取消订单零配件退/换货
+const afterSaleCancel = function (parmas) {
+  return posts("/vehicle/afterSale/afterSaleCancel", parmas)
+}
+//配件申请退换货
+const afterSaleRequest = function (parmas) {
+  return posts("/vehicle/afterSale/afterSaleRequest", parmas)
+}
 export {
   login,
   logout,
@@ -559,5 +589,12 @@ export {
   staffpay,
   staffall,
   newlysave,
-  uplodeURL
+  uplodeURL,
+  purOrderList,
+  receiveGoods,
+  cancelAccessories,
+  afterSalePartList,
+  afterSaleReceive,
+  afterSaleCancel,
+  afterSaleRequest
 }
