@@ -487,6 +487,19 @@ const afterSaleCancel = function (parmas) {
 const afterSaleRequest = function (parmas) {
   return posts("/vehicle/afterSale/afterSaleRequest", parmas)
 }
+
+//查询配件商报价列表
+const pcaskPriceList = function (parmas) {
+  return get("/vehicle/garageAskPrice/pcaskPriceList", parmas)
+}
+//查询配件商报价列表
+const askPriceList = function (parmas) {
+  return get("/vehicle/garageAskPrice/askPriceList", parmas)
+}
+//采购订单（下单）
+const pcpurOrder = function (parmas) {
+  return posts("/vehicle/garageAskPrice/purOrder", parmas)
+}
 export {
   login,
   logout,
@@ -596,5 +609,8 @@ export {
   afterSalePartList,
   afterSaleReceive,
   afterSaleCancel,
-  afterSaleRequest
+  afterSaleRequest,
+  askPriceList,
+  pcaskPriceList,
+  pcpurOrder
 }

@@ -28,12 +28,12 @@ export default {
   },
   mounted() {
 	  if(this.$route.path == "/"){this.orderNavActive = 0}
-		else if(this.$route.path == "/home/order"){this.orderNavActive = 1}	
-		else if(this.$route.path == "/home/formPage" ||this.$route.path == "/home/formPageB" ||this.$route.path == "/home/formPageB_B"||  this.$route.path == "/home/formB" || this.$route.path == "/home/formC" || this.$route.path == "/home/formD" || this.$route.path == "/home/formE" || this.$route.path == "/home/formF" || this.$route.path == "/home/formG" || this.$route.path == "/home/formH" || this.$route.path == "/home/formI"){
+		else if(this.$route.path == "/home/order"|| this.$route.path == "/home/orderX"){this.orderNavActive = 1}	
+		else if(this.$route.path == "/home/formPage" ||this.$route.path == "/home/formPageB" ||this.$route.path == "/home/formPageB_B"|| this.$route.path == "/home/formB" || this.$route.path == "/home/formC" || this.$route.path == "/home/formD" || this.$route.path == "/home/formE" || this.$route.path == "/home/formF"||this.$route.path == "/home/formK" || this.$route.path == "/home/formJ" ||this.$route.path == "/home/formL" || this.$route.path == "/home/formG" || this.$route.path == "/home/formH" || this.$route.path == "/home/formI"){
 			this.orderNavActive = 2
 			}
-		else if(this.$route.path == "/home/parts"){this.orderNavActive = 3}	
-		else if(this.$route.path == "/home/setting"){this.orderNavActive = 4}	
+		else if(this.$route.path == "/home/parts"|| this.$route.path == "/home/stock"|| this.$route.path == "/home/out_stock"|| this.$route.path == "/home/in_stock"|| this.$route.path == "/home/stock_order"|| this.$route.path == "/home/stock_enquiry"|| this.$route.path == "/home/supplier"){this.orderNavActive = 3}	
+		else if(this.$route.path == "/home/setting"|| this.$route.path == "/home/role"|| this.$route.path == "/home/qrcode"|| this.$route.path == "/home/project_setting"|| this.$route.path == "/home/parts_setting"|| this.$route.path == "/home/royalty_setting"){this.orderNavActive = 4}	
   },
    watch:{
     $route( to , from ){   

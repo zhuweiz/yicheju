@@ -120,9 +120,9 @@
         <el-table :data="editForm" style="width: 100%">
           <el-table-column type="index" label="序号"></el-table-column>
           <el-table-column property="partName" label="配件名称"></el-table-column>
-          <el-table-column property label="规格型号"></el-table-column>
+          <el-table-column property='modal' label="规格型号"></el-table-column>
           <el-table-column property="partCount" label="购入数量"></el-table-column>
-          <el-table-column property="fitCar" label="申请数量">
+          <el-table-column property="returnQuantity" label="申请数量">
             <template scope="scope">
               <!-- <div class="btn" @click="btnMinute(scope.row)" >-</div>  
                 <div class="btn">{{count}}</div>
@@ -134,7 +134,7 @@
               >
                 <i class="el-icon-minus"></i>
               </span>
-              <span class="number">{{scope.row.number}}</span>
+              <span class="number">{{scope.row.returnCount?scope.row.returnCount:scope.row.number}}</span>
               <span
                 v-if="scope.row.statusDesc == '在厂'"
                 style="color:#409EFF;font-size:16px"
@@ -145,7 +145,7 @@
             </template>
           </el-table-column>
           <el-table-column property="statusDesc" label="状态"></el-table-column>
-          <el-table-column property="price" label="备注"></el-table-column>
+          <el-table-column property="remark" label="备注"></el-table-column>
           <el-table-column prop="remark" label="操作" width="180" align="center">
             <template slot-scope="scope">
               <!-- <el-button size="mini" @click="editPartDig(scope.row)">编辑</el-button> -->
@@ -443,20 +443,27 @@ export default {
         });
       });
     },
-
+  //退换货
     editPartDig(row, type) {
-      console.log(type);
-      let tishi = "订单" + row.partName + "确认收货？";
+      console.log(row);
+     let data = {
+        askPricePartId: row.askPricePartId,
+        partId:row.partId,
+        quantity:row.number,
+        type: type
+      };
+      console.log(data)
+      let tishi = "订单" + row.partName + "确认退/换货？";
       this.$confirm(tishi, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        afterSaleReceive({ afterSaleId: row.afterSaleId }).then(res => {
+        afterSaleRequest(data).then(res => {
           if (res.data.code == 200) {
             this.$message({
               type: "success",
-              message: "确认收货成功!"
+              message: "退/换货成功!"
             });
             this.init2();
           }

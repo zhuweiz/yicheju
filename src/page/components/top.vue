@@ -65,6 +65,7 @@ export default {
       this.factoryList = res.data.data.allGarageList
       if(this.factoryList.length>0){
         let row = this.factoryList.find(v => v.id == localStorage.getItem("gid"))
+        // console.log(row)
         this.gname = row.name
       }
     })

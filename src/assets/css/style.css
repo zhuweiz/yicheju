@@ -216,7 +216,9 @@ html, body, #app {
   -webkit-transform-origin: center;
   transform-origin: center;
 }
-
+.radio_ccid /deep/.el-radio__label{
+  display: none !important;
+}
 /* .el-form--inline .el-form-item {
   margin-right: 15px;
 } */

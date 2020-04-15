@@ -118,11 +118,12 @@
 			
 			<el-row :gutter="10" class="orderTable" v-if="orderNavActive == 0">
 			  <el-col :xs="24" :md="8">
-			  	<h2 class="f-18 p-tb-10" style="width: 150px;color: #0D906E;font-weight: normal;float:left;">| 项目工时清单</h2>
+			  	<h2 class="f-18 p-tb-10" style="width: 130px;color: #0D906E;font-weight: normal;float:left;">| 项目工时清单</h2>
+				  <div class=" su" style="display: inline-block">{{tableData1.length}}</div>
 					<el-button type="text" icon="el-icon-plus" style="float:right;color:#000;" @click="addProjectDialog" v-if="data.settlementStatus != 1">新增项目</el-button>
 			  	<el-table
 			      :data="tableData1"
-			      :max-height="maxHeight"
+			      :height="400+'px'"
 			      style="width: 100%">
 			      <el-table-column
 			        prop="date"
@@ -186,10 +187,11 @@
 			    </el-table> 
 			  </el-col>
 			  <el-col :xs="24" :md="16">
-			  	<h2 class="f-18 p-tb-10" style="width: 150px;color: #0D906E;font-weight: normal;float:left;">| 配件清单</h2>
+			  	<h2 class="f-18 p-tb-10" style="width: 100px;color: #0D906E;font-weight: normal;float:left;">| 配件清单</h2>
+				    <div class=" su" style="display: inline-block">{{tableData2.length}}</div>
 			  	<el-table
 			      :data="tableData2"
-			      :max-height="maxHeight"
+			      :height="400+'px'"
 			      style="width: 100%">
 			      <el-table-column
 			        prop="date"
@@ -649,7 +651,7 @@
 				<el-dialog
 					title="添加配件"
 					:visible.sync="visible.addPartsVisible"
-					width="30%"
+					width="35%"
 					center
 					:modal="false"
 					:show-close="false"
@@ -674,10 +676,15 @@
 								<template slot-scope="scope">{{ scope.row.partName }}</template>
 							</el-table-column>
 							<el-table-column
+								label="">
+								<template slot-scope="scope">{{ scope.row.model }}</template>
+							</el-table-column>
+							<el-table-column
 								prop="sellPrice"
 								label="">
 								<template slot-scope="scope">
 									<el-tag type="danger" effect="dark" v-if="scope.row.isFactioryPartName == 0">库</el-tag>
+									<el-tag type="success"  v-if="scope.row.isFactioryPartName == 1">询</el-tag>
 								</template>
 							</el-table-column>
 							<el-table-column
@@ -692,7 +699,7 @@
 						</div>
 
 						<div class="lines">
-							<h2>已选配件：{{selectPartList.length}}个</h2>
+							<h2 @click="ccd">已选配件：{{selectPartList.length}}个</h2>
 							<el-table
 								:data="selectPartList"
 								tooltip-effect="dark"
@@ -1028,8 +1035,10 @@ const unique = function(arr, name) {
 }
 export default {
   name: "order",
+    inject:['reload'], 
   data() {
     return {
+			pjprice:[],
 			treeData: [],
 			tableData1: [],
 			tableData2: [],
@@ -1172,18 +1181,31 @@ export default {
 				return v
 			})
 		})
-    const data = {
+this.ccd()
+  },
+  mounted() {
+    this.maxHeight = $(".tabBox").height() - 102 - 86 - 37 - 80 - 60 + "px";
+  },
+  methods: {
+	  ccd(){
+		    const data = {
       oid: localStorage.getItem("oid")
     };
     getOrderListX(data).then(res => {
-      this.data = res.data.data;
-      this.tableData1 = res.data.data.orderItemList;
+		
+	  this.data = res.data.data;
+	  console.log(res.data.data)
+	  this.tableData1 = res.data.data.orderItemList;
+	//   console.log( this.tableData1)
+	
 	  if(this.tableData1){
 		  this.tableData1.forEach((item, index) => {
         	item.orderPartList.forEach((items, indexs) => {
 				this.zonghe += parseInt(items.inPrice * items.counts);
 				items.itemName = item.itemName
+			
 				this.tableData2.push(items);
+				this.pjprice =items
 			});
 		});
       this.lirun =
@@ -1193,6 +1215,7 @@ export default {
 
 	  }
 		this.tableData3 = res.data.data.comboCustomerList
+		// console.log(this.tableData3)
 		this.tableData3.forEach((i)=>{
 			i.startDate = moment(i.startDate).format("YYYY-MM-DD")
 			i.endDate = moment(i.startDate).format("YYYY-MM-DD")
@@ -1205,12 +1228,8 @@ export default {
 		}
 		this.srcList = imgList.map(v => v.picUrl)
 	});
-
-  },
-  mounted() {
-    this.maxHeight = $(".tabBox").height() - 102 - 86 - 37 - 80 - 60 + "px";
-  },
-  methods: {
+		console.log(this.tableData2.length)
+	  },
 		getProject(){
 			getProject().then(res => {
 				this.projectList = this.projectLists = res.data.data
@@ -1336,6 +1355,7 @@ export default {
 			this.visible.deliverVisible = true
 		},
 		add_parts(params, index){
+			// console.log(params)
 			if(this.selectPartList.length == 0)  this.getPart()
 			this.selectPartItemId = params.id
 			this.selectPartName = params.itemName
@@ -1469,10 +1489,12 @@ export default {
 				} 
 			})
 		},
+		//确定选择
 		addProjectSubmit(){
 			if(this.selectProjectList.length == 0){
 				return this.$message({message: "请先选择项目", type: "error"})
 			}
+			// console.log(this.selectProjectList)
 			this.selectProjectList.forEach(v => { 
 				if(this.tableData1 && this.tableData1.length > 0){
 					let row = this.tableData1.find(k => k.id == v.id)
@@ -1490,12 +1512,14 @@ export default {
 			this.projectSearch = ''
 			this.visible.addProjectVisible = false
 		},
+		//确定添加配件
 		addPartsSubmit(){
 			if(this.selectPartList.length == 0){
 				return this.$message({message: "请先选择配件", type: "error"})
 			}
-
+			// console.log(this.selectPartList)
 			this.selectPartList.forEach(v => {
+				// console.log(v)
 				let row = this.tableData2.find(k => k.id == v.id && k.itemId == this.selectPartItemId)
 				if(row){
 					return this.$message({message: `配件${row.partName}已存在`, type: "error"})
@@ -1505,12 +1529,16 @@ export default {
 				v.price = v.sellPrice
 				v.itemId = this.selectPartItemId
 				v.source = v.gid == -99 ? 1 : 0
+				v.partId = v.id
 				v.itemName = this.selectPartName
 				this.tableData2.push(v)
 			})
 			this.selectPartList = this.selected1 = []
 			this.partSearch = ''
+			this.saveWorkInfo()
+	
 			this.visible.addPartsVisible = false
+			this.reload();
 		},
 		selectMealProject(event){
 			this.selectMealProjectList = event
@@ -1519,11 +1547,14 @@ export default {
 			this.visible.mealVisible = true
 			this.visible.addProjectVisible = false
 		},
+		//创建新配件
 		createPartsSubmit(){
 			const dto = {
 				gid: this.data.gid,
+				isFactioryPartName:1,
 				...this.createPartsForm
 			}
+			// console.log(dto)
 			addPart(dto).then(e => {
 				if(e.data.code == 200){
 					this.visible.createPartsVisible = false
@@ -1551,7 +1582,9 @@ export default {
 		createParts() {
 			this.visible.createPartsVisible = true
 		},
+		//编辑配件
 		editParts(row){
+			console.log(row)
 			this.editPartsForm = row
 			this.visible.editPartsVisible = true
 		},
@@ -1595,11 +1628,18 @@ export default {
 			this.data.receivableItemAmount = this.tableData1.reduce(function (accumulator, currentValue) {
 					return accumulator + parseFloat(currentValue.standPrice)
 				}, 0)
-
+	console.log(this.tableData2)
 			this.data.receivablePartAmount = this.tableData2.reduce(function (accumulator, currentValue) {
-					return (accumulator + parseFloat(currentValue.price)) * currentValue.counts
+				
+				// console.log(accumulator)
+				// console.log(currentValue)
+				// console.log(currentValue.counts)
+						return accumulator + (parseFloat(currentValue.price) * currentValue.counts)
+					// return (accumulator + parseFloat(currentValue.price)) * currentValue.counts
+						
 				}, 0)
-
+			console.log(this.data.receivableItemAmount)
+			
 			this.data.amountReceivable = parseFloat(this.data.receivableItemAmount) + parseFloat(this.data.receivablePartAmount)
 			let data = {
 				oid: localStorage.getItem("oid"),
@@ -1609,13 +1649,15 @@ export default {
 				amountReceivable: this.data.amountReceivable,
 				orderItems: []
 			}
-			
+				// console.log(this.tableData1)
 			data.orderItems = this.tableData1.map(v => {
+				
 				v.isCombo = v.ciId ? 0 : 1
 				v.itemDispatch = this.itemDispatch.filter(item => item.itemId == v.id)
 				v.orderPartList = this.tableData2.filter(item => item.itemId == v.id)
 				return v
 			})
+		console.log(data)
 			saveWorkInfo(data).then(res => {
 				if(res.data.code == 200){
 					this.$message({
@@ -1624,6 +1666,10 @@ export default {
 					})
 				}
 			})
+			      this.lirun =
+        this.data.amountActual -
+        (this.data.amountActual - this.data.amountReceivable) -
+		this.zonghe;
 		},
 		selectLossProject(event){
 			event.forEach(v => {
@@ -1853,8 +1899,28 @@ export default {
 	.orderUl li:hover{background: rgba(0,0,0,0.1);transition: .5s;}
 	.orderUl li.active{background: #3AC29F;color: #fff;}
 	
-	
-	.orderXHeji{color: #067E5F;}
+	.orderTable{
+		padding-bottom: 60px
+	}
+	.orderXHeji{
+		color: #067E5F;
+		position: fixed;
+		bottom: 0;
+		margin-bottom: 20px;
+		background: #fff;
+		width: 100%;
+	}
+	.su{
+		margin-top: 12px;
+		border-radius: 7px 7px 7px 7px;
+		color: #fff;
+		width: 35px;
+		font-size: 16px;
+		line-height: 20px;
+		height: 20px;
+		background: #3AC29F;
+		text-align: center;
+	}
 	.orderXHeji em{margin: 0 15px;}
 	.orderXHeji i{color: #A8CEC3;}
 
