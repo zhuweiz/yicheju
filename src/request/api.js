@@ -500,6 +500,26 @@ const askPriceList = function (parmas) {
 const pcpurOrder = function (parmas) {
   return posts("/vehicle/garageAskPrice/purOrder", parmas)
 }
+
+//查询配件商系统推荐
+const systemReco = function (parmas) {
+  return get("/vehicle/garageAskPrice/systemReco", parmas)
+}
+
+//查询所有汽配城
+const getAllPartTown = function (parmas) {
+  return get("/vehicle/garageAskPrice/getAllPartTown", parmas)
+}
+
+//查询所有询价供应商
+const querySupplierByGid = function (parmas) {
+  return get("/vehicle/garage/querySupplierByGid", parmas)
+}
+
+//发起配件询价
+const askPricePull = function (parmas) {
+  return posts("/vehicle/garageAskPrice/askPrice", parmas)
+}
 export {
   login,
   logout,
@@ -612,5 +632,9 @@ export {
   afterSaleRequest,
   askPriceList,
   pcaskPriceList,
-  pcpurOrder
+  pcpurOrder,
+  systemReco,
+  getAllPartTown,
+  querySupplierByGid,
+  askPricePull
 }

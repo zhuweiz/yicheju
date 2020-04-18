@@ -230,3 +230,9 @@ html, body, #app {
   /*-khtml-user-select:none;!*早期浏览器*!*/
   user-select:none;
 }
+.chek /deep/.el-checkbox__label{
+  padding-left: 4px !important;
+}
+.chek /deep/.el-checkbox__input{
+  line-height: 50px;
+}

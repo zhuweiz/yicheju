@@ -152,8 +152,8 @@ export default {
       const data = {
         gid: localStorage.getItem("gid"),
         supplierName: this.search.supplierName,
-        pageSize: this.page,
-        pageNumber: this.size
+        page: this.page,
+        size: this.size
       };
       queryAllSupplierByGid(data).then(res => {
         this.addList = res.data.data;

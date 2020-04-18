@@ -185,7 +185,7 @@
       <el-table-column label="操作" width="180" align="center">
         <template slot-scope="scope">
           <el-button v-if="!show" size="mini" plain @click="editRow(scope.row)">商家报价</el-button>
-          <el-button v-if="!show" size="mini" plain @click="enquiry()">询价</el-button>
+          <el-button v-if="!show" size="mini" plain @click="enquiry(scope.row)">询价</el-button>
           <el-button v-if="show" size="mini" plain @click="toOrderX(scope.row)">查看</el-button>
           <el-button
             v-if="scope.row.settlementStatus == 1"
@@ -212,61 +212,149 @@
         :total="pageLength"
       ></el-pagination>
     </div>
+
     <!-- 询价弹出框 -->
-    <el-dialog
-      title="询价配置"
-      :visible.sync="configuration"
-      width="70%"
-      :modal="false"
-      center
-      :before-close="handleClose"
-    >
-    <div class="configlist">
-      <div class="left PJparts">
-        <div class="lines">
-            <div class="left">配件</div>
-            <div class="right">选择</div>
+    <el-dialog title="询价配置" :visible.sync="configuration" width="65%" :modal="false" center>
+      <div class="configlist">
+        <div class="left PJparts">
+          <div class="lines" style="border-top: 1px solid #ebeef5; ">
+            <div class="left pejx">配件</div>
+            <div class="right" style="cursor:pointer" @click="Pjclick">
+              选择
+              <i class="el-icon-arrow-right"></i>
+            </div>
+          </div>
+          <div class="outbox">
+             <div class="outbox_c" v-if="systemRecoList2.length < 1">请选择询价配件~</div>
+            <div class="lines" v-for="(items,idx) in systemRecoList2" :key="'inte'+idx">
+              <div class="left namepes">{{items.partName}}</div>
+              <div class="right namedelet" style="cursor:pointer" @click="detparts(idx)">删除</div>
+              <div class="right namelet">x{{items.partCount}}.0</div>
+            </div>
+          </div>
         </div>
-        <el-table
-          ref="partTable"
-          :data="partList"
-          tooltip-effect="dark"
-          :show-header="false"
-          style="width: 100%"
-          max-height="250"
-          @selection-change="selectPart"
-        >
-          <el-table-column label>
-            <template slot-scope="scope">{{ scope.row.partName }}</template>
-          </el-table-column>
-          <el-table-column type="selection" width="50"></el-table-column>
-        </el-table>
-      </div>
-      <div class="right PJparts2">
-            <div class="lines">
-            <div class="left">配件</div>
-            <div class="right">选择</div>
+        <div class="right PJparts2">
+          <div class="lines" style="border-top: 1px solid #ebeef5; ">
+            <div class="left pejx">
+              供应商
+              <span style="  font-size: 12px;color: #666;">(最多6家)</span>
+            </div>
+            <div class="left chek">
+              <el-checkbox @change="isMyclck">我的商家优先</el-checkbox>
+            </div>
+            <div class="left xitong" style="cursor:pointer" @click="systemReco">系统推荐</div>
+            <div class="right" @click="choose" style="cursor:pointer">
+              选择
+              <i class="el-icon-arrow-right"></i>
+            </div>
+          </div>
+          <div class="outbox">
+                    <div class="outbox_c" v-if="systemRecoList.length < 1">请选择询价汽配城~</div>
+            <div class="lines2" v-for="(items,idx) in systemRecoList" :key="'inte'+idx">
+              <div class="outlis">
+                <div class="chengde">{{items.companyName}}</div>
+                <div class="wode" v-if="items.gid == gid">我的</div>
+              </div>
+              <div class="outlis_a">
+                <div class="chengde">{{items.manageRemark}}</div>
+                <div class="namedelet sc" style="cursor:pointer" @click="detsupplier(idx)">删除</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <el-table
-          ref="partTable"
-          :data="partList"
-          tooltip-effect="dark"
-          :show-header="false"
-          style="width: 100%"
-          max-height="250"
-          @selection-change="selectPart"
-        >
-          <el-table-column label>
-            <template slot-scope="scope">{{ scope.row.partName }}</template>
-          </el-table-column>
-          <el-table-column type="selection" width="50"></el-table-column>
-        </el-table>
       </div>
-    </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="configuration = false">取 消</el-button>
-        <el-button type="primary" @click="configuration = false">确 定</el-button>
+        <el-button type="success" style="width:450px" @click="enquiryPull">询 价</el-button>
       </div>
+      <!-- 内层选择配件询价弹窗 -->
+      <el-dialog width="30%" center title="选择配件" :visible.sync="configuration_c" append-to-body>
+        <div class="outbox_d">
+          <div
+            class="lines"
+            v-for="(items,idx) in tableData2"
+            :key="'inte'+idx"
+            v-if="items.source == 1 && items.askPriceStatus != 1"
+          >
+            <div class="left namepes">{{items.partName}}</div>
+            <el-checkbox-group class="right" style="margin-right: 5px;"  v-model="items.checked">
+              <el-checkbox></el-checkbox>
+            </el-checkbox-group>
+            <div class="right namelet">x{{items.counts}}.0</div>
+          </div>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="success" style="width:200px" @click="Clicktijiao">提 交</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 内层供应商弹窗 -->
+      <el-dialog width="35%" center title="选择供应商" :visible.sync="innerVisible" append-to-body>
+        <div class="inputd">
+          <el-input style="width: 250px;" class="left" placeholder="输入相关关键字" v-model="seekgysname">
+            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+          </el-input>
+          <img
+            class="left"
+            style="width: 25px;height: 25px;margin-left: 50px;margin-top: 5px;"
+            src="../../assets/saixuan.png"
+            alt
+          />
+          <div class="qipeic left" style="cursor:pointer" @click="Town">汽配城</div>
+          <el-button class="right" type="success" @click="seeksupplier">查 找</el-button>
+        </div>
+        <div class="outbox"> 
+          <div class="lines2" v-for="(items,idx) in supplierlist" :key="'supp'+idx">
+            <div class="outlis">
+              <div class="chengde2">{{items.supplierName}}</div>
+              <div class="phin">{{items.phone}}</div>
+              <el-checkbox-group style="margin-left: 5px;" :min="1" :max="3" v-model="items.checked">
+                <el-checkbox @change="check(items)"></el-checkbox>
+              </el-checkbox-group>
+            </div>
+            <div class="outlis_a">
+              <div class="chengde">{{items.scope}}</div>
+              <div class="wode" style="margin-bottom: 0px" v-if="items.gid == gid">我的</div>
+            </div>
+          </div>
+        </div>
+
+        <div slot="footer" class="dialog-footer">
+          <el-button type="success" style="width:200px" @click="Clickinquiry">询 价</el-button>
+        </div>
+        <!-- //再内窗 -->
+        <el-dialog
+          style="padding-bottom: 20px;"
+          width="20%"
+          center
+          :visible.sync="innerVisible2"
+          append-to-body
+        >
+          <div style="overflow: hidden;">
+            <div class="letzc">
+              <div class="letz_b">汽配城</div>
+              <div class="letz_b">地址</div>
+            </div>
+            <div class="outbox2">
+              <div class="letz" v-for="(item,idx) in Townlist" :key="'i'+idx">
+                <div @click="switTown(item.id)" :class="item.id==switchActive2?'letz_a_A':'letz_a'">
+                  {{item.name}}
+                  <img
+                    v-if="item.id==switchActive2"
+                    class="imgdagou"
+                    src="../../assets/dagou.png"
+                    alt
+                  />
+                </div>
+                <div class="letz_b">{{item.locationTown}}</div>
+              </div>
+            </div>
+
+          </div>
+          <div style="overflow: hidden;margin-top: 20px;">
+            <div class="right queding" @click="qipeicheng" style="cursor:pointer">确 定</div>
+          </div>
+        </el-dialog>
+      </el-dialog>
     </el-dialog>
 
     <!--  -->
@@ -609,19 +697,40 @@ import {
   settlement,
   rollbackSettlement,
   getGrade,
+  queryAllSupplierByGid,
   askPriceList,
   pcaskPriceList,
-  pcpurOrder
+  pcpurOrder,
+  systemReco,
+  getAllPartTown,
+  querySupplierByGid,
+  askPricePull
 } from "../../request/api.js";
 import moment from "moment";
+import router from "../../router";
 export default {
   name: "order",
   data() {
     return {
       radio: 3,
+      configuration_c: false,
+      max: [],
+      Townlist: [],
+      isMy: false,
+      oid: null,
+      checked: [], //选择我的商家
+      systemRecoList: [], //汽配商列表
+      systemRecoList2: [], //配件列表
+      tableData2: [], //配件清单
+      seekgysname: "", //搜索供应商
+      partList: [], //询价数据
+      supplierlist: [], //供应商列表
       lensg: null,
       show: false,
       configuration: false, //询价弹窗
+      innerVisible: false, //询价弹窗内层
+      innerVisible2: false, //询价弹窗内层再内窗
+      PjVisibleL: false, //询价配件弹窗
       radioID: [],
       ceshi: [],
       askPriceId: "",
@@ -634,8 +743,10 @@ export default {
       orderList: ["在厂全部", "报价", "施工", "质检", "出厂", "历史"],
       orderNavActive: 0,
       switchActive: 0,
+      switchActive2: 1,
       value1: "",
       maxHeight: undefined,
+      xunjialist: {},
       search: {
         time: [],
         times: [],
@@ -646,6 +757,7 @@ export default {
       pageLength: null,
       size: 10,
       page: 0,
+      gid: localStorage.getItem("gid"),
       title: "蒙B99999",
       payVisible: false,
       payForm: {},
@@ -671,13 +783,158 @@ export default {
     this.show = true;
   },
   methods: {
+    check(e) {
+      // console.log(e);
+    },
+    Clickinquiry() {
+      this.systemRecoList = [];
+      var arr = this.supplierlist.filter(item => item.checked === true);
+      if (arr.length > 6) {
+        this.$message({
+          showClose: true,
+          message: "最多选择6家供应商~",
+          type: "error"
+        });
+        return;
+      }
+      for (var i in this.supplierlist) {
+        let list = {
+          address: this.supplierlist[i].address,
+          businessScope: this.supplierlist[i].businessScope,
+          companyName: this.supplierlist[i].supplierName,
+          gid: this.gid,
+          id: this.supplierlist[i].id,
+          manageRemark: this.supplierlist[i].scope,
+          motorPartsTown: this.supplierlist[i].motorPartsTown,
+          phone: this.supplierlist[i].phone,
+          type: this.supplierlist[i].type
+        };
+        if (this.supplierlist[i].checked == true) {
+          this.systemRecoList.push(list);
+        }
+      }
+      this.innerVisible = false;
+    },
+    Clicktijiao() {
+      this.systemRecoList2 = [];
+ 
+      for (var i in this.tableData2) {
+        let list = {
+          partCount: this.tableData2[i].counts,
+          partId: this.tableData2[i].partId,
+          partName: this.tableData2[i].partName,
+          partPicUrl: this.tableData2[i].imageUrl,
+          remark: this.tableData2[i].partRemark,
+          seq: 0
+        };
+        if (this.tableData2[i].checked == true) {
+          this.systemRecoList2.push(list);
+        }
+      }
+      this.configuration_c = false;
+      // console.log(this.systemRecoList2);
+    },
     //点击询价
-    enquiry() {
+    enquiry(row) {
+      // console.log(row);
+      this.systemRecoList = [];
+      this.systemRecoList2 = [];
+      this.oid = row.oid;
+
       this.configuration = true;
+    },
+
+    //确定选择汽配城
+    qipeicheng() {
+      const data = {
+        gid: this.gid,
+        isMy: this.isMy,
+        partTownId: this.switchActive2,
+        page: 0,
+        size: 999
+      };
+      querySupplierByGid(data).then(res => {
+        this.supplierlist = res.data.data;
+        this.supplierlist.map((c, i) => {
+          this.$set(c, "checked", false);
+        });
+      });
+      this.innerVisible2 = false;
+    },
+    //点击选择配件
+    Pjclick() {
+      this.tableData2 = [];
+      const data = {
+        oid: this.oid
+      };
+      getOrderListX(data).then(res => {
+        // console.log(res.data.data);
+        if(res.data.data.orderPictureList.length > 1){
+           this.xunjialist.carPicUrl = res.data.data.orderPictureList[0].picUrl
+        }
+        this.xunjialist = {
+          carModel: res.data.data.standard,
+          carVin: res.data.data.vin,
+          gid: res.data.data.gid,
+          oid: res.data.data.oid,
+          partTotalCount: res.data.data.partTotalCount,
+          status: 0
+        };
+        var tableData1 = res.data.data.orderItemList;
+        tableData1.forEach((item, index) => {
+          item.orderPartList.forEach((items, indexs) => {
+            this.tableData2.push(items);
+            this.tableData2.map((c, i) => {
+              this.$set(c, "checked", false);
+            });
+          });
+        });
+      });
+      // console.log(this.tableData2);
+      this.configuration_c = true;
+    },
+    //点击选择供应商
+    choose() {
+      const data = {
+        gid: this.gid,
+        isMy: this.isMy,
+        page: 0,
+        size: 999
+      };
+      querySupplierByGid(data).then(res => {
+        this.supplierlist = res.data.data;
+        this.supplierlist.map((c, i) => {
+          this.$set(c, "checked", false);
+        });
+        // console.log(this.supplierlist);
+      });
+
+      this.innerVisible = true;
+    },
+    //搜索供应商名字查找
+    seeksupplier() {
+      const data = {
+        gid: this.gid,
+        page: 0,
+        size: 999,
+        standard: this.seekgysname
+      };
+      querySupplierByGid(data).then(res => {
+        // console.log(res.data.data);
+        this.supplierlist = res.data.data;
+        this.supplierlist.map((c, i) => {
+          this.$set(c, "checked", false);
+        });
+      });
+    },
+    //点击切换选择汽配商
+    switTown(i) {
+      // console.log(i);
+      this.switchActive2 = i;
     },
     //点击单选框
     getValue(i) {
-      console.log(i);
+      // console.log(i);
       this.askPriceId = i.askPriceId;
     },
     getValue2(i) {
@@ -708,7 +965,7 @@ export default {
         askPriceId: this.askPriceId,
         askPricePartIds: askPricePartIds
       };
-      console.log(data);
+      // console.log(data);
       let tishi = "确认生成订货单？";
       this.$confirm(tishi, "提示", {
         confirmButtonText: "确定",
@@ -716,7 +973,7 @@ export default {
         type: "warning"
       }).then(() => {
         pcpurOrder(data).then(res => {
-          console.log(res.data);
+          // console.log(res.data);
           if (res.data.code == 200) {
             this.$message({
               type: "success",
@@ -729,7 +986,6 @@ export default {
           }
         });
       });
-      console.log(askPricePartIds);
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0) {
@@ -745,6 +1001,75 @@ export default {
           };
         }
       }
+    },
+    //点击切换数据
+    isMyclck() {
+      this.isMy = !this.isMy;
+    },
+    //点击删除当前汽配城数据
+    detsupplier(idx) {
+      // this.systemRecoList.forEach(function(i, index) {
+      this.systemRecoList.splice(idx, 1);
+      // });
+    },
+    //点击删除当前配件列表数据
+    detparts(idx) {
+      // this.systemRecoList.forEach(function(i, index) {
+      this.systemRecoList2.splice(idx, 1);
+      // });
+    },
+    //发起询价
+    enquiryPull() {
+         
+      if (this.systemRecoList2.length < 1) {
+        this.$message.error("请选择您要询价的配件");
+        return;
+      } else if (this.systemRecoList.length < 1) {
+        this.$message.error("请选择您要询价的供应商");
+        return;
+      }
+      let data = {
+        askPricePart4GarageDTOList:this.systemRecoList2,
+        carModel: this.xunjialist.standard,
+        carPicUrl: this.xunjialist.carPicUrl,
+        carVin: this.xunjialist.vin,
+        gid: this.xunjialist.gid,
+        oid: this.xunjialist.oid,
+        partTotalCount: this.systemRecoList2.length,
+        status: this.xunjialist.status,
+        supplierList:this.systemRecoList,
+      }
+      askPricePull(data).then(res => {
+        if (res.data.code == 200) {
+          this.$message({
+            type: "success",
+            message: "询价成功!"
+          });
+           this.configuration = false;
+        } else {
+          // this.$message.error(res.data.message);
+        }
+      });
+    },
+    //系统推荐
+    systemReco() {
+      // console.log(this.isMy);
+      const data = {
+        gid: this.gid,
+        isMy: this.isMy
+      };
+      systemReco(data).then(res => {
+        this.systemRecoList = res.data.data;
+        // console.log(res.data.data);
+      });
+    },
+    //汽配城
+    Town() {
+      getAllPartTown().then(res => {
+        this.Townlist = res.data.data;
+        // console.log(res.data.data);
+      });
+      this.innerVisible2 = true;
     },
     //查看商家
     editRow(row) {
@@ -1346,13 +1671,166 @@ tr .td9 {
   border: 1px solid #dcdfe6;
   border-bottom: none;
 }
-.configlist{
+.configlist {
   overflow: hidden;
 }
-.lines{
-  border-top: 1px solid #909399;
-  border-bottom: 1px solid #909399;
+.outlis {
+  overflow: hidden;
+  height: 34px;
+  line-height: 34px;
+  padding-top: 3px;
+}
+.chengde {
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.phin {
+  color: #888;
+  font-size: 13px;
+}
+.chengde2 {
+  width: 72%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chek {
+  /* margin-left: 95px; */
+  width: 25%;
+}
+.cheken {
+  margin-left: 10px;
+}
+.wode {
+  height: 15px;
+  line-height: 15px !important;
+  font-size: 8px !important;
+  padding: 0px 3px;
+  background: #04b404;
+  color: #fff;
+  margin-bottom: 5px;
+}
+.qipeic {
+  display: inline-block;
+  line-height: 25px;
+  margin-left: 9px;
+  color: #333;
+  margin-top: 5px;
+}
+.xitong {
+  height: 24px;
+  line-height: 24px;
+  color: #0d906e;
+  margin-left: 25px;
+  text-align: center;
+  border-radius: 7px;
+  /* font-weight:bold; */
+  font-size: 13px;
+  margin-top: 13px;
+  width: 65px;
+  border: 1px solid #0d906e;
+}
+.outlis_a {
+  height: 20px;
+  line-height: 20px;
+  color: #999;
+}
+.sc {
+  padding: 0px 5px;
+}
+.outlis div {
+  display: inline-block;
+  line-height: 30px;
+  overflow: hidden;
+}
+.outlis_a div {
+  font-size: 12px;
+
+  overflow: hidden;
+  display: inline-block;
+  line-height: 20px;
+}
+.lines {
+  /* border-top: 1px solid #ebeef5; */
+  border-bottom: 1px solid #ebeef5;
   height: 50px;
+  line-height: 50px;
+}
+.lines2 {
+  border-bottom: 1px solid #ebeef5;
+  height: 60px;
+  line-height: 50px;
+}
+.pejx {
+  height: 36px;
+  width: 40%;
+  padding-left: 10px;
+  margin-top: 7px;
+  line-height: 36px;
+  border-left: 5px solid #74a496;
+}
+.namepes {
+  padding-left: 15px;
+}
+.namedelet {
+  padding-right: 5px;
+  font-size: 12px;
+  color: #ffa042;
+}
+.letz:nth-child(n + 3) {
+  margin-top: 10px;
+}
+.letz {
+  font-size: 13px;
+}
+.letz_a_A {
+  padding-left: 10px;
+  width: 49%;
+  height: 35px;
+  line-height: 35px;
+  background: #ffdcb9;
+  border-radius: 5px;
+  display: inline-block;
+  position: relative;
+}
+.letz_a {
+  padding-left: 10px;
+  width: 49%;
+  height: 35px;
+  line-height: 35px;
+  background: #f3f3fa;
+  border-radius: 5px;
+  display: inline-block;
+  position: relative;
+}
+.imgdagou {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 15px;
+  height: 12px;
+}
+.letz_b {
+  line-height: 35px;
+  width: 49%;
+  height: 35px;
+  display: inline-block;
+}
+
+.queding {
+  line-height: 30px;
+  text-align: center;
+  width: 200px;
+  height: 30px;
+  border-radius: 15px 15px 15px 15px;
+  background: #ff5809;
+  color: #fff;
+}
+.namelet {
+  font-size: 12px;
+  margin-right: 15px;
 }
 .PJparts {
   width: 45%;
@@ -1398,6 +1876,36 @@ th {
   position: relative;
   width: 50px;
   z-index: 9;
+}
+/deep/.el-checkbox {
+  font-size: 0px;
+}
+.outbox_d {
+  border-top: 5px solid #ebeef5;
+  width: 100%;
+  height: 300px;
+  overflow-y: auto;
+}
+.outbox_c{
+  margin: auto;
+  text-align: center;
+  width: 100%;
+  color: #999;
+}
+.outbox {
+  width: 100%;
+  height: 320px;
+  overflow-y: auto;
+}
+.outbox2 {
+  width: 100%;
+  height: 250px;
+  overflow-y: auto;
+}
+.inputd {
+  padding-bottom: 10px;
+  border-bottom: 5px solid #ebeef5;
+  overflow: hidden;
 }
 /* .orderTable /deep/ table thead tr th {
   background: #f2f2f2 !important;

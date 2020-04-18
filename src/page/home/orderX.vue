@@ -24,7 +24,7 @@
 						  	<p>客户来源：{{data.source}}</p>
 						  	<p>业 务 员：{{data.sellsMan}}</p>
 						  	<p>初定提车：{{data.completeTime}}</p>
-							<p><el-button @click="royaltyConfim(1, {price: data.amountReceivable})">业务提成</el-button></p>
+							<p><el-button size="small" @click="royaltyConfim(1, {price: data.amountReceivable})">业务提成</el-button></p>
 						  </el-col>
 					<el-col :xs="24" :md="5" style="border-left:1px solid #dedede;border-right:1px solid #dedede;padding-left: 20px;padding-top:20px;margin-top: 15px;" v-if="data.insuranceInfoDO">
 				  	<p>保单号：{{data.insuranceInfoDO.insureBillNumber}}</p>
