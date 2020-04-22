@@ -520,6 +520,21 @@ const querySupplierByGid = function (parmas) {
 const askPricePull = function (parmas) {
   return posts("/vehicle/garageAskPrice/askPrice", parmas)
 }
+//查询未报价配件商列表
+const unAskPriceList = function (parmas) {
+  return get("/vehicle/garageAskPrice/unAskPriceList", parmas)
+}
+
+//退换货暂缓区
+const afterSaleList = function (parmas) {
+  return get("/vehicle/afterSale/afterSaleList", parmas)
+}
+
+//发起配件询价
+const afterSaleDeliver = function (parmas) {
+  return posts("/vehicle/afterSale/afterSaleDeliver", parmas)
+}
+
 export {
   login,
   logout,
@@ -636,5 +651,8 @@ export {
   systemReco,
   getAllPartTown,
   querySupplierByGid,
-  askPricePull
+  askPricePull,
+  unAskPriceList,
+  afterSaleList,
+  afterSaleDeliver
 }

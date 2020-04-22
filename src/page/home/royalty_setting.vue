@@ -44,7 +44,7 @@
         </el-table-column>
         <el-table-column prop="unit" label="施工员">
           <template slot-scope="scope">
-            <span v-if="scope.row.percentagePointCW || scope.row.percentageAmoutCW">{{scope.row.percentageWay == 1 ? scope.row.percentagePointCW + '%' : scope.row.percentageAmoutCW + '元'}}</span>
+            <span v-if="scope.row.percentagePointSG || scope.row.percentageAmoutSG">{{scope.row.percentageWay == 1 ? scope.row.percentagePointSG + '%' : scope.row.percentageAmoutSG + '元'}}</span>
           </template>
         </el-table-column>
         <el-table-column prop="unit" label="业务员">
@@ -52,9 +52,9 @@
             <span v-if="scope.row.percentagePointYW || scope.row.percentageAmoutYW">{{scope.row.percentageWay == 1 ? scope.row.percentagePointYW + '%' : scope.row.percentageAmoutYW + '元'}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="unit" label="主管">
+        <el-table-column prop="unit" label="财务">
           <template slot-scope="scope">
-            <span v-if="scope.row.percentagePointSG || scope.row.percentageAmoutSG">{{scope.row.percentageWay == 1 ? scope.row.percentagePointSG + '%' : scope.row.percentageAmoutSG + '元'}}</span>
+            <span v-if="scope.row.percentagePointCW || scope.row.percentageAmoutCW">{{scope.row.percentageWay == 1 ? scope.row.percentagePointCW + '%' : scope.row.percentageAmoutCW + '元'}}</span>
           </template>
         </el-table-column>
         <el-table-column prop="employeeName" label="操作" align="center" width="350">
@@ -116,16 +116,18 @@
             <template slot="append">%</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="财务" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 2">
-          <el-input v-model="editForm.percentageAmoutCW">
+
+             <el-form-item label="施工员" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 2">
+          <el-input v-model="editForm.percentageAmoutSG">
             <template slot="append">元</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="财务" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 1">
-          <el-input v-model="editForm.percentagePointCW">
-            <template slot="append">%</template>
+        <el-form-item label="施工员" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 1">
+          <el-input v-model="editForm.percentagePointSG">
+            <template slot="施工员">%</template>
           </el-input>
         </el-form-item>
+
         <el-form-item label="业务员" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 2">
           <el-input v-model="editForm.percentageAmoutYW">
             <template slot="append">元</template>
@@ -136,16 +138,21 @@
             <template slot="append">%</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="主管" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 2">
-          <el-input v-model="editForm.percentageAmoutSG">
+
+
+
+   <el-form-item label="财务" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 2">
+          <el-input v-model="editForm.percentageAmoutCW">
             <template slot="append">元</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="主管" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 1">
-          <el-input v-model="editForm.percentagePointSG">
+        <el-form-item label="财务" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 1">
+          <el-input v-model="editForm.percentagePointCW">
             <template slot="append">%</template>
           </el-input>
         </el-form-item>
+
+
         <el-form-item label="方式" label-width="120px" v-show="editForm.isByPosition === false">
           <el-radio-group v-model="editForm.percentageMethod">
             <el-radio :label="1">总额等分</el-radio>

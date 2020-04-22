@@ -12,27 +12,27 @@
 			<div class="clear"></div>
 			</div>
 				<div style="background:rgba(229,246,247,1);padding:0 20px;">
-				<el-row :gutter="10">
-						  <el-col :xs="24" :md="5" style="padding:20px 0;">
+				<el-row>
+						  <el-col :xs="24"  :md="data.insuranceInfoDO?3:4" style="padding:20px 0;">
 						  	<p>车      型：{{data.standard}}</p>
 						  	<p>客户全称：{{data.ownerName}}</p>
 						  	<p>VIN：{{data.vin}}</p>
 						  	<p>手机号：{{data.phone}}</p>
 						  </el-col>
-						  <el-col :xs="24" :md="5" style="padding:20px 0;">
+						  <el-col :xs="24" :md="data.insuranceInfoDO?3:4"  style="padding:20px 0;">
 						  	<p>接 车 员：{{data.sellsMan}}</p>
 						  	<p>客户来源：{{data.source}}</p>
 						  	<p>业 务 员：{{data.sellsMan}}</p>
 						  	<p>初定提车：{{data.completeTime}}</p>
 							<p><el-button size="small" @click="royaltyConfim(1, {price: data.amountReceivable})">业务提成</el-button></p>
 						  </el-col>
-					<el-col :xs="24" :md="5" style="border-left:1px solid #dedede;border-right:1px solid #dedede;padding-left: 20px;padding-top:20px;margin-top: 15px;" v-if="data.insuranceInfoDO">
+					<el-col :xs="24" :md="4" style="border-left:1px solid #dedede;border-right:1px solid #dedede;padding-left: 20px;;margin-top: 20px;" v-if="data.insuranceInfoDO">
 				  	<p>保单号：{{data.insuranceInfoDO.insureBillNumber}}</p>
 				  	<p>类 型：<em v-if="data.insuranceInfoDO.type === 0">标的车</em><em v-if="data.insuranceInfoDO.type === 1">三者车</em></p>
 				  	<p>保险公司：{{data.insuranceInfoDO.insureCompanyName}}</p>
 				  </el-col>
 				 
-				  <el-col :xs="24" :md="5" class="text-center rel taocanTable" style="font-size: 22px;color: #74A496;padding-left: 20px;">
+				  <el-col :xs="24" :md="6" class=" rel taocanTable" style="font-size: 22px;color: #74A496;padding-left: 20px;">
 				  	
 				  	 <el-table
 				  	 	v-if="this.taocanLength"
@@ -62,7 +62,7 @@
 					    <span v-else class="abs" style="top:20px;left: 20px; font-size: 16px;width: 100%;">套餐：<em class="radius" style="background: #0D906E;color: #fff;padding: 0 15px;">0</em><em class="abs" style="top:40px;width:100px;font-size: 16px !important;">暂无套餐</em></span>
 					    
 				  </el-col>
-					<el-col :xs="24" :md="9" class="text-center rel taocanTable" style="font-size: 22px;color: #74A496;float:right;margin-top:15px;">
+					<el-col :xs="24" :md="8" class="text-center rel taocanTable" style="font-size: 22px;color: #74A496;float:right;margin-top:15px;">
 					    <span class="abs" style="top:5px;left: 20px; font-size: 16px;">外观留图</span>
 						<span class="abs" style="top:25px;left: 20px; font-size: 13px;color:#666;">（共{{srcList.length}}张）</span>
 					    <!-- <el-image 
@@ -85,7 +85,7 @@
 				</el-row>
 			</div>
 			
-			<div class="p-15" style="border-bottom: 1px solid #EEEEEE;">
+			<div class="p-10" style="border-bottom: 1px solid #EEEEEE;">
 				<ul class="left orderUl" style="width: 400px;padding-top: 5px;">
 				<li :class="index==orderNavActive?'active':''" v-for="(item,index) in orderList" :key="index" @click="orderTab(index)">{{item}}</li>
 				<div class="clear"></div>
@@ -1215,7 +1215,7 @@ this.ccd()
 
 	  }
 		this.tableData3 = res.data.data.comboCustomerList
-		// console.log(this.tableData3)
+		console.log(this.tableData3)
 		this.tableData3.forEach((i)=>{
 			i.startDate = moment(i.startDate).format("YYYY-MM-DD")
 			i.endDate = moment(i.startDate).format("YYYY-MM-DD")

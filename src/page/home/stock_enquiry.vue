@@ -1,5 +1,6 @@
 <template>
   <div class="w-100 order flex-col">
+    <!-- <div>niasdasd</div> -->
     <div class="p-15" style="background:rgba(229,246,247,1);">
       <el-row :gutter="10">
         <el-form :inline="true" class="demo-form-inline">
@@ -22,15 +23,60 @@
               <el-input v-model="search.text2" placeholder="订单号" style="width: 160px;"></el-input>
             </el-form-item>
             <el-button type="success" icon="el-icon-search" @click="init()">查找</el-button>
+           
             <el-form-item label class="m-b-0 right m-r-20">
               <div class="left c-p c-9">
                 <el-button type="success" icon="el-icon-refresh-right" @click="init()">刷新</el-button>
               </div>
             </el-form-item>
+ <!-- <el-form-item label class="m-b-0 right" style="cursor: pointer;margin-right: 40px; ">
+              <img class="mis" src="../../assets/tuihuo.png" alt />
+              <span class="mis2" @click="tuihuanhuo">退货暂缓区</span>
+            </el-form-item> -->
+
           </el-col>
         </el-form>
       </el-row>
     </div>
+
+    <!-- 内层供应商弹窗 -->
+    <!-- <el-dialog width="35%" center title="选择发车配件" :visible.sync="centerDialogVisible" append-to-body>
+      <div class="outbox">
+        <div class="lines2" v-for="(items,idx) in supplierlist" :key="'supp'+idx">
+          <div class="outlis">
+            <div class="chengde2">{{items.partName}}</div>
+            <div class="shushu">x{{items.quantity}}</div>
+            <div class="phin">
+              <el-checkbox-group
+                class="right"
+                style="margin-left: 5px;"
+                :min="1"
+                :max="3"
+                v-model="items.checked"
+              >
+                <el-checkbox @change="check(items)"></el-checkbox>
+              </el-checkbox-group>
+              <span class="right">{{items.type == 1?"退货":"换货"}}</span>
+            </div>
+          </div>
+          <div class="outlis_a">
+            <div class="chengde">车牌：{{items.carNo}}</div>
+            <div class="wode" style="margin-bottom: 0px">供应商：{{items.supplierName}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button type="success" style="width:200px" @click="Clickinquiry">发 车</el-button>
+      </div>
+      <el-dialog width="30%" title="请填写备注信息" :visible.sync="innerVisible" append-to-body>
+        <el-input type="textarea" v-model="beizhu" style="height:50px"></el-input>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="success" style="width:200px" @click="Clickinquiry2">发 车</el-button>
+        </div>
+      </el-dialog>
+    </el-dialog> -->
+
     <div style="width:100%;padding-top:15px;" class="orderTable" id="printBox">
       <el-table :data="tableData" :height="500" style="width: 100%">
         <el-table-column type="index" label="序号" width="60"></el-table-column>
@@ -120,7 +166,7 @@
         <el-table :data="editForm" style="width: 100%">
           <el-table-column type="index" label="序号"></el-table-column>
           <el-table-column property="partName" label="配件名称"></el-table-column>
-          <el-table-column property='modal' label="规格型号"></el-table-column>
+          <el-table-column property="modal" label="规格型号"></el-table-column>
           <el-table-column property="partCount" label="购入数量"></el-table-column>
           <el-table-column property="returnQuantity" label="申请数量">
             <template scope="scope">
@@ -185,7 +231,9 @@ import {
   afterSaleReceive,
   afterSalePartList,
   afterSaleCancel,
-  afterSaleRequest
+  afterSaleRequest,
+  afterSaleList,
+  afterSaleDeliver
 } from "../../request/api.js";
 import moment from "moment";
 export default {
@@ -195,6 +243,7 @@ export default {
       status_name: ["部分发货", "已发货", "已收货", "已取消"],
       dispose: ["预处理", "处理中"],
       orderNavActive: 0,
+      centerDialogVisible: false,
       gid: localStorage.getItem("gid"),
       type: 1, //退换货状态1
       askPriceId: "", //退换货id
@@ -260,9 +309,12 @@ export default {
       statisticStatus: false,
       editFormStatus: false,
       editForm: [],
+      supplierlist: [],
       storeStatus: false,
       storeList: [],
-      partStatus: false
+      partStatus: false,
+      innerVisible: false,
+      beizhu: ""
     };
   },
   created() {
@@ -272,6 +324,57 @@ export default {
     this.maxHeight = $(".tabBox").height() - 235 + "px";
   },
   methods: {
+    //发车
+    // Clickinquiry() {
+     
+    //   var data = []
+    //   for (var i in this.supplierlist) {
+    //     if (this.supplierlist[i].checked == true) {
+    //       data.push(this.supplierlist[i].id);
+    //     }
+    //   }
+    //   if(data.length<1){
+    //       this.$message.error('请选择发车配件'); return;
+    //   }
+    //    this.innerVisible = true;
+    // },
+    // Clickinquiry2() {
+    //   let data = {
+    //     afterSaleIds: [],
+    //     gid: this.gid,
+    //     remark:this.beizhu
+    //   };
+    //   for (var i in this.supplierlist) {
+    //     if (this.supplierlist[i].checked == true) {
+    //       data.afterSaleIds.push(this.supplierlist[i].id);
+    //     }
+    //   }
+    //   console.log(data);
+
+    //     afterSaleDeliver(data).then(res => {
+    //       if (res.data.code == 200) {
+    //         this.$message({
+    //           type: "success",
+    //           message: "发车成功!"
+    //         });
+    //         this.beizhu = '';
+    //         this.centerDialogVisible= false;
+    //           this.innerVisible = false;
+    //       }
+    //     });
+
+    // },
+    //退换货
+    // tuihuanhuo() {
+    //   afterSaleList({ status: 1 }).then(res => {
+    //     this.supplierlist = res.data.data;
+    //     this.supplierlist.map((c, i) => {
+    //       this.$set(c, "checked", false);
+    //     });
+    //     console.log(res.data.data);
+    //   });
+    //   this.centerDialogVisible = true;
+    // },
     //点击切换退还货
     orderTab(i) {
       this.type = i + 1;
@@ -443,16 +546,16 @@ export default {
         });
       });
     },
-  //退换货
+    //退换货
     editPartDig(row, type) {
       console.log(row);
-     let data = {
+      let data = {
         askPricePartId: row.askPricePartId,
-        partId:row.partId,
-        quantity:row.number,
+        partId: row.partId,
+        quantity: row.number,
         type: type
       };
-      console.log(data)
+      console.log(data);
       let tishi = "订单" + row.partName + "确认退/换货？";
       this.$confirm(tishi, "提示", {
         confirmButtonText: "确定",
@@ -480,6 +583,21 @@ export default {
 .number {
   padding: 0 5px;
 }
+
+.mis {
+  height: 35px;
+  width: 35px;
+  vertical-align: middle;
+}
+.mis2 {
+  vertical-align: middle;
+  margin-left: 3px;
+}
+.miaa {
+  margin-right: 50px;
+  cursor: pointer;
+  font-size: 16px;
+}
 .orderUl li {
   float: left;
   padding: 1px 10px;
@@ -505,5 +623,50 @@ export default {
 
 .navActive em.active {
   color: #3ac29f;
+}
+.lines2 {
+  border-bottom: 1px solid #ebeef5;
+  height: 60px;
+  line-height: 50px;
+}
+.outlis {
+  overflow: hidden;
+  height: 34px;
+  line-height: 34px;
+  padding-top: 3px;
+}
+.outlis div {
+  display: inline-block;
+  line-height: 30px;
+  overflow: hidden;
+  
+}
+.outlis_a {
+  height: 20px;
+  line-height: 20px;
+  color: #999;
+}
+.chengde {
+  height: 20px;
+  float: left;
+  font-size: 12px;
+  padding-left: 10px;
+}
+.wode {
+  float: right;
+  font-size: 12px;
+}
+.chengde2 {
+  width: 32%;
+  border-left: 5px solid #74a496;
+  padding-left: 5px;
+}
+.shushu {
+  width: 32%;
+  text-align: center;
+}
+.phin {
+  width: 32%;
+  float: right;
 }
 </style>

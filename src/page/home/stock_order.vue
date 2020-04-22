@@ -37,7 +37,7 @@
       </el-row>
     </div>
     <div style="width:100%;padding-top:15px;" class="orderTable" id="printBox">
-      <el-table :data="tableData" :height="maxHeight" style="width: 100%">
+      <el-table :data="tableData" :max-height="maxHeight" style="width: 100%">
         <el-table-column type="index" label="序号" width="90">
         </el-table-column>
         <el-table-column prop="orderNo" label="单号" width="160">

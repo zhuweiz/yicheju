@@ -57,6 +57,11 @@
               ></el-date-picker>
             </el-form-item>
             <el-button type="success" icon="el-icon-search" @click="searchList()">查找</el-button>
+            <el-form-item label class="m-b-0 right m-r-20" v-if="!show">
+              <div class="left c-p c-9">
+                <el-button type="success" icon="el-icon-refresh-right" @click="searchList()">刷新</el-button>
+              </div>
+            </el-form-item>
           </el-col>
         </el-form>
       </el-row>
@@ -105,8 +110,8 @@
       <el-table-column label="接车员">
         <template slot-scope="scope">{{scope.row.clerkOrder}}</template>
       </el-table-column>
-      <el-table-column label="询价数量" v-if="!show">
-        <template slot-scope="scope">{{scope.row.askSupplierCount}}</template>
+      <el-table-column label="询价配件" v-if="!show">
+        <template slot-scope="scope">{{scope.row.askPriceCount}}</template>
       </el-table-column>
       <el-table-column label="应收金额" v-if="show">
         <template slot-scope="scope">{{scope.row.amountReceivable}}</template>
@@ -225,7 +230,7 @@
             </div>
           </div>
           <div class="outbox">
-             <div class="outbox_c" v-if="systemRecoList2.length < 1">请选择询价配件~</div>
+            <div class="outbox_c" v-if="systemRecoList2.length < 1">请选择您要询价的配件~</div>
             <div class="lines" v-for="(items,idx) in systemRecoList2" :key="'inte'+idx">
               <div class="left namepes">{{items.partName}}</div>
               <div class="right namedelet" style="cursor:pointer" @click="detparts(idx)">删除</div>
@@ -249,7 +254,7 @@
             </div>
           </div>
           <div class="outbox">
-                    <div class="outbox_c" v-if="systemRecoList.length < 1">请选择询价汽配城~</div>
+            <div class="outbox_c" v-if="systemRecoList.length < 1">请选择您要询价的汽配商~</div>
             <div class="lines2" v-for="(items,idx) in systemRecoList" :key="'inte'+idx">
               <div class="outlis">
                 <div class="chengde">{{items.companyName}}</div>
@@ -276,7 +281,7 @@
             v-if="items.source == 1 && items.askPriceStatus != 1"
           >
             <div class="left namepes">{{items.partName}}</div>
-            <el-checkbox-group class="right" style="margin-right: 5px;"  v-model="items.checked">
+            <el-checkbox-group class="right" style="margin-right: 5px;" v-model="items.checked">
               <el-checkbox></el-checkbox>
             </el-checkbox-group>
             <div class="right namelet">x{{items.counts}}.0</div>
@@ -302,12 +307,17 @@
           <div class="qipeic left" style="cursor:pointer" @click="Town">汽配城</div>
           <el-button class="right" type="success" @click="seeksupplier">查 找</el-button>
         </div>
-        <div class="outbox"> 
+        <div class="outbox">
           <div class="lines2" v-for="(items,idx) in supplierlist" :key="'supp'+idx">
             <div class="outlis">
               <div class="chengde2">{{items.supplierName}}</div>
               <div class="phin">{{items.phone}}</div>
-              <el-checkbox-group style="margin-left: 5px;" :min="1" :max="3" v-model="items.checked">
+              <el-checkbox-group
+                style="margin-left: 5px;"
+                :min="1"
+                :max="3"
+                v-model="items.checked"
+              >
                 <el-checkbox @change="check(items)"></el-checkbox>
               </el-checkbox-group>
             </div>
@@ -348,9 +358,8 @@
                 <div class="letz_b">{{item.locationTown}}</div>
               </div>
             </div>
-
           </div>
-          <div style="overflow: hidden;margin-top: 20px;">
+          <div style="overflow: hidden;margin-top: 10px;">
             <div class="right queding" @click="qipeicheng" style="cursor:pointer">确 定</div>
           </div>
         </el-dialog>
@@ -359,11 +368,11 @@
 
     <!--  -->
     <!-- 查看商家弹窗 -->
-    <el-dialog title="商家报价" :visible.sync="editFormStatus" width="70%" center :modal="false">
+    <el-dialog :title="carNoname+' 商家报价'" :visible.sync="editFormStatus" width="70%" center :modal="false">
       <el-form :inline="true" class="demo-form-inline">
         <el-row>
-          <el-col>
-            <ul class="left orderUl" style="width:45%;">
+          <el-col style="margin-bottom: 5px;">
+            <ul class="left orderUl" style="width:40%;">
               <li
                 :class="indexfl==switchActive?'active':''"
                 v-for="(item,indexfl) in dispose"
@@ -371,183 +380,260 @@
                 @click="switchOF(indexfl)"
               >{{item}}</li>
             </ul>
-            <div class="left orlist" v-if="PriceList != ''">
+            <div class="left orlist" v-if="PriceList != ''&& switchActive != 2">
               <div>车牌：{{PriceList[0].carNo}}</div>
               <div>工单号：{{PriceList[0].billNumber}}</div>
               <div>询价日期：{{PriceList[0].askPriceTime}}</div>
             </div>
+            <div class="right" @click="editRow2" v-if="switchActive != 2">
+              <img class="shaimg" src="../../assets/shaxin.png" alt />
+            </div>
           </el-col>
         </el-row>
       </el-form>
-      <div class="xuhao">
+      <div class="tbode">
+        <el-table
+          :data="Noquotation"
+          :max-height="360"
+          style="width: 100%"
+          ref="lists"
+          id="printBox"
+          v-if="switchActive == 2"
+        >
+          <el-table-column type="index" label="序号" width="80">
+            <!-- <template slot-scope="scope">{{scope.row.index}}</template> -->
+          </el-table-column>
+          <el-table-column prop="name" label="供应商" width="200">
+            <template slot-scope="scope">{{scope.row.companyName}}</template>
+          </el-table-column>
+          <el-table-column label="联系人" width="100">
+            <template slot-scope="scope">{{scope.row.linkman}}</template>
+          </el-table-column>
+          <el-table-column label="联系电话" width="150">
+            <template slot-scope="scope">{{scope.row.phone}}</template>
+          </el-table-column>
+          <el-table-column label="询价配件">
+            <template slot-scope="scope">{{scope.row.askPart2}}等{{scope.row.sl}}个配件</template>
+          </el-table-column>
+          <el-table-column label="询价时间">
+            <template slot-scope="scope">{{scope.row.createdTime}}</template>
+          </el-table-column>
+          <el-table-column label="询价状态" width="110px">
+            <template>
+              <em style="color:#FF6757">未报价</em>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="xuhao" v-if="switchActive != 2">
         <div class="xu1">序号</div>
-        <div class="xu2" :style="{'width':switchActive == 1 ? '140px':''}">供应商</div>
+        <div class="xu2" :style="{'width':switchActive == 1 ? '15%':''}">供应商</div>
         <div class="xu8" v-if="switchActive == 1">数量</div>
-        <div class="xu3" :style="{'width':switchActive == 1 ? '90px':''}">配件类型</div>
-        <div class="xu4" :style="{'width':switchActive == 1 ? '85px':''}">单价</div>
-        <div class="xu5" :style="{'width':switchActive == 1 ? '140px':''}">到货时间</div>
-        <div class="xu6" :style="{'width':switchActive == 1 ? '145px':''}">保质期</div>
-        <div class="xu7" :style="{'width':switchActive == 1 ? '195px':''}">备注</div>
+        <div class="xu3" :style="{'width':switchActive == 1 ? '9%':''}">配件类型</div>
+        <div class="xu4">单价</div>
+        <div class="xu5" :style="{'width':switchActive == 1 ? '14%':''}">到货时间</div>
+        <div class="xu6">保质期</div>
+        <div class="xu7" :style="{'width':switchActive == 1 ? '20%':''}">备注</div>
       </div>
-      <div v-for="(item,indexff) in PriceList" :key="'item'+indexff" v-show="showlist">
-        <div class="xuhao2" v-if="switchActive == 0">
-          <div class="pj">配件名称：{{item.partName}}</div>
-          <div class="sl">数量：{{item.askPricePartDOS[0][0].partCount}}</div>
-        </div>
-        <table
-          border="0"
-          cellspacing="0"
-          cellpadding="0"
-          class="tbbd"
-          v-for="(items,idx) in item.askPricePartDOS"
-          :key="'items'+idx"
-        >
-          <tr>
-            <td class="td1">{{idx+1}}</td>
-            <td class="td2" style="  text-align: left;">
-              <div v-if="switchActive == 0">
-                <img src="../../assets/supplier.png" alt />
-                <span>{{items[0].supplierName}}</span>
-              </div>
-              <div v-if="switchActive == 0">
-                <img src="../../assets/phone.png" alt />
-                <span>{{items[1].supplierPhone}}</span>
-              </div>
-              <div v-if="switchActive == 0">
-                <img src="../../assets/dizi.png" alt />
-                <span>{{items[2].address}}</span>
-              </div>
-              <div v-if="switchActive == 1" style=" margin-left: 25px;">
-                <span>{{items[2].partName}}</span>
-              </div>
-            </td>
-            <td class="td8" v-if="switchActive == 1">
-              <div>{{items[0].partCount}}</div>
-            </td>
-            <td class="td3">
-              <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].partType==0 ?'原厂件':''}}</div>
-              <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].partType==1 ?'品牌件':''}}</div>
-              <div>{{items[2].partType==2 ?'其它件':''}}</div>
-            </td>
-            <td class="td4">
-              <div style="border-bottom: 1px solid #dcdfe6;">￥{{items[0].price}}</div>
-              <div style="border-bottom: 1px solid #dcdfe6;">￥{{items[1].price}}</div>
-              <div>￥{{items[2].price}}</div>
-            </td>
-            <td class="td5">
-              <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].arrivalTime}}</div>
-              <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].arrivalTime}}</div>
-              <div>{{items[2].arrivalTime}}</div>
-            </td>
-            <td class="td6">
-              <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].qualityTime}}</div>
-              <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].qualityTime}}</div>
-              <div>{{items[2].qualityTime}}</div>
-            </td>
-            <td class="td7">
-              <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].remark}}</div>
-              <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].remark}}</div>
-              <div>{{items[2].remark}}</div>
-            </td>
-            <td class="td9 radio_ccid">
-              <el-radio
-                v-for="(itemd,idxd) in items"
-                :key="'itemd'+idxd"
-                v-if="idxd<3"
-                v-model="items.number"
-                :label="itemd.id"
-                @change="getValue(itemd)"
-                style="border-bottom: 1px solid #dcdfe6;"
-              >&nbsp;</el-radio>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <!-- 222 -->
-      <div v-for="(itemst,indexlst) in ceshi" :key="'itemst'+indexlst" v-show="!showlist">
-        <div class="xuhao2">
-          <div class="pei1 pei" style="width: 240px;">
-            <img src="../../assets/supplier.png" alt />
-            <span>{{itemst.supplierName}}</span>
-          </div>
-          <div class="pei2 pei">
-            <img src="../../assets/phone.png" alt />
-            <span>{{itemst.supplierPhone}}</span>
-          </div>
-          <div class="pei3 pei">
-            <img src="../../assets/dizi.png" alt />
-            <span>{{itemst.address}}</span>
-          </div>
-        </div>
+      <!-- 配件模式 -->
+      <div
+        class="huadong"
+        v-if="switchActive == 0"
+        :style="{'height':PriceList != '' ? '350px':''}"
+      >
+        <div v-for="(item,indexff) in PriceList" :key="'item'+indexff" class="tbcd">
+          <el-row>
+            <div class="xuhao2" v-if="switchActive == 0">
+              <el-col :span="8">
+                <div class="pj">配件名称：{{item.partName}}</div>
+              </el-col>
+              <el-col :span="14">
+                <div class="sl">数量：{{item.askPricePartDOS[0][0].partCount}}</div>
+              </el-col>
+            </div>
+          </el-row>
 
-        <table
-          border="0"
-          cellspacing="0"
-          cellpadding="0"
-          class="tbbd"
-          v-for="(itemc,idxxx) in itemst.askPricePartDOS"
-          :key="'itemc'+idxxx"
-          v-if="idxxx<lensg"
-        >
-          <tr>
-            <td class="td1">{{idxxx+1}}</td>
-            <td class="td2" style="  text-align: left;">
-              <div v-if="switchActive == 1" style=" margin-left: 25px;">
-                <span>{{itemc[0].partName}}</span>
-              </div>
-            </td>
-            <td class="td8" v-if="switchActive == 1">
-              <div>{{itemc[0].partCount}}</div>
-            </td>
-            <td class="td3">
-              <div style="border-bottom: 1px solid #dcdfe6;" v-if="itemc[0].partType==0">原厂件</div>
-              <div style="border-bottom: 1px solid #dcdfe6;" v-if="itemc[1].partType==1">品牌件</div>
-              <div v-if="itemc[2].partType==2">其它件</div>
-            </td>
-            <td class="td4">
-              <div
+          <table
+            border="0"
+            cellspacing="0"
+            cellpadding="0"
+            class="tbbd"
+            v-for="(items,idx) in item.askPricePartDOS"
+            :key="'items'+idx"
+          >
+            <tr>
+              <td class="td1">{{idx+1}}</td>
+              <td class="td2" style="  text-align: left;">
+                <div v-if="switchActive == 0">
+                  <img src="../../assets/supplier.png" alt />
+                  <span>{{items[0].supplierName}}</span>
+                </div>
+                <div v-if="switchActive == 0">
+                  <img src="../../assets/phone.png" alt />
+                  <span>{{items[1].supplierPhone}}</span>
+                </div>
+                <div v-if="switchActive == 0">
+                  <img src="../../assets/dizi.png" alt />
+                  <span>{{items[2].address}}</span>
+                </div>
+                <div v-if="switchActive == 1" style=" margin-left: 25px;">
+                  <span>{{items[2].partName}}</span>
+                </div>
+              </td>
+              <td class="td8" v-if="switchActive == 1">
+                <div>{{items[0].partCount}}</div>
+              </td>
+              <td class="td3">
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].partType==0 ?'原厂件':''}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].partType==1 ?'品牌件':''}}</div>
+                <div>{{items[2].partType==2 ?'其它件':''}}</div>
+              </td>
+              <td class="td4">
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{items[0].price ?'￥':''}}{{items[0].price}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{items[2].price ?'￥':''}}{{items[1].price}}</div>
+                <div>{{items[2].price ?'￥':''}}{{items[2].price}}</div>
+              </td>
+              <td class="td5">
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].arrivalTime}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].arrivalTime}}</div>
+                <div>{{items[2].arrivalTime}}</div>
+              </td>
+              <td class="td6">
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].qualityTime}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].qualityTime}}</div>
+                <div>{{items[2].qualityTime}}</div>
+              </td>
+              <td class="td7">
+                <div style="border-bottom: 1px solid #dcdfe6;">
+                  <em v-if="items[0].status == 0 ||items[0].status == 1">已下单</em>
+                </div>
+                <div style="border-bottom: 1px solid #dcdfe6;">
+                  <em v-if="items[1].status == 0 ||items[1].status == 1">已下单</em>
+                </div>
+                <div>
+                  <em v-if="items[2].status == 0 ||items[2].status == 1">已下单</em>
+                </div>
+              </td>
+              <td class="td9 radio_ccid" style="width: 3%">
+                <el-radio
+                  v-for="(itemd,idxd) in items"
+                  :key="'itemd'+idxd"
+                  v-if="idxd<3"
+                  v-model="items.number"
+                  :label="itemd.id"
+                  @change="getValue(itemd)"
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >&nbsp;</el-radio>
+                <!-- <el-checkbox v-model="itemd.number"
                 style="border-bottom: 1px solid #dcdfe6;"
-                v-if="itemc[0].partType==0"
-              >￥{{itemc[0].price}}</div>
-              <div
-                style="border-bottom: 1px solid #dcdfe6;"
-                v-if="itemc[1].partType==1"
-              >￥{{itemc[1].price}}</div>
-              <div v-if="itemc[2]">￥{{itemc[2].price}}</div>
-            </td>
-            <td class="td5">
-              <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].arrivalTime}}</div>
-              <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].arrivalTime}}</div>
-              <div>{{itemc[2].arrivalTime}}</div>
-            </td>
-            <td class="td6">
-              <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].qualityTime}}</div>
-              <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].qualityTime}}</div>
-              <div>{{itemc[2].qualityTime}}</div>
-            </td>
-            <td class="td7">
-              <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].remark}}</div>
-              <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].remark}}</div>
-              <div>{{itemc[2].remark}}</div>
-            </td>
-            <td class="td9 radio_ccid">
-              <el-radio
-                v-for="(itemf,idxb) in itemc"
-                :key="'itemf'+idxb"
-                v-model="itemc.purNumber"
-                v-if="idxb<3"
-                :label="itemf.id"
-                @change="getValue2(itemf)"
-                style="border-bottom: 1px solid #dcdfe6;"
-              >&nbsp;</el-radio>
-            </td>
-          </tr>
-        </table>
+                 v-for="(itemd,idxd) in items"
+                :key="'itemd'+idxd"
+                 @change="getValue(itemd)"
+                v-if="idxd<3">
+                </el-checkbox>-->
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 222 -->
+      <div class="huadong" v-show="switchActive == 1" :style="{'height':ceshi != '' ? '350px':''}">
+        <div v-for="(itemst,indexlst) in ceshi" :key="'itemst'+indexlst" class="tbcd">
+          <div class="xuhao2">
+            <div class="pei1 pei" style="width: 240px;">
+              <img src="../../assets/supplier.png" alt />
+              <span>{{itemst.supplierName}}</span>
+            </div>
+            <div class="pei2 pei">
+              <img src="../../assets/phone.png" alt />
+              <span>{{itemst.supplierPhone}}</span>
+            </div>
+            <div class="pei3 pei">
+              <img src="../../assets/dizi.png" alt />
+              <span>{{itemst.address}}</span>
+            </div>
+          </div>
+
+          <table
+            border="0"
+            cellspacing="0"
+            cellpadding="0"
+            class="tbbd"
+            v-for="(itemc,idxxx) in itemst.askPricePartDOS"
+            :key="'itemc'+idxxx"
+            v-if="idxxx<lensg"
+          >
+            <tr>
+              <td class="td1">{{idxxx+1}}</td>
+              <td class="td2" style="  text-align: left;">
+                <div v-if="switchActive == 1" style=" padding-left: 25px;">
+                  <span>{{itemc[0].partName}}</span>
+                </div>
+              </td>
+              <td class="td8" v-if="switchActive == 1">
+                <div>{{itemc[0].partCount}}</div>
+              </td>
+              <td class="td3">
+                <div style="border-bottom: 1px solid #dcdfe6;" v-if="itemc[0].partType==0">原厂件</div>
+                <div style="border-bottom: 1px solid #dcdfe6;" v-if="itemc[1].partType==1">品牌件</div>
+                <div v-if="itemc[2].partType==2">其它件</div>
+              </td>
+              <td class="td4">
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                  v-if="itemc[0].partType==0"
+                >{{itemc[0].price ?'￥':''}}{{itemc[0].price}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                  v-if="itemc[1].partType==1"
+                >{{itemc[1].price ?'￥':''}}{{itemc[1].price}}</div>
+                <div v-if="itemc[2]">{{itemc[2].price ?'￥':''}}{{itemc[2].price}}</div>
+              </td>
+              <td class="td5">
+                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].arrivalTime}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].arrivalTime}}</div>
+                <div>{{itemc[2].arrivalTime}}</div>
+              </td>
+              <td class="td6">
+                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].qualityTime}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].qualityTime}}</div>
+                <div>{{itemc[2].qualityTime}}</div>
+              </td>
+              <td class="td7" :style="{'width':switchActive == 1 ? '17%':''}">
+                <div style="border-bottom: 1px solid #dcdfe6;">
+                  <em v-if="itemc[0].status == 0 ||itemc[0].status == 1">已下单</em>
+                </div>
+                <div style="border-bottom: 1px solid #dcdfe6;">
+                  <em v-if="itemc[1].status == 0 ||itemc[1].status == 1">已下单</em>
+                </div>
+                <div>
+                  <em v-if="itemc[2].status == 0 ||itemc[2].status == 1">已下单</em>
+                </div>
+              </td>
+              <td class="td9 radio_ccid">
+                <el-radio
+                  v-for="(itemf,idxb) in itemc"
+                  :key="'itemf'+idxb"
+                  v-model="itemc.purNumber"
+                  v-if="idxb<3"
+                  :label="itemf.id"
+                  @change="getValue2(itemf)"
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >&nbsp;</el-radio>
+              </td>
+            </tr>
+          </table>
+        </div>
         <!--  -->
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" @click="editFormStatus = false">取 消</el-button>
-        <el-button type="success" @click="dinghuodan">生成订货单</el-button>
+        <el-button type="success" @click="dinghuodan" v-if="switchActive != 2">生成订货单</el-button>
       </div>
     </el-dialog>
     <!--  -->
@@ -704,7 +790,8 @@ import {
   systemReco,
   getAllPartTown,
   querySupplierByGid,
-  askPricePull
+  askPricePull,
+  unAskPriceList
 } from "../../request/api.js";
 import moment from "moment";
 import router from "../../router";
@@ -718,6 +805,7 @@ export default {
       Townlist: [],
       isMy: false,
       oid: null,
+      Noquotation: [], //未报价列表
       checked: [], //选择我的商家
       systemRecoList: [], //汽配商列表
       systemRecoList2: [], //配件列表
@@ -739,7 +827,7 @@ export default {
       PriceList: [], //商家报价，商家模式
       showlist: true,
       editFormStatus: false,
-      dispose: ["配件模式", "商家模式"],
+      dispose: ["配件模式", "商家模式", "未报价"],
       orderList: ["在厂全部", "报价", "施工", "质检", "出厂", "历史"],
       orderNavActive: 0,
       switchActive: 0,
@@ -764,6 +852,7 @@ export default {
       discountVisible: false,
       discountForm: {},
       paymentVisible: false,
+      carNoname:'',
       paymentData: [
         { type: 0, name: "现金" },
         { type: 1, name: "支付宝" },
@@ -785,6 +874,13 @@ export default {
   methods: {
     check(e) {
       // console.log(e);
+    },
+    clickitem(itemd) {
+      this.PriceList.map((c, i) => {
+        c.askPricePartDOS.map((c, i) => {
+          itemd === c.number ? (c.number = "") : (c.number = itemd);
+        });
+      });
     },
     Clickinquiry() {
       this.systemRecoList = [];
@@ -817,7 +913,7 @@ export default {
     },
     Clicktijiao() {
       this.systemRecoList2 = [];
- 
+
       for (var i in this.tableData2) {
         let list = {
           partCount: this.tableData2[i].counts,
@@ -869,8 +965,8 @@ export default {
       };
       getOrderListX(data).then(res => {
         // console.log(res.data.data);
-        if(res.data.data.orderPictureList.length > 1){
-           this.xunjialist.carPicUrl = res.data.data.orderPictureList[0].picUrl
+        if (res.data.data.orderPictureList.length > 1) {
+          this.xunjialist.carPicUrl = res.data.data.orderPictureList[0].picUrl;
         }
         this.xunjialist = {
           carModel: res.data.data.standard,
@@ -965,7 +1061,7 @@ export default {
         askPriceId: this.askPriceId,
         askPricePartIds: askPricePartIds
       };
-      // console.log(data);
+      console.log(data);
       let tishi = "确认生成订货单？";
       this.$confirm(tishi, "提示", {
         confirmButtonText: "确定",
@@ -1020,7 +1116,6 @@ export default {
     },
     //发起询价
     enquiryPull() {
-         
       if (this.systemRecoList2.length < 1) {
         this.$message.error("请选择您要询价的配件");
         return;
@@ -1029,7 +1124,7 @@ export default {
         return;
       }
       let data = {
-        askPricePart4GarageDTOList:this.systemRecoList2,
+        askPricePart4GarageDTOList: this.systemRecoList2,
         carModel: this.xunjialist.standard,
         carPicUrl: this.xunjialist.carPicUrl,
         carVin: this.xunjialist.vin,
@@ -1037,15 +1132,15 @@ export default {
         oid: this.xunjialist.oid,
         partTotalCount: this.systemRecoList2.length,
         status: this.xunjialist.status,
-        supplierList:this.systemRecoList,
-      }
+        supplierList: this.systemRecoList
+      };
       askPricePull(data).then(res => {
         if (res.data.code == 200) {
           this.$message({
             type: "success",
             message: "询价成功!"
           });
-           this.configuration = false;
+          this.configuration = false;
         } else {
           // this.$message.error(res.data.message);
         }
@@ -1071,13 +1166,16 @@ export default {
       });
       this.innerVisible2 = true;
     },
-    //查看商家
+    //查看商家报价
     editRow(row) {
-      // console.log(row);
+      console.log(row);
+   this.carNoname =row. carNo
+      this.oid = row.oid;
       var _this = this;
       let listArr = [];
       pcaskPriceList({ oid: row.oid }).then(res => {
         this.PriceList = res.data.data;
+        console.log(res.data.data);
         var result = [];
         this.PriceList.map((v, i) => {
           v.askPricePartDOS.map((c, i) => {
@@ -1094,7 +1192,7 @@ export default {
 
       askPriceList({ oid: row.oid }).then(res => {
         let listArr = [];
-        // console.log(res.data.data);
+        console.log(res.data.data);
         res.data.data.map((v, i) => {
           // console.log(v.askPricePartDOList);
           var data = v.askPricePartDOList;
@@ -1166,16 +1264,154 @@ export default {
         this.ceshi = ceshi;
         var result = [];
       });
-
+      if (this.switchActive == 2) {
+        unAskPriceList({ oid: this.oid }).then(res => {
+          this.Noquotation = res.data.data;
+          this.Noquotation.forEach(function(el, index) {
+            var arr;
+            arr = el.askPart.split("|");
+            var sl = arr.length - 1;
+            _this.$set(el, "askPart2", arr[0]);
+            _this.$set(el, "sl", sl);
+          });
+        });
+      }
       this.editFormStatus = true;
     },
+
+    editRow2() {
+      this.askPriceId = ''
+      var _this = this;
+      let listArr = [];
+      pcaskPriceList({ oid: this.oid}).then(res => {
+        this.PriceList = res.data.data;
+        console.log(res.data.data);
+        var result = [];
+        this.PriceList.map((v, i) => {
+          v.askPricePartDOS.map((c, i) => {
+            c.map((d, i) => {
+              // console.log(d);
+              this.$set(d, "number", 0);
+              if (d.supplierId == d.supplierId) {
+                result.push(d);
+              }
+            });
+          });
+        });
+      });
+
+      askPriceList({ oid: this.oid }).then(res => {
+        let listArr = [];
+        console.log(res.data.data);
+        res.data.data.map((v, i) => {
+          // console.log(v.askPricePartDOList);
+          var data = v.askPricePartDOList;
+          data.forEach(function(el, index) {
+            for (var i = 0; i < listArr.length; i++) {
+              if (listArr[i].supplierName == el.supplierName) {
+                listArr[i].askPricePartDOS.push(el);
+                return;
+              }
+            }
+            // 第一次对比没有参照，放入参照
+            listArr.push({
+              supplierName: el.supplierName,
+              supplierPhone: el.supplierPhone,
+              address: el.address,
+              askPriceTime: el.askPriceTime,
+              billNumber: el.billNumber,
+              carNo: el.carNo,
+              partId: el.partId,
+              partName: el.partName,
+              partTotalCount: el.partTotalCount,
+              unPricedCount: el.unPricedCount,
+              askPricePartDOS: [el]
+            });
+          });
+        });
+        var ceshi = [];
+        var cddd = [];
+        listArr.map((el, i) => {
+          var res = el.askPricePartDOS;
+          ceshi.push({
+            supplierName: el.supplierName,
+            supplierPhone: el.supplierPhone,
+            address: el.address,
+            askPriceTime: el.askPriceTime,
+            billNumber: el.billNumber,
+            carNo: el.carNo,
+            partId: el.partId,
+            partName: el.partName,
+            partTotalCount: el.partTotalCount,
+            unPricedCount: el.unPricedCount,
+            askPricePartDOS: []
+          });
+
+          for (var i = 0; i < res.length; i += 3) {
+            cddd.push(res.slice(i, i + 3));
+          }
+
+          cddd.forEach(function(v, index) {
+            _this.$set(v, "number2", 1);
+
+            for (var i = 0; i < ceshi.length; i++) {
+              // console.log(ceshi[i].supplierName)
+              //      console.log(v[0].supplierName)
+              if (ceshi[i].supplierName == v[0].supplierName) {
+                ceshi[i].askPricePartDOS.push(v);
+                //   return;
+              }
+            }
+          });
+        });
+        // console.log(cddd);
+        if (cddd.length > 1) {
+          this.lensg = cddd.length / 2;
+        } else {
+          this.lensg = 1;
+        }
+        console.log(ceshi);
+        this.ceshi = ceshi;
+        var result = [];
+      });
+      if (this.switchActive == 2) {
+        unAskPriceList({ oid: this.oid }).then(res => {
+          this.Noquotation = res.data.data;
+          this.Noquotation.forEach(function(el, index) {
+            var arr;
+            arr = el.askPart.split("|");
+            var sl = arr.length - 1;
+            _this.$set(el, "askPart2", arr[0]);
+            _this.$set(el, "sl", sl);
+          });
+        });
+      }
+    },
+
+
+
+
+
     //点击切换退还货
     switchOF(i) {
+      var _this = this;
       this.switchActive = i;
       if (this.switchActive == 0) {
         this.showlist = true;
       } else if (this.switchActive == 1) {
         this.showlist = false;
+      } else if (this.switchActive == 2) {
+        unAskPriceList({ oid: this.oid }).then(res => {
+          this.Noquotation = res.data.data;
+          console.log(res.data.data);
+          this.Noquotation.forEach(function(el, index) {
+            var arr;
+            arr = el.askPart.split("|");
+            var sl = arr.length - 1;
+            _this.$set(el, "askPart2", arr[0]);
+            _this.$set(el, "sl", sl);
+          });
+        });
       }
     },
     getOrderListInit() {
@@ -1277,7 +1513,7 @@ export default {
           return v;
         });
 
-        // console.log(this.tableData);
+        console.log(this.tableData);
       });
     },
     searchList() {
@@ -1549,12 +1785,16 @@ export default {
 }
 
 .xuhao {
-  margin-top: 10px;
+  /* margin-top: 10px; */
+  overflow: hidden;
   width: 100%;
   line-height: 40px;
   height: 40px;
   background: #f2f2f2;
   border: 1px solid #dcdfe6;
+}
+.tbcd table:nth-child(n + 1) {
+  border-top: none;
 }
 table {
   width: 100%;
@@ -1562,30 +1802,31 @@ table {
 }
 .xuhao div {
   text-align: center;
+  float: left;
 }
 .xuhao .xu1 {
-  width: 45px;
+  width: 4%;
 }
 .xuhao .xu2 {
-  width: 150px;
+  width: 15%;
 }
 .xuhao .xu3 {
-  width: 105px;
+  width: 10%;
 }
 .xuhao .xu4 {
-  width: 110px;
+  width: 10%;
 }
 .xuhao .xu5 {
-  width: 135px;
+  width: 15%;
 }
 .xuhao .xu6 {
-  width: 160px;
+  width: 15%;
 }
 .xuhao .xu7 {
-  width: 210px;
+  width: 25%;
 }
 .xuhao .xu8 {
-  width: 85px;
+  width: 10%;
 }
 
 .tbbd tr td {
@@ -1622,39 +1863,39 @@ tr td span {
   vertical-align: middle;
 }
 tr .td1 {
-  width: 25px;
+  width: 4%;
 }
 tr .td2 {
-  width: 95px;
+  width: 15%;
   border-left: 1px solid #dcdfe6;
   border-right: 1px solid #dcdfe6;
 }
 tr .td3 {
-  width: 55px;
+  width: 10%;
   border-right: 1px solid #dcdfe6;
 }
 tr .td4 {
-  width: 55px;
+  width: 10%;
   border-right: 1px solid #dcdfe6;
 }
 tr .td5 {
-  width: 90px;
+  width: 15%;
   border-right: 1px solid #dcdfe6;
 }
 tr .td6 {
-  width: 80px;
+  width: 15%;
   border-right: 1px solid #dcdfe6;
 }
 tr .td7 {
-  width: 130px;
+  width: 25%;
   border-right: 1px solid #dcdfe6;
 }
 tr .td8 {
-  width: 50px;
+  width: 10%;
   border-right: 1px solid #dcdfe6;
 }
 tr .td9 {
-  width: 20px;
+  width: 3%;
 }
 .el-radio {
   height: 35px;
@@ -1662,7 +1903,14 @@ tr .td9 {
   line-height: 35px;
   margin-right: 0px;
 }
+.el-checkbox {
+  height: 35px;
+  display: block;
+  line-height: 35px;
+  margin-right: 0px;
+}
 .xuhao2 {
+  overflow: hidden;
   margin-top: 15px;
   width: 100%;
   line-height: 45px;
@@ -1699,6 +1947,7 @@ tr .td9 {
 .chek {
   /* margin-left: 95px; */
   width: 25%;
+  margin-top: 5px;
 }
 .cheken {
   margin-left: 10px;
@@ -1785,6 +2034,7 @@ tr .td9 {
 .letz {
   font-size: 13px;
 }
+
 .letz_a_A {
   padding-left: 10px;
   width: 49%;
@@ -1841,11 +2091,9 @@ tr .td9 {
 .pj {
   margin-left: 10px;
   display: inline-block;
-  width: 250px;
 }
 .sl {
   display: inline-block;
-  width: 200px;
 }
 .xuhao div {
   display: inline-block;
@@ -1886,7 +2134,7 @@ th {
   height: 300px;
   overflow-y: auto;
 }
-.outbox_c{
+.outbox_c {
   margin: auto;
   text-align: center;
   width: 100%;
@@ -1902,6 +2150,10 @@ th {
   height: 250px;
   overflow-y: auto;
 }
+.huadong {
+  /* height: 350px; */
+  overflow-y: auto;
+}
 .inputd {
   padding-bottom: 10px;
   border-bottom: 5px solid #ebeef5;
@@ -1911,6 +2163,14 @@ th {
   background: #f2f2f2 !important;
   color: #606266;
 } */
+.shaimg {
+  width: 20px;
+  height: 20px;
+  /* right: ; */
+  cursor: pointer;
+  margin-right: 8px;
+  margin-top: 1px;
+}
 .peijian {
   line-height: 45px;
   height: 45px;

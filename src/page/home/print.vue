@@ -78,11 +78,11 @@
               </el-col>
               <el-col :span="8">
                 <div class="ta_a">进厂时间</div>
-                <em v-if="data.createdDate">{{data.createdDate}}</em>
+                <em v-if="data.createdDate">{{data.createdDate.substring(0,10)}}</em>
               </el-col>
               <el-col :span="7">
                 <div class="ta_a">出厂时间</div>
-                <em v-if="data.settlementDate">{{data.settlementDate}}</em>
+                <em v-if="data.settlementDate">{{data.settlementDate.substring(0,10)}}</em>
               </el-col>
             </el-row>
           </div>
@@ -484,14 +484,14 @@ body {
 }
 .ta {
   text-align: center;
-  width: 80px;
+  width: 100px;
   display: inline-block;
   border-right: 1px solid #333;
   padding: 0px 8px;
 }
 .ta_a {
   text-align: center;
-  width: 80px;
+  width: 100px;
   display: inline-block;
   border-right: 1px solid #333;
   border-left: 1px solid #333;
@@ -499,7 +499,7 @@ body {
 }
 .ta_b {
   text-align: center;
-  width: 80px;
+  width: 100px;
   display: inline-block;
   border-right: 1px solid #333;
   padding: 0px 8px;
