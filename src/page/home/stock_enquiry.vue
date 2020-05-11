@@ -462,6 +462,7 @@ export default {
     },
     handleCurrentChange(val) {
       this.page = val - 1;
+        // this.pageNumber = val - 1;
       this.init();
     },
     init() {
@@ -477,8 +478,8 @@ export default {
         return false;
       }
       const data = {
-        pageNumber: this.page,
-        pageSize: this.size,
+        page: this.page,
+        size: this.size,
         carNo: this.search.text1, //车牌号
         billNumber: this.search.text2, //订单号
         endTime: this.search.time[1],
@@ -488,8 +489,8 @@ export default {
       };
       purOrderList(data).then(res => {
         console.log(res.data.data);
-        this.tableData = res.data.data.content;
-        this.pageLength = res.data.data.numberOfElements;
+        this.tableData = res.data.data;
+        this.pageLength = res.data.pageInfo.total;
       });
     },
     //退换货

@@ -238,12 +238,19 @@
           </el-table-column>
           <el-table-column prop="price" label="成交单价"></el-table-column>
           <el-table-column prop="partCount" label="数量"></el-table-column>
-          <el-table-column prop="phone" label="金额">
+          <el-table-column prop="phone" label="金额" >
             <template slot-scope="scope">
-              {{(scope.row.price * scope.row.partCount).toFixed(2)}}
+            <span v-if="scope.row.isStatus == 1 ||scope.row.isStatus == 2 ">－</span>{{(scope.row.price * scope.row.partCount).toFixed(2)}}
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注"></el-table-column>
+              <el-table-column prop="isStatus" label="交易动作" >
+            <template slot-scope="scope">
+              <em v-if="scope.row.isStatus == 0">收</em>
+              <em v-if="scope.row.isStatus == 1">退</em>
+              <em v-if="scope.row.isStatus == 2">换</em>
+            </template>
+          </el-table-column>
+          <el-table-column prop="exeTime" label="交易时间" width="200px"></el-table-column>
         </el-table>
         <div class="p-tb-10 text-center">
           <el-pagination

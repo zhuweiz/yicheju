@@ -381,7 +381,7 @@ export default new Router({
       name: 'print',
       component: print,
       meta: {
-        title: '易车驹',
+        title: '打印结算单',
         index: 1
       }
     },

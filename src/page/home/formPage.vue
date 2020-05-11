@@ -45,17 +45,17 @@ export default {
     return {
       orderList: [
         { name: "月报总表", link: "../home/formPage" },
-        { name: "业绩分项日报表", link: "../home/formB" },
+        { name: "分项日报表", link: "../home/formB" },
         { name: "挂帐报表", link: "../home/formC" },
-        { name: "收入支出方式", link: "../home/formD" },
+        { name: "收支方式", link: "../home/formD" },
         { name: "收入流水", link: "../home/formE" },
         { name: "支出流水", link: "../home/formF" },
-        { name: "库存配件采购账", link: "../home/formL" },
-        { name: "询价配件采购账", link: "../home/formG" },
-        { name: "其他渠道配件采购帐", link: "../home/formH" },
+        { name: "库存配件账", link: "../home/formL" },
+        { name: "询价配件账", link: "../home/formG" },
+        { name: "其他配件帐", link: "../home/formH" },
         { name: "固定资产", link: "../home/formI" },
-        { name: "提成", link: "../home/formJ" },
-        { name: "工单提成设置", link: "../home/formK" }
+        { name: "提成报表", link: "../home/formJ" },
+        { name: "提成审核", link: "../home/formK" }
       ],
       statementList: [
         { name: "财务报表", link: "../home/formPage" },

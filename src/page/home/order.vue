@@ -23,6 +23,7 @@
       </div>
       <div class="clear"></div>
     </div>
+
     <div class="p-20" style="background:rgba(229,246,247,1);">
       <el-row :gutter="10">
         <el-form :inline="true" class="demo-form-inline">
@@ -57,6 +58,16 @@
               ></el-date-picker>
             </el-form-item>
             <el-button type="success" icon="el-icon-search" @click="searchList()">查找</el-button>
+
+            <!-- <div class="right miaa" @click="XinzengGD" v-if="orderNavActive == 0">
+              <i class="el-icon-plus"></i>
+              <span class="mis2">新增工单</span>
+            </div>-->
+            <div class="right miaa" @click="XinzengGD" v-if="orderNavActive == 0">
+              <i class="el-icon-plus"></i>
+              <span class="mis2">新增工单</span>
+            </div>
+
             <el-form-item label class="m-b-0 right m-r-20" v-if="!show">
               <div class="left c-p c-9">
                 <el-button type="success" icon="el-icon-refresh-right" @click="searchList()">刷新</el-button>
@@ -66,12 +77,134 @@
         </el-form>
       </el-row>
     </div>
+
+    <el-dialog
+      title="新增工单"
+      :visible.sync="XinzenVisible"
+      center
+      width="45%"
+      :modal="false"
+      @click="visible = false"
+    >
+      <div>
+        <el-popover
+          placement="bottom-start"
+          :width="width"
+          v-model="visible"
+          trigger="manual"
+          class="hhd"
+        >
+          <i @click="visible = false" class="el-icon-circle-close guanbi"></i>
+          <el-table
+            :data="list_car"
+            :height="height"
+            @row-click="onClickItem"
+            @row-dblclick="onDblClickSelect"
+          >
+            <el-table-column type="index" label></el-table-column>
+            <el-table-column property="ownerName" label="客户姓名"></el-table-column>
+            <el-table-column property="carNo" label="车牌号"></el-table-column>
+            <el-table-column property="phone" label="手机号码"></el-table-column>
+          </el-table>
+          <div slot="reference">
+            <el-input placeholder="请输入内容" v-model="input3" @blur="handleBlur">
+              <i slot="suffix" @click="visible = false" class="el-icon-arrow-down xialabiao"></i>
+              <el-button
+                slot="prepend"
+                @click="shousuo_Car"
+                style="width: 80px;border-radius: 0px"
+              >搜 索</el-button>
+            </el-input>
+          </div>
+        </el-popover>
+      </div>
+
+      <el-row class="csxian">
+        <el-col :span="8">
+          <div class="xinxi" style=" border-left:none">车牌</div>
+          <span>{{Car_list.carNo}}</span>
+        </el-col>
+        <el-col :span="8">
+          <div class="xinxi">姓名</div>
+          <span>{{Car_list.ownerName}}</span>
+        </el-col>
+        <el-col :span="8">
+          <div class="xinxi">手机</div>
+          <span>{{Car_list.phone}}</span>
+        </el-col>
+      </el-row>
+      <el-row class="csxian">
+        <el-col :span="8">
+          <div class="xinxi" style=" border-left:none">品牌车系</div>
+          <span>{{Car_list.standard}}</span>
+        </el-col>
+        <el-col :span="8">
+          <div class="xinxi">欠款</div>
+          <span>{{Car_list.totalBills}}</span>
+        </el-col>
+        <el-col :span="8">
+          <div class="xinxi">余额</div>
+          <span>{{Car_list.balance}}</span>
+        </el-col>
+      </el-row>
+
+      <el-row class="csxian">
+        <el-col :span="8">
+          <div class="xinxi" style=" border-left:none">保险到期</div>
+          <span>{{Car_list.insuranceExpire}}</span>
+        </el-col>
+        <el-col :span="8">
+          <div class="xinxi">保养到期</div>
+          <span>{{Car_list.maintenanceExpire}}</span>
+        </el-col>
+        <el-col :span="8">
+          <div class="xinxi">年检到期</div>
+          <span>{{Car_list.yearExpire}}</span>
+        </el-col>
+      </el-row>
+      <div class="redd">
+        <el-table :data="Car_list.comboCustomerListVOS" height="220" border style="width: 100%">
+          <el-table-column prop="comboName" label="已购套餐" width></el-table-column>
+          <el-table-column prop="comboItemList" label="项目名称" width="130">
+            <template slot-scope="scope">
+              <div
+                v-if="scope.row.comboItemList.length != 0"
+              >{{scope.row.comboItemList[0].itemName}}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="comboItemList" label="总次数" width="70">
+            <template slot-scope="scope">
+              <div
+                v-if="scope.row.comboItemList.length != 0"
+              >{{scope.row.comboItemList[0].totalTimes}}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="comboItemList" label="剩余次数" width="80">
+            <template slot-scope="scope">
+              <div
+                v-if="scope.row.comboItemList.length != 0"
+              >{{scope.row.comboItemList[0].surplusTimes}}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="endDate" label="到期时间" width="130">
+            <template slot-scope="scope">
+              <div>{{scope.row.endDate.substring(0,10)}}</div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="success" @click="KaidanClick">开 单</el-button>
+      </div>
+    </el-dialog>
+
     <el-table
       :data="tableData"
       :max-height="maxHeight"
       style="width: 100%"
       ref="lists"
       id="printBox"
+      @row-click="toOrderX2"
     >
       <el-table-column prop="date" label="编号" width="160">
         <template slot-scope="scope">{{scope.row.billNumber}}</template>
@@ -91,7 +224,13 @@
       <el-table-column label="接车时间" width="110px">
         <template slot-scope="scope">{{scope.row.createdDate}}</template>
       </el-table-column>
-      <el-table-column label="服务项目">
+      <el-table-column label="询价配件" v-if="!show" width="120px">
+        <template slot-scope="scope">{{scope.row.askPricePartAll}}</template>
+      </el-table-column>
+      <el-table-column label="数量" v-if="!show">
+        <template slot-scope="scope">{{scope.row.askPriceCount}}</template>
+      </el-table-column>
+      <el-table-column label="服务项目" v-if="show">
         <template slot-scope="scope">
           <span
             v-if="scope.row.orderItemList && scope.row.orderItemList.length >= 2 && scope.row.shows == 0"
@@ -107,12 +246,11 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="接车员">
+
+      <el-table-column label="接车员" v-if="show">
         <template slot-scope="scope">{{scope.row.clerkOrder}}</template>
       </el-table-column>
-      <el-table-column label="询价配件" v-if="!show">
-        <template slot-scope="scope">{{scope.row.askPriceCount}}</template>
-      </el-table-column>
+
       <el-table-column label="应收金额" v-if="show">
         <template slot-scope="scope">{{scope.row.amountReceivable}}</template>
       </el-table-column>
@@ -187,22 +325,41 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180" align="center">
+      <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
-          <el-button v-if="!show" size="mini" plain @click="editRow(scope.row)">商家报价</el-button>
-          <el-button v-if="!show" size="mini" plain @click="enquiry(scope.row)">询价</el-button>
-          <el-button v-if="show" size="mini" plain @click="toOrderX(scope.row)">查看</el-button>
+          <el-button v-if="!show" size="mini" plain @click.stop="editRow(scope.row)">商家报价</el-button>
+          <el-button v-if="!show" size="mini" plain @click.stop="enquiry(scope.row)">询价</el-button>
+          <!-- <el-button v-if="show" size="mini" plain @click.stop="toOrderX(scope.row)">查看</el-button> -->
+          <!-- <template slot-scope="scope" v-if="show" > -->
+          <div @click.stop v-if="show" style="display: inline-block;">
+            <el-dropdown trigger="click" @command="handleCommand">
+              <el-button plain size="mini">
+                操作
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="send_work(scope.row)">会员办理</el-dropdown-item>
+                <el-dropdown-item @click.native="add_parts(scope.row)">变更车牌</el-dropdown-item>
+                <el-dropdown-item @click.native="edit_project(scope.row)">其它支出</el-dropdown-item>
+                <el-dropdown-item @click.native="delete_project(scope.row)">预付款</el-dropdown-item>
+                <el-dropdown-item @click.native="royalty(scope.row)">工单上锁</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <!-- </template> -->
+          <!--  -->
           <el-button
             v-if="scope.row.settlementStatus == 1"
             type="success"
             size="mini"
-            @click="rollbackSettlement(scope.row)"
+            @click.stop="rollbackSettlement(scope.row)"
           >反结算</el-button>
           <el-button
             v-if="scope.row.settlementStatus != 1 && show"
             type="danger"
+            style="display: inline-block;"
             size="mini"
-            @click="pay(scope.row)"
+            @click.stop="pay(scope.row)"
           >结算</el-button>
         </template>
       </el-table-column>
@@ -220,6 +377,29 @@
 
     <!-- 询价弹出框 -->
     <el-dialog title="询价配置" :visible.sync="configuration" width="65%" :modal="false" center>
+      <div class="lux">
+        <div class="sdx">
+          车架号：
+          <span class="phon">{{chejia_list.vin}}</span>
+        </div>
+
+        <div class="sdx">
+          车架照片：
+          <el-image
+            class="min-width-60 cart-img cc_img"
+            :src="chejia_list.vinPic"
+            alt
+            v-if="chejia_list.vinPic"
+            :preview-src-list="chejia_list.vinPic.split(',')"
+          ></el-image>
+          <el-image
+            class="min-width-60 cart-img cc_img"
+            src="../../../static/img/chejia.png"
+            :preview-src-list="chejia_list.vinPic"
+            v-else
+          ></el-image>
+        </div>
+      </div>
       <div class="configlist">
         <div class="left PJparts">
           <div class="lines" style="border-top: 1px solid #ebeef5; ">
@@ -273,6 +453,9 @@
       </div>
       <!-- 内层选择配件询价弹窗 -->
       <el-dialog width="30%" center title="选择配件" :visible.sync="configuration_c" append-to-body>
+        <div class="lulux">
+          <el-checkbox class="lulu2" v-model="checkedAll" @change="checkAllHandle">全选</el-checkbox>
+        </div>
         <div class="outbox_d">
           <div
             class="lines"
@@ -281,7 +464,11 @@
             v-if="items.source == 1 && items.askPriceStatus != 1"
           >
             <div class="left namepes">{{items.partName}}</div>
-            <el-checkbox-group class="right" style="margin-right: 5px;" v-model="items.checked">
+            <el-checkbox-group
+              class="right sdsd"
+              style="margin-right: 5px;"
+              v-model="items.checked"
+            >
               <el-checkbox></el-checkbox>
             </el-checkbox-group>
             <div class="right namelet">x{{items.counts}}.0</div>
@@ -368,7 +555,7 @@
 
     <!--  -->
     <!-- 查看商家弹窗 -->
-    <el-dialog :title="carNoname+' 商家报价'" :visible.sync="editFormStatus" width="70%" center :modal="false">
+    <el-dialog title=" 商家报价" :visible.sync="editFormStatus" width="70%" center :modal="false">
       <el-form :inline="true" class="demo-form-inline">
         <el-row>
           <el-col style="margin-bottom: 5px;">
@@ -380,12 +567,12 @@
                 @click="switchOF(indexfl)"
               >{{item}}</li>
             </ul>
-            <div class="left orlist" v-if="PriceList != ''&& switchActive != 2">
+            <div class="left orlist" v-if="PriceList != ''">
               <div>车牌：{{PriceList[0].carNo}}</div>
               <div>工单号：{{PriceList[0].billNumber}}</div>
               <div>询价日期：{{PriceList[0].askPriceTime}}</div>
             </div>
-            <div class="right" @click="editRow2" v-if="switchActive != 2">
+            <div class="right" @click="editRow2">
               <img class="shaimg" src="../../assets/shaxin.png" alt />
             </div>
           </el-col>
@@ -419,15 +606,16 @@
             <template slot-scope="scope">{{scope.row.createdTime}}</template>
           </el-table-column>
           <el-table-column label="询价状态" width="110px">
-            <template>
-              <em style="color:#FF6757">未报价</em>
+            <template slot-scope="scope">
+              <em style="color:#FF6757" v-if="scope.row.status ==0">未报价</em>
+              <em style="color:#FF6757" v-if="scope.row.status ==1">缺货取消</em>
             </template>
           </el-table-column>
         </el-table>
       </div>
       <div class="xuhao" v-if="switchActive != 2">
         <div class="xu1">序号</div>
-        <div class="xu2" :style="{'width':switchActive == 1 ? '15%':''}">供应商</div>
+        <div class="xu2" style="width:200px">供应商</div>
         <div class="xu8" v-if="switchActive == 1">数量</div>
         <div class="xu3" :style="{'width':switchActive == 1 ? '9%':''}">配件类型</div>
         <div class="xu4">单价</div>
@@ -438,10 +626,15 @@
       <!-- 配件模式 -->
       <div
         class="huadong"
-        v-if="switchActive == 0"
-        :style="{'height':PriceList != '' ? '350px':''}"
+        v-if="switchActive == 0 "
+        :style="{'height':PriceList != '' ? '470px':''}"
       >
-        <div v-for="(item,indexff) in PriceList" :key="'item'+indexff" class="tbcd">
+        <div
+          v-for="(item,indexff) in PriceList"
+          :key="'item'+indexff"
+          class="tbcd"
+          v-if="item.askPricePartDOS != null"
+        >
           <el-row>
             <div class="xuhao2" v-if="switchActive == 0">
               <el-col :span="8">
@@ -484,38 +677,79 @@
                 <div>{{items[0].partCount}}</div>
               </td>
               <td class="td3">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].partType==0 ?'原厂件':''}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].partType==1 ?'品牌件':''}}</div>
-                <div>{{items[2].partType==2 ?'其它件':''}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">
+                  <img
+                    v-if="items[0].status == 0 ||items[0].status == 1"
+                    class="gou"
+                    src="../../assets/gou.png"
+                    alt
+                  />
+                  {{items[0].partType==0 ?'原厂件':''}}
+                </div>
+                <div style="border-bottom: 1px solid #dcdfe6;">
+                  <img
+                    v-if="items[1].status == 0 ||items[1].status == 1"
+                    class="gou"
+                    src="../../assets/gou.png"
+                    alt
+                  />
+                  {{items[1].partType==1 ?'品牌件':''}}
+                </div>
+                <div>
+                  <img
+                    v-if="items[2].status == 0 ||items[2].status == 1"
+                    class="gou"
+                    src="../../assets/gou.png"
+                    alt
+                  />
+                  {{items[2].partType==2 ?'其它件':''}}
+                </div>
               </td>
               <td class="td4">
-                <div
-                  style="border-bottom: 1px solid #dcdfe6;"
-                >{{items[0].price ?'￥':''}}{{items[0].price}}</div>
-                <div
-                  style="border-bottom: 1px solid #dcdfe6;"
-                >{{items[2].price ?'￥':''}}{{items[1].price}}</div>
-                <div>{{items[2].price ?'￥':''}}{{items[2].price}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;" @click="yijia(items[0])">
+                  <span
+                    v-if="items[0].talkStatus ==1"
+                    :style="{'color': (items[0].talkStatus == 1 ? '#0D906E':'')}"
+                  >{{items[0].talkPrice ?'￥':''}}{{items[0].talkPrice}}</span>
+                  <span v-if="items[0].talkStatus !=1">{{items[0].price ?'￥':''}}{{items[0].price}}</span>
+                </div>
+                <div style="border-bottom: 1px solid #dcdfe6;" @click="yijia(items[1])">
+                  <span
+                    v-if="items[1].talkStatus ==1"
+                    :style="{'color': (items[1].talkStatus == 1 ? '#0D906E':'')}"
+                  >{{items[1].talkPrice ?'￥':''}}{{items[1].talkPrice}}</span>
+                  <span v-if="items[1].talkStatus !=1">{{items[1].price ?'￥':''}}{{items[1].price}}</span>
+                </div>
+                <div @click="yijia(items[2])">
+                  <span
+                    v-if="items[2].talkStatus ==1"
+                    :style="{'color': (items[2].talkStatus == 1 ? '#0D906E':'')}"
+                  >{{items[2].talkPrice ?'￥':''}}{{items[2].talkPrice}}</span>
+                  <span v-if="items[2].talkStatus !=1">{{items[2].price ?'￥':''}}{{items[2].price}}</span>
+                </div>
               </td>
               <td class="td5">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].arrivalTime}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].arrivalTime}}</div>
-                <div>{{items[2].arrivalTime}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].price?items[0].arrivalTime:''}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].price?items[1].arrivalTime:''}}</div>
+                <div>{{items[2].price?items[2].arrivalTime:''}}</div>
               </td>
               <td class="td6">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].qualityTime}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].qualityTime}}</div>
-                <div>{{items[2].qualityTime}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].price?items[0].qualityTime:''}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].price?items[1].qualityTime:''}}</div>
+                <div>{{items[2].price?items[2].qualityTime:''}}</div>
               </td>
               <td class="td7">
                 <div style="border-bottom: 1px solid #dcdfe6;">
-                  <em v-if="items[0].status == 0 ||items[0].status == 1">已下单</em>
+                  <em>{{items[0].remark}}</em>
+                  <!-- <em v-if="items[0].status == 0 ||items[0].status == 1">（已下单）</em> -->
                 </div>
                 <div style="border-bottom: 1px solid #dcdfe6;">
-                  <em v-if="items[1].status == 0 ||items[1].status == 1">已下单</em>
+                  <em>{{items[1].remark}}</em>
+                  <!-- <em v-if="items[1].status == 0 ||items[1].status == 1">（已下单）</em> -->
                 </div>
                 <div>
-                  <em v-if="items[2].status == 0 ||items[2].status == 1">已下单</em>
+                  <em>{{items[2].remark}}</em>
+                  <!-- <em v-if="items[2].status == 0 ||items[2].status == 1">（已下单）</em> -->
                 </div>
               </td>
               <td class="td9 radio_ccid" style="width: 3%">
@@ -541,8 +775,8 @@
         </div>
       </div>
 
-      <!-- 222 -->
-      <div class="huadong" v-show="switchActive == 1" :style="{'height':ceshi != '' ? '350px':''}">
+      <!-- 商家模式-->
+      <div class="huadong" v-show="switchActive == 1" :style="{'height':ceshi != '' ? '470px':''}">
         <div v-for="(itemst,indexlst) in ceshi" :key="'itemst'+indexlst" class="tbcd">
           <div class="xuhao2">
             <div class="pei1 pei" style="width: 240px;">
@@ -557,6 +791,10 @@
               <img src="../../assets/dizi.png" alt />
               <span>{{itemst.address}}</span>
             </div>
+            <!-- <div class="right"> -->
+              <el-button class="right" style="margin-top: 7px;" size="mini" type="danger" @click="TuihuiClick(itemst.askPricePartDOS)">退回重报</el-button>
+
+            <!-- </div> -->
           </div>
 
           <table
@@ -566,7 +804,6 @@
             class="tbbd"
             v-for="(itemc,idxxx) in itemst.askPricePartDOS"
             :key="'itemc'+idxxx"
-            v-if="idxxx<lensg"
           >
             <tr>
               <td class="td1">{{idxxx+1}}</td>
@@ -579,40 +816,84 @@
                 <div>{{itemc[0].partCount}}</div>
               </td>
               <td class="td3">
-                <div style="border-bottom: 1px solid #dcdfe6;" v-if="itemc[0].partType==0">原厂件</div>
-                <div style="border-bottom: 1px solid #dcdfe6;" v-if="itemc[1].partType==1">品牌件</div>
-                <div v-if="itemc[2].partType==2">其它件</div>
+                <div style="border-bottom: 1px solid #dcdfe6;" v-if="itemc[0].partType==0">
+                  <img
+                    v-if="itemc[0].status == 0 ||itemc[0].status == 1"
+                    class="gou"
+                    src="../../assets/gou.png"
+                    alt
+                  />
+                  原厂件
+                </div>
+                <div style="border-bottom: 1px solid #dcdfe6;" v-if="itemc[1].partType==1">
+                  <img
+                    v-if="itemc[1].status == 0 ||itemc[1].status == 1"
+                    class="gou"
+                    src="../../assets/gou.png"
+                    alt
+                  />
+                  品牌件
+                </div>
+                <div v-if="itemc[2].partType==2">
+                  <img
+                    v-if="itemc[2].status == 0 ||itemc[2].status == 1"
+                    class="gou"
+                    src="../../assets/gou.png"
+                    alt
+                  />
+                  其它件
+                </div>
               </td>
               <td class="td4">
                 <div
                   style="border-bottom: 1px solid #dcdfe6;"
                   v-if="itemc[0].partType==0"
-                >{{itemc[0].price ?'￥':''}}{{itemc[0].price}}</div>
+                  @click="yijia(itemc[0])"
+                >
+                  <span
+                    v-if="itemc[0].talkStatus ==1"
+                    :style="{'color': (itemc[0].talkStatus == 1 ? '#0D906E':'')}"
+                  >{{itemc[0].talkPrice ?'￥':''}}{{itemc[0].talkPrice}}</span>
+                  <span v-if="itemc[0].talkStatus !=1">{{itemc[0].price ?'￥':''}}{{itemc[0].price}}</span>
+                </div>
                 <div
                   style="border-bottom: 1px solid #dcdfe6;"
                   v-if="itemc[1].partType==1"
-                >{{itemc[1].price ?'￥':''}}{{itemc[1].price}}</div>
-                <div v-if="itemc[2]">{{itemc[2].price ?'￥':''}}{{itemc[2].price}}</div>
+                  @click="yijia(itemc[1])"
+                >
+                  <span
+                    v-if="itemc[1].talkStatus ==1"
+                    :style="{'color': (itemc[1].talkStatus == 1 ? '#0D906E':'')}"
+                  >{{itemc[1].talkPrice ?'￥':''}}{{itemc[1].talkPrice}}</span>
+                  <span v-if="itemc[1].talkStatus !=1">{{itemc[1].price ?'￥':''}}{{itemc[1].price}}</span>
+                </div>
+                <div v-if="itemc[2]" @click="yijia(itemc[2])">
+                  <span
+                    v-if="itemc[2].talkStatus ==1"
+                    :style="{'color': (itemc[2].talkStatus == 1 ? '#0D906E':'')}"
+                  >{{itemc[2].talkPrice ?'￥':''}}{{itemc[2].talkPrice}}</span>
+                  <span v-if="itemc[2].talkStatus !=1">{{itemc[2].price ?'￥':''}}{{itemc[2].price}}</span>
+                </div>
               </td>
               <td class="td5">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].arrivalTime}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].arrivalTime}}</div>
-                <div>{{itemc[2].arrivalTime}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].price?itemc[0].arrivalTime:""}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].price?itemc[1].arrivalTime:""}}</div>
+                <div>{{itemc[2].price?itemc[2].arrivalTime:""}}</div>
               </td>
               <td class="td6">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].qualityTime}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].qualityTime}}</div>
-                <div>{{itemc[2].qualityTime}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].price?itemc[0].qualityTime:""}}</div>
+                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].price?itemc[1].qualityTime:""}}</div>
+                <div>{{itemc[2].price?itemc[2].qualityTime:""}}</div>
               </td>
               <td class="td7" :style="{'width':switchActive == 1 ? '17%':''}">
                 <div style="border-bottom: 1px solid #dcdfe6;">
-                  <em v-if="itemc[0].status == 0 ||itemc[0].status == 1">已下单</em>
+                  <em>{{itemc[0].remark}}</em>
                 </div>
                 <div style="border-bottom: 1px solid #dcdfe6;">
-                  <em v-if="itemc[1].status == 0 ||itemc[1].status == 1">已下单</em>
+                  <em>{{itemc[1].remark}}</em>
                 </div>
                 <div>
-                  <em v-if="itemc[2].status == 0 ||itemc[2].status == 1">已下单</em>
+                  <em>{{itemc[2].remark}}</em>
                 </div>
               </td>
               <td class="td9 radio_ccid">
@@ -636,8 +917,73 @@
         <el-button type="success" @click="dinghuodan" v-if="switchActive != 2">生成订货单</el-button>
       </div>
     </el-dialog>
-    <!--  -->
 
+    <!-- 预付款 -->
+    <el-dialog :title="yufuName" :visible.sync="yufuVisible" center width="40%" :modal="false">
+      <el-form :model="yufuForm">
+        <el-row :gutter="20" style="border-bottom:1px solid #ccc;padding:10px 0px;">
+          <el-col :span="19">金额：</el-col>
+          <el-col :span="5" style="text-align:right;">
+            <el-input v-if="!yufuForm.advanceMoney" v-model="yufu_amount" placeholder="请输入金额"></el-input>
+            <span v-else>{{yufuForm.advanceMoney}}</span>
+            <!-- {{yufuForm.advanceMoney?yufuForm.advanceMoney:'0'}} -->
+          </el-col>
+        </el-row>
+        <el-row
+          :gutter="20"
+          style="border-bottom:1px solid #ccc;padding:10px 0px;border-left:5px solid #0d906e;margin-top:20px;"
+        >
+          <el-col :span="12">支付方式</el-col>
+          <el-col :span="12" v-if="!yufuForm.advanceMoney">
+            <!-- <el-button type="info" class="right" size="mini" plain @click="paymentDialog2">请选择 ></el-button> -->
+            <el-select v-model="yufu_type" class="right" placeholder="请选择" style="width:120px">
+              <el-option
+                v-for="item in paymentData2"
+                :key="item.type"
+                :label="item.name"
+                :value="item.type"
+              ></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="12" v-if="yufuForm.advanceMoney" style="text-align: right;">
+            <div v-if="yufuForm.payTypes.type == 0">现金</div>
+            <div v-if="yufuForm.payTypes.type == 1">支付宝</div>
+            <div v-if="yufuForm.payTypes.type == 2">微信</div>
+            <div v-if="yufuForm.payTypes.type == 3">银行卡</div>
+            <div v-if="yufuForm.payTypes.type == 4">直赔到店</div>
+          </el-col>
+        </el-row>
+        <el-row
+          :gutter="20"
+          style="border-bottom:1px solid #ccc;padding:10px 0px;"
+          v-for="item in payForm.payTypeList"
+          :key="item.type"
+        >
+          <el-col :span="12">{{item.name}}</el-col>
+          <el-col :span="12">
+            <el-input v-model="item.amount" @change="changeAmount">
+              <template slot="append">元</template>
+            </el-input>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <!-- <el-button type="success" @click="yufuVisible = false">取 消</el-button> -->
+        <el-button
+          type="danger"
+          v-if="yufuForm.advanceMoney"
+          @click="paySubmit2"
+          style="width: 50%;"
+        >退 款</el-button>
+        <el-button
+          type="success"
+          v-if="!yufuForm.advanceMoney"
+          @click="paySubmit2"
+          style="width: 50%;"
+        >保 存</el-button>
+      </div>
+    </el-dialog>
+    <!--  -->
     <el-dialog :title="payForm.carNo" :visible.sync="payVisible" center width="40%" :modal="false">
       <el-form :model="payForm">
         <el-row :gutter="20" style="border-bottom:1px solid #ccc;padding:10px 0px;">
@@ -674,21 +1020,33 @@
           </el-col>
         </el-row>
         <el-row :gutter="20" style="border-bottom:1px solid #ccc;padding:10px 0px;">
-          <el-col :span="7">应收：￥{{payForm.amountReceivable}}</el-col>
-          <el-col :span="7">
+          <el-col :span="6">应收：￥{{payForm.amountReceivable}}</el-col>
+          <el-col :span="6">
+            预付：
+            <font color="red" v-if="detailForm.advance">￥{{detailForm.advance}}</font>
+          </el-col>
+          <el-col :span="6">
             优惠：
             <font color="red">￥{{payForm.discountPrice}}</font>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="6">
             实收：
-            <font color="red">￥{{payForm.amountActual}}</font>
+            <!-- payForm.amountActual 实收参数 -->
+            <font color="red">￥{{payForm.amountReceivable - detailForm.advance}}</font>
           </el-col>
         </el-row>
         <el-row
           :gutter="20"
           style="border-bottom:1px solid #ccc;padding:10px 0px;border-left:5px solid #0d906e;margin-top:20px;"
         >
-          <el-col :span="7">支付方式</el-col>
+          <el-col :span="7">
+            支付方式
+            <font
+              style="margin-left: 10px;"
+              color="red"
+              v-if="(payForm.amountReceivable - detailForm.advance) < 0"
+            >退款</font>
+          </el-col>
           <el-col :span="7">差额：￥{{payForm.difference}}</el-col>
           <el-col :span="7">
             <el-button type="info" size="mini" plain @click="paymentDialog">请选择 ></el-button>
@@ -771,6 +1129,34 @@
         <el-button type="success" @click="paymentVisible = false">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 议价 -->
+    <el-dialog
+      :title="yijia_SP.yijia_name"
+      :visible.sync="yijialist"
+      center
+      width="30%"
+      :modal="false"
+    >
+      <el-row>
+        <el-col :span="24">
+          <div class="grid-content bg-purple-dark yipic">
+            原价：
+            <span style="color: rgba(255,62,42,1);
+">{{yijia_SP.yijia_pic}}</span>
+          </div>
+        </el-col>
+      </el-row>
+      <el-form ref="form" :model="yijia_SP" label-width="80px">
+        <el-form-item label="议价">
+          <el-input v-model="yijia_SP.talkPrice"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="danger" @click="yijialist = false">取 消</el-button>
+        <el-button type="success" @click="yijia_FS">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 议价 -->
   </div>
 </template>
 
@@ -791,7 +1177,17 @@ import {
   getAllPartTown,
   querySupplierByGid,
   askPricePull,
-  unAskPriceList
+  unAskPriceList,
+  talkPrice,
+  queryAdvanceDetail,
+  payOrderAdvance,
+  refundOrderAdvance,
+  findAllSellMan,
+  saveBaseIno,
+  carNoSearch,
+  CSinit,
+  checkOrderUnfinish,
+  rollbackAskPrice
 } from "../../request/api.js";
 import moment from "moment";
 import router from "../../router";
@@ -799,9 +1195,11 @@ export default {
   name: "order",
   data() {
     return {
+      checkedAll: false,
       radio: 3,
       configuration_c: false,
       max: [],
+      yufuName: "",
       Townlist: [],
       isMy: false,
       oid: null,
@@ -822,6 +1220,7 @@ export default {
       radioID: [],
       ceshi: [],
       askPriceId: "",
+      chejia_list: [],
       askPricePartIds: [],
       tableData: [],
       PriceList: [], //商家报价，商家模式
@@ -833,6 +1232,10 @@ export default {
       switchActive: 0,
       switchActive2: 1,
       value1: "",
+      yijialist: false, //议价弹窗
+      yijia_SP: {
+        talkPrice: ""
+      },
       maxHeight: undefined,
       xunjialist: {},
       search: {
@@ -843,6 +1246,8 @@ export default {
         text3: ""
       },
       pageLength: null,
+      XinzenVisible: false,
+
       size: 10,
       page: 0,
       gid: localStorage.getItem("gid"),
@@ -851,17 +1256,36 @@ export default {
       payForm: {},
       discountVisible: false,
       discountForm: {},
+      yufuVisible: false,
+      yufuForm: {},
       paymentVisible: false,
-      carNoname:'',
+      carNoname: "",
+      yufu_type: "",
+      yufu_amount: "",
       paymentData: [
         { type: 0, name: "现金" },
         { type: 1, name: "支付宝" },
         { type: 2, name: "微信" },
         { type: 3, name: "银行卡" },
-        { type: 4, name: "支票" },
+        { type: 4, name: "直赔到店" },
         { type: 5, name: "挂帐" }
       ],
-      detailForm: {}
+      paymentData2: [
+        { type: 0, name: "现金" },
+        { type: 1, name: "支付宝" },
+        { type: 2, name: "微信" },
+        { type: 3, name: "银行卡" },
+        { type: 4, name: "直赔到店" }
+      ],
+      detailForm: {},
+
+      values: "",
+      input3: "",
+      visible: false,
+      width: 600,
+      height: 300,
+      Car_list: {},
+      list_car: []
     };
   },
   created() {
@@ -872,6 +1296,181 @@ export default {
     this.show = true;
   },
   methods: {
+    //退回重报
+    TuihuiClick(e){
+      let data ={
+        supplierId:e[0][0].supplierId,
+        oid:this.oid
+      }
+            let tishi = e[0][0].supplierName+"的报价确定要退回重报价吗？";
+      this.$confirm(tishi, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        rollbackAskPrice(data).then(res => {
+          if (res.data.code == 200) {
+            this.$message({
+              type: "success",
+              message: "退回重报价成功!"
+            });
+            this.editRow()
+            // this.editFormStatus = false;
+          }
+        });
+      });
+    },
+    // 订单开单
+    KaidanClick() {
+      let res = /^(([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z](([0-9]{5}[DF])|([DF]([A-HJ-NP-Z0-9])[0-9]{4})))|([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳使领]))$/;
+      var input = this.input3.toUpperCase(); //转大写
+      if (res.test(input)) {
+        // checkOrderUnfinish({ carNo: input }).then(res => {
+        //   console.log(res.data)
+        // });
+        CSinit({ carNo: input }).then(res => {
+          if (res.data.code == 200) {
+            let data = {
+              id: res.data.data.id,
+              carNo: res.data.data.carNo
+            };
+            saveBaseIno(data).then(res => {
+              if (res.data.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "开单成功"
+                });
+                this.XinzenVisible = false;
+                this.getOrderListInit();
+              }
+            });
+          }
+        });
+      } else {
+        return this.$message.error("车牌格式有误");
+      }
+      // this.visible = true;
+    },
+    handleBlur() {
+      this.visible = false;
+    },
+    //点击搜索车牌
+    shousuo_Car() {
+      this.Car_list = {};
+      if (this.input3 == "") {
+        return this.$message.error("请输入车牌号");
+      }
+      carNoSearch({ carNo: this.input3 }).then(res => {
+        if (res.data.code == 200) {
+          this.list_car = res.data.data;
+          console.log(res.data.data);
+        }
+      });
+      this.visible = true;
+    },
+    onClickItem(row) {
+      this.Car_list = row;
+      this.input3 = row.carNo;
+      this.visible = false;
+    },
+    onDblClickSelect(row) {
+      // console.log(row);
+      this.input3 = row.name;
+      this.visible = false;
+    },
+
+    // 搜索
+
+    // 新增工单
+    XinzengGD() {
+      this.input3=""
+       this.Car_list = {}
+      this.XinzenVisible = true;
+    },
+
+    //保存保险信息
+
+    //监听图片上传成功
+    handleSuccess(e) {
+      // console.log(e.data);
+      const picUrl = { picUrl: e.data };
+      this.xinzen.orderPictures.push(picUrl);
+    },
+    //删除上传图片
+    handleRemove(file, fileList) {
+      const filepath = file.response.data;
+      //从pictureList数组中找到对应得索引值
+      const i = this.xinzen.orderPictures.findIndex(x => x.picUrl === filepath);
+      //调用solice方法删除
+      this.xinzen.orderPictures.splice(i, 1);
+    },
+    //预付款
+    delete_project(row, index) {
+      this.yufu_amount = ''
+      this.yufu_type = ''
+      this.payForm.payTypeList = [];
+      this.oid = row.oid;
+      queryAdvanceDetail({ oid: row.oid }).then(res => {
+        if (res.data.code == 200) {
+          this.yufuForm = res.data.data;
+        }
+      });
+      this.yufuName = row.carNo + " 预付款";
+      // amountReceivable: row.amountReceivable
+
+      this.yufuVisible = true;
+      // console.log(row);
+    },
+    handleCommand(command) {
+      // console.log(command);
+    },
+    //全选
+    checkAllHandle(e) {
+      this.tableData2.forEach((item, i) => {
+        this.tableData2[i].checked = e;
+      });
+    },
+
+    //议价
+    yijia(e) {
+      var name = "";
+      if (e.partType == 0) {
+        name = "原厂件：";
+      } else if (e.partType == 1) {
+        name = "品牌件：";
+      } else if (e.partType == 2) {
+        name = "其它件：";
+      }
+      this.yijia_SP = {
+        yijia_name: name + e.partName,
+        yijia_pic: e.price,
+        yijia_id: e.id
+      };
+
+      this.yijialist = true;
+    },
+    yijia_FS(e) {
+      if (this.yijia_SP.talkPrice == undefined) {
+        this.$message.error("请输入议价价格！");
+        return;
+      }
+      let data = {
+        askPricePartId: this.yijia_SP.yijia_id,
+        status: 0,
+        talkPrice: this.yijia_SP.talkPrice
+      };
+      talkPrice(data).then(res => {
+        //
+        if (res.data.code == 200) {
+          this.$message({
+            type: "success",
+            message: "已发送议价!"
+          });
+          this.editRow2();
+          this.yijialist = false;
+        }
+      });
+    },
     check(e) {
       // console.log(e);
     },
@@ -932,11 +1531,37 @@ export default {
     },
     //点击询价
     enquiry(row) {
-      // console.log(row);
       this.systemRecoList = [];
       this.systemRecoList2 = [];
+      this.tableData2 = [];
       this.oid = row.oid;
-
+      const data = {
+        oid: this.oid
+      };
+      getOrderListX(data).then(res => {
+        this.chejia_list = res.data.data;
+        if (res.data.data.orderPictureList.length > 1) {
+          this.xunjialist.carPicUrl = res.data.data.orderPictureList[0].picUrl;
+        }
+        this.xunjialist = {
+          carModel: res.data.data.standard,
+          carVin: res.data.data.vin,
+          gid: res.data.data.gid,
+          oid: res.data.data.oid,
+          partTotalCount: res.data.data.partTotalCount,
+          status: 0
+        };
+        var tableData1 = res.data.data.orderItemList;
+        tableData1.forEach((item, index) => {
+          item.orderPartList.forEach((items, indexs) => {
+            this.tableData2.push(items);
+            this.tableData2.map((c, i) => {
+              this.$set(c, "checked", false);
+            });
+          });
+        });
+      });
+      //  console.log(tableData1);
       this.configuration = true;
     },
 
@@ -959,33 +1584,34 @@ export default {
     },
     //点击选择配件
     Pjclick() {
-      this.tableData2 = [];
-      const data = {
-        oid: this.oid
-      };
-      getOrderListX(data).then(res => {
-        // console.log(res.data.data);
-        if (res.data.data.orderPictureList.length > 1) {
-          this.xunjialist.carPicUrl = res.data.data.orderPictureList[0].picUrl;
-        }
-        this.xunjialist = {
-          carModel: res.data.data.standard,
-          carVin: res.data.data.vin,
-          gid: res.data.data.gid,
-          oid: res.data.data.oid,
-          partTotalCount: res.data.data.partTotalCount,
-          status: 0
-        };
-        var tableData1 = res.data.data.orderItemList;
-        tableData1.forEach((item, index) => {
-          item.orderPartList.forEach((items, indexs) => {
-            this.tableData2.push(items);
-            this.tableData2.map((c, i) => {
-              this.$set(c, "checked", false);
-            });
-          });
-        });
-      });
+      this.checkedAll = false;
+      // this.tableData2 = [];
+      // const data = {
+      //   oid: this.oid
+      // };
+      // getOrderListX(data).then(res => {
+      //   // console.log(res.data.data);
+      //   if (res.data.data.orderPictureList.length > 1) {
+      //     this.xunjialist.carPicUrl = res.data.data.orderPictureList[0].picUrl;
+      //   }
+      //   this.xunjialist = {
+      //     carModel: res.data.data.standard,
+      //     carVin: res.data.data.vin,
+      //     gid: res.data.data.gid,
+      //     oid: res.data.data.oid,
+      //     partTotalCount: res.data.data.partTotalCount,
+      //     status: 0
+      //   };
+      //   var tableData1 = res.data.data.orderItemList;
+      //   tableData1.forEach((item, index) => {
+      //     item.orderPartList.forEach((items, indexs) => {
+      //       this.tableData2.push(items);
+      //       this.tableData2.map((c, i) => {
+      //         this.$set(c, "checked", false);
+      //       });
+      //     });
+      //   });
+      // });
       // console.log(this.tableData2);
       this.configuration_c = true;
     },
@@ -1061,7 +1687,7 @@ export default {
         askPriceId: this.askPriceId,
         askPricePartIds: askPricePartIds
       };
-      console.log(data);
+      // console.log(data);
       let tishi = "确认生成订货单？";
       this.$confirm(tishi, "提示", {
         confirmButtonText: "确定",
@@ -1116,6 +1742,18 @@ export default {
     },
     //发起询价
     enquiryPull() {
+      var _this = this;
+      if (this.chejia_list.vin == null && this.chejia_list.vinPic == null) {
+        this.$message.error("请输入17位车架号或提供车架号图片再询价！");
+        return;
+      }
+      if (_this.chejia_list.vinPic == null) {
+        if (_this.chejia_list.vin.length < 17) {
+          _this.$message.error("请设置17位数的车架号");
+          return;
+        }
+      }
+
       if (this.systemRecoList2.length < 1) {
         this.$message.error("请选择您要询价的配件");
         return;
@@ -1148,15 +1786,19 @@ export default {
     },
     //系统推荐
     systemReco() {
-      // console.log(this.isMy);
       const data = {
         gid: this.gid,
-        isMy: this.isMy
+        isMy: this.isMy,
+        oid: this.oid
       };
+      // console.log(data);
       systemReco(data).then(res => {
-        this.systemRecoList = res.data.data;
-        // console.log(res.data.data);
+        console.log(res);
+        if (res.data.code == 200) {
+          this.systemRecoList = res.data.data;
+        }
       });
+      console.log(this.systemRecoList);
     },
     //汽配城
     Town() {
@@ -1168,19 +1810,23 @@ export default {
     },
     //查看商家报价
     editRow(row) {
-      console.log(row);
-   this.carNoname =row. carNo
+      this.ceshi = [];
+      // console.log(row);
+      this.carNoname = row.carNo;
       this.oid = row.oid;
       var _this = this;
       let listArr = [];
       pcaskPriceList({ oid: row.oid }).then(res => {
         this.PriceList = res.data.data;
-        console.log(res.data.data);
+        // console.log(res.data.data);
         var result = [];
         this.PriceList.map((v, i) => {
           v.askPricePartDOS.map((c, i) => {
+            var r = c.filter(function(s) {
+              return s && s.trim();
+            });
+            // console.log(r);
             c.map((d, i) => {
-              // console.log(d);
               this.$set(d, "number", 0);
               if (d.supplierId == d.supplierId) {
                 result.push(d);
@@ -1192,10 +1838,11 @@ export default {
 
       askPriceList({ oid: row.oid }).then(res => {
         let listArr = [];
-        console.log(res.data.data);
+        // console.log(res.data.data);
         res.data.data.map((v, i) => {
           // console.log(v.askPricePartDOList);
           var data = v.askPricePartDOList;
+          //  console.log(data);
           data.forEach(function(el, index) {
             for (var i = 0; i < listArr.length; i++) {
               if (listArr[i].supplierName == el.supplierName) {
@@ -1219,8 +1866,9 @@ export default {
             });
           });
         });
+
         var ceshi = [];
-        var cddd = [];
+        var shangjia_lis = [];
         listArr.map((el, i) => {
           var res = el.askPricePartDOS;
           ceshi.push({
@@ -1236,34 +1884,29 @@ export default {
             unPricedCount: el.unPricedCount,
             askPricePartDOS: []
           });
-
-          for (var i = 0; i < res.length; i += 3) {
-            cddd.push(res.slice(i, i + 3));
+          var cddd = [];
+          for (var i = 0; i < el.askPricePartDOS.length; i += 3) {
+            cddd.push(el.askPricePartDOS.slice(i, i + 3));
           }
-
-          cddd.forEach(function(v, index) {
-            _this.$set(v, "number2", 1);
-
+          shangjia_lis.push(cddd);
+        });
+        shangjia_lis.forEach(function(v, index) {
+          v.map((j, i) => {
+            _this.$set(j, "number2", 1);
             for (var i = 0; i < ceshi.length; i++) {
-              // console.log(ceshi[i].supplierName)
               //      console.log(v[0].supplierName)
-              if (ceshi[i].supplierName == v[0].supplierName) {
-                ceshi[i].askPricePartDOS.push(v);
+              if (ceshi[i].supplierName == j[0].supplierName) {
+                ceshi[i].askPricePartDOS.push(j);
                 //   return;
               }
             }
           });
         });
-        // console.log(cddd);
-        if (cddd.length > 1) {
-          this.lensg = cddd.length / 2;
-        } else {
-          this.lensg = 1;
-        }
-        console.log(ceshi);
+
         this.ceshi = ceshi;
         var result = [];
       });
+
       if (this.switchActive == 2) {
         unAskPriceList({ oid: this.oid }).then(res => {
           this.Noquotation = res.data.data;
@@ -1280,17 +1923,16 @@ export default {
     },
 
     editRow2() {
-      this.askPriceId = ''
+      this.askPriceId = "";
       var _this = this;
       let listArr = [];
-      pcaskPriceList({ oid: this.oid}).then(res => {
+      pcaskPriceList({ oid: this.oid }).then(res => {
         this.PriceList = res.data.data;
-        console.log(res.data.data);
+        // console.log(res.data.data);
         var result = [];
         this.PriceList.map((v, i) => {
           v.askPricePartDOS.map((c, i) => {
             c.map((d, i) => {
-              // console.log(d);
               this.$set(d, "number", 0);
               if (d.supplierId == d.supplierId) {
                 result.push(d);
@@ -1299,13 +1941,21 @@ export default {
           });
         });
       });
+      this.shangjia();
+    },
 
+    //商家模式
+
+    shangjia() {
+      var _this = this;
+      this.ceshi = [];
       askPriceList({ oid: this.oid }).then(res => {
         let listArr = [];
-        console.log(res.data.data);
+        // console.log(res.data.data);
         res.data.data.map((v, i) => {
           // console.log(v.askPricePartDOList);
           var data = v.askPricePartDOList;
+          //  console.log(data);
           data.forEach(function(el, index) {
             for (var i = 0; i < listArr.length; i++) {
               if (listArr[i].supplierName == el.supplierName) {
@@ -1329,8 +1979,9 @@ export default {
             });
           });
         });
+
         var ceshi = [];
-        var cddd = [];
+        var shangjia_lis = [];
         listArr.map((el, i) => {
           var res = el.askPricePartDOS;
           ceshi.push({
@@ -1346,31 +1997,25 @@ export default {
             unPricedCount: el.unPricedCount,
             askPricePartDOS: []
           });
-
-          for (var i = 0; i < res.length; i += 3) {
-            cddd.push(res.slice(i, i + 3));
+          var cddd = [];
+          for (var i = 0; i < el.askPricePartDOS.length; i += 3) {
+            cddd.push(el.askPricePartDOS.slice(i, i + 3));
           }
-
-          cddd.forEach(function(v, index) {
-            _this.$set(v, "number2", 1);
-
+          shangjia_lis.push(cddd);
+        });
+        shangjia_lis.forEach(function(v, index) {
+          v.map((j, i) => {
+            _this.$set(j, "number2", 1);
             for (var i = 0; i < ceshi.length; i++) {
-              // console.log(ceshi[i].supplierName)
               //      console.log(v[0].supplierName)
-              if (ceshi[i].supplierName == v[0].supplierName) {
-                ceshi[i].askPricePartDOS.push(v);
+              if (ceshi[i].supplierName == j[0].supplierName) {
+                ceshi[i].askPricePartDOS.push(j);
                 //   return;
               }
             }
           });
         });
-        // console.log(cddd);
-        if (cddd.length > 1) {
-          this.lensg = cddd.length / 2;
-        } else {
-          this.lensg = 1;
-        }
-        console.log(ceshi);
+
         this.ceshi = ceshi;
         var result = [];
       });
@@ -1388,12 +2033,9 @@ export default {
       }
     },
 
-
-
-
-
     //点击切换退还货
     switchOF(i) {
+      // console.log(this.PriceList)
       var _this = this;
       this.switchActive = i;
       if (this.switchActive == 0) {
@@ -1403,7 +2045,7 @@ export default {
       } else if (this.switchActive == 2) {
         unAskPriceList({ oid: this.oid }).then(res => {
           this.Noquotation = res.data.data;
-          console.log(res.data.data);
+          // console.log(res.data.data);
           this.Noquotation.forEach(function(el, index) {
             var arr;
             arr = el.askPart.split("|");
@@ -1499,9 +2141,21 @@ export default {
       this.getOrderList2(data);
     },
     toOrderX(item) {
+      // console.log(item);
       localStorage.setItem("oid", item.oid);
       this.$router.push({
-        path: "../home/orderX"
+        path: "../home/orderX",
+        query: { clerkOrder: item.clerkOrder }
+        // name: '../home/orderX
+      });
+    },
+    toOrderX2(row, event, column) {
+      // console.log(row);
+      localStorage.setItem("oid", row.oid);
+      this.$router.push({
+        path: "../home/orderX",
+        query: { clerkOrder: row.clerkOrder }
+        // name: '../home/orderX
       });
     },
     getOrderList2(data) {
@@ -1513,7 +2167,7 @@ export default {
           return v;
         });
 
-        console.log(this.tableData);
+        // console.log(this.tableData);
       });
     },
     searchList() {
@@ -1578,16 +2232,17 @@ export default {
     },
     pay(row) {
       getOrderListX({ oid: row.oid }).then(res => {
+        
         if (res.data.code == 200) {
           this.detailForm = res.data.data;
           this.detailForm.carNo = row.carNo;
-
+//  console.log(this.detailForm);
           let receivableItemAmount = 0;
           let receivablePartAmount = 0;
           this.detailForm.orderItemList.forEach(v => {
-            receivableItemAmount += v.standPrice;
+            receivableItemAmount += v.standPrice * v.counts;
             v.orderPartList.forEach(k => {
-              receivablePartAmount += k.price;
+              receivablePartAmount += k.price* k.counts;
             });
           });
 
@@ -1627,8 +2282,10 @@ export default {
               }
             }
           });
+           this.discountCalc();
           this.payVisible = true;
         }
+        // console.log(this.payForm);
       });
     },
     //折扣计算
@@ -1638,6 +2295,7 @@ export default {
         parseFloat(this.payForm.discountItemRate / 10)
       ).toFixed(2);
       this.payForm.actualPartAmount = (
+        // parseFloat(this.payForm.receivablePartAmount) *
         parseFloat(this.payForm.receivablePartAmount) *
         parseFloat(this.payForm.discountPartRate / 10)
       ).toFixed(2);
@@ -1678,6 +2336,13 @@ export default {
         return v;
       });
     },
+    selectPayment2(event) {
+      this.payForm.difference = 0;
+      this.payForm.payTypeList = event.map(v => {
+        this.$set(v, "amount", 0);
+        return v;
+      });
+    },
     changeAmount() {
       const sumPrice = this.payForm.payTypeList.reduce(function(
         accumulator,
@@ -1690,6 +2355,7 @@ export default {
       this.payForm.difference =
         parseFloat(this.payForm.amountActual) - sumPrice;
     },
+    //结算工单
     paySubmit() {
       if (this.payForm.amountActual != 0) {
         if (this.payForm.payTypeList.length < 1) {
@@ -1703,7 +2369,11 @@ export default {
           return accumulator + parseFloat(currentValue.amount);
         },
         0);
-        if (sumPrice != this.payForm.amountActual) {
+
+        if (
+          sumPrice !=
+          Math.abs(this.payForm.amountReceivable - this.detailForm.advance)
+        ) {
           return this.$message({
             message: "结算金额不等于实收金额，请修改",
             type: "error"
@@ -1714,7 +2384,8 @@ export default {
       const data = {
         ...this.payForm,
         discountItemRate: parseFloat(this.payForm.discountItemRate),
-        discountPartRate: parseFloat(this.payForm.discountPartRate)
+        discountPartRate: parseFloat(this.payForm.discountPartRate),
+        advance: this.detailForm.advance
       };
       settlement(data).then(res => {
         if (res.data.code == 200) {
@@ -1727,6 +2398,71 @@ export default {
         }
       });
     },
+    //预付款保存
+    paySubmit2() {
+      var _this = this;
+      if (!_this.yufuForm.advanceMoney) {
+        // if (this.payForm.amountActual != 0) {
+        if (this.yufu_amount == "") {
+          return this.$message({
+            message: "请输入金额",
+            type: "error"
+          });
+        }
+        if (this.yufu_amount == 0) {
+          return this.$message({
+            message: "输入金额必须大于0",
+            type: "error"
+          });
+        }
+        if (this.yufu_type == "") {
+          return this.$message({
+            message: "请选择支付方式",
+            type: "error"
+          });
+        }
+        // }
+
+        const data = {
+          oid: this.oid,
+          payTypes: {
+            amount: _this.yufu_amount,
+            billerCustomerId: null,
+            type: _this.yufu_type
+          }
+        };
+        payOrderAdvance(data).then(res => {
+          if (res.data.code == 200) {
+            this.$message({
+              type: "success",
+              message: "保存成功!"
+            });
+            this.yufuVisible = false;
+            this.payForm.payTypeList = [];
+          }
+        });
+      } else {
+        let data = {
+          oid: _this.oid,
+          payTypes: {
+            amount: _this.yufuForm.payTypes.amount,
+            billerCustomerId: null,
+            type: _this.yufuForm.payTypes.type
+          }
+        };
+        refundOrderAdvance(data).then(res => {
+          if (res.data.code == 200) {
+            _this.$message({
+              type: "success",
+              message: "退款成功!"
+            });
+            _this.yufuVisible = false;
+            _this.payForm.payTypeList = [];
+          }
+        });
+      }
+    },
+
     rollbackSettlement(row) {
       this.$confirm(`确认车牌为${row.carNo}的工单反结算?`, "提示", {
         confirmButtonText: "确定",
@@ -1771,7 +2507,7 @@ export default {
 .jindu {
   position: relative;
   width: 100%;
-  height: 34px;
+  height: 50px;
   /* background: pink; */
 }
 .orlist div {
@@ -1828,13 +2564,25 @@ table {
 .xuhao .xu8 {
   width: 10%;
 }
-
+.sdx{
+  float: left;
+}
 .tbbd tr td {
   text-align: center;
 }
 .tbbd tr td div {
   height: 35px;
   line-height: 35px;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gou {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 8px;
 }
 .tbbd tr td img {
   margin-left: 5px;
@@ -1850,7 +2598,7 @@ table {
   margin-left: 15px;
 }
 .pei2 {
-  width: 125px;
+  width: 155px;
 }
 .pei3 {
   margin-left: 100px;
@@ -1866,9 +2614,19 @@ tr .td1 {
   width: 4%;
 }
 tr .td2 {
-  width: 15%;
+  /* width: 15%; */
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   border-left: 1px solid #dcdfe6;
   border-right: 1px solid #dcdfe6;
+}
+tr .td2 div {
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 tr .td3 {
   width: 10%;
@@ -1877,6 +2635,7 @@ tr .td3 {
 tr .td4 {
   width: 10%;
   border-right: 1px solid #dcdfe6;
+  color: rgba(229, 99, 80, 1);
 }
 tr .td5 {
   width: 15%;
@@ -1919,6 +2678,11 @@ tr .td9 {
   border: 1px solid #dcdfe6;
   border-bottom: none;
 }
+.phon {
+  display: inline-block;
+  width: 150px;
+  font-size: 13px;
+}
 .configlist {
   overflow: hidden;
 }
@@ -1947,8 +2711,37 @@ tr .td9 {
 .chek {
   /* margin-left: 95px; */
   width: 25%;
-  margin-top: 5px;
+  margin-top: 8px;
 }
+.cc_img {
+  vertical-align: middle;
+  height: 50px;
+  width: 130px;
+}
+.lux {
+  vertical-align: middle;
+  margin-left: 25px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  line-height: 80px;
+
+  overflow: hidden;
+}
+
+/* .lulux {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 45px;
+
+  overflow: hidden;
+}
+.lulu2 {
+  font-weight: 500;
+  float: right;
+  margin-right: 10px;
+} */
 .cheken {
   margin-left: 10px;
 }
@@ -2001,6 +2794,9 @@ tr .td9 {
   display: inline-block;
   line-height: 20px;
 }
+.xialabiao {
+  margin-top: 12px;
+}
 .lines {
   /* border-top: 1px solid #ebeef5; */
   border-bottom: 1px solid #ebeef5;
@@ -2023,6 +2819,9 @@ tr .td9 {
 .namepes {
   padding-left: 15px;
 }
+.sdsd {
+  margin-top: 8px;
+}
 .namedelet {
   padding-right: 5px;
   font-size: 12px;
@@ -2033,6 +2832,25 @@ tr .td9 {
 }
 .letz {
   font-size: 13px;
+}
+/* 创建车牌 */
+.csxian {
+  border: 1px solid #dcdfe6;
+  /* border-radius: 4px; */
+  border-top: none;
+
+  /* background: #f5f7fa; */
+}
+.xinxi {
+  width: 81px;
+  display: inline-block;
+  text-align: center;
+  background-color: transparent;
+  border-left: 1px solid #dcdfe6;
+  border-right: 1px solid #dcdfe6;
+  color: #606266;
+  height: 40px;
+  line-height: 40px;
 }
 
 .letz_a_A {
@@ -2077,6 +2895,15 @@ tr .td9 {
   border-radius: 15px 15px 15px 15px;
   background: #ff5809;
   color: #fff;
+}
+
+.BCc {
+  margin-top: 5px;
+}
+.yipic {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 20px;
 }
 .namelet {
   font-size: 12px;
@@ -2127,6 +2954,13 @@ th {
 }
 /deep/.el-checkbox {
   font-size: 0px;
+}
+.miaa {
+  margin-top: 5px;
+  font-weight: 500;
+  font-size: 16px;
+  margin-right: 8px;
+  cursor: pointer;
 }
 .outbox_d {
   border-top: 5px solid #ebeef5;
@@ -2194,6 +3028,19 @@ th {
   color: #fff;
   line-height: 30px;
 }
+.hhd {
+  position: relative;
+}
+.guanbi {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 15px;
+  margin-top: 15px;
+  z-index: 99;
+  cursor: pointer;
+  /* float: right; */
+}
 .span {
   color: #000;
   font-size: 11px;
@@ -2206,6 +3053,17 @@ th {
 .orderUl li.active {
   background: #3ac29f;
   color: #fff;
+}
+</style>
+<style>
+.redd ::-webkit-scrollbar-thumb {
+  background: #f5f7fa !important;
+}
+.redd table thead tr th {
+  background: #f5f7fa !important;
+  color: #606266;
+  padding: 8px 0;
+  /* color: #FF6757; */
 }
 </style>
 

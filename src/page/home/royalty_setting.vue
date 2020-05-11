@@ -20,7 +20,7 @@
             <span>{{scope.row.indexId}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="className" label="分类名称"></el-table-column>
+        <el-table-column prop="className" label="方案分类"></el-table-column>
         <el-table-column prop="percentageWay" label="提成方式">
           <template slot-scope="scope">
             <span v-if="scope.row.type == 2">{{scope.row.percentageWay == 1 ? '提成点' : '固定'}}</span>
@@ -59,7 +59,7 @@
         </el-table-column>
         <el-table-column prop="employeeName" label="操作" align="center" width="350">
           <template slot-scope="scope">
-            <el-button size="mini" type="success" @click="addDig(scope.row)" v-if="scope.row.type == 1">添加下级分类</el-button>
+            <el-button size="mini" type="success" @click="addDig(scope.row)" v-if="scope.row.type == 1">添加方案</el-button>
             <el-button size="mini" @click="editRow(scope.row)" v-if="scope.row.type == 2">修改</el-button>
             <el-button size="mini" type="danger" @click="deleteRow(scope.row)">删除</el-button>
           </template>
@@ -67,7 +67,7 @@
       </el-table>
     </div>
 
-    <el-dialog title="添加目录" :visible.sync="addStatus" center width="30%" :modal="false">
+    <el-dialog title="添加方案" :visible.sync="addStatus" center width="30%" :modal="false">
       <el-form :model="addForm">
         <el-form-item label="名称" label-width="120px">
           <el-input v-model="addForm.className"></el-input>
@@ -124,7 +124,7 @@
         </el-form-item>
         <el-form-item label="施工员" label-width="120px" v-show="editForm.isByPosition === true && editForm.percentageWay === 1">
           <el-input v-model="editForm.percentagePointSG">
-            <template slot="施工员">%</template>
+            <template slot="append">%</template>
           </el-input>
         </el-form-item>
 
@@ -322,6 +322,7 @@ export default {
       })
     },
     deleteRow(row) {
+      console.log(row)
       if(row.children && row.children.length > 0) return this.$message({type: 'error',message: '该目录存在下级分类，不允许删除！'})
       this.$confirm(`确认删除${row.className}吗?`, '提示', {
 					confirmButtonText: '确定',

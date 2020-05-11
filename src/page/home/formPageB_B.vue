@@ -68,9 +68,9 @@
                 <div class>请上传凭证（最多6张）</div>
                 <el-form-item label label-width="120px">
                   <el-upload
+                     multiple
                     ref="uploadImg"
-                    :action="uplodeURL"
-                    :headers="headersObj"
+                    action="/api/vehicle/file/uploadPicture"
                     list-type="picture-card"
                     :limit="6"
                     :on-preview="handlePictureCardPreview"
@@ -140,9 +140,6 @@ export default {
   name: "formPageB_B",
   data() {
     return {
-      uplodeURL: uplodeURL,
-      //图片上传请求头对象
-      headersObj: { authorization: window.sessionStorage.getItem("token") },
       search: {
         time: [
           // moment(new Date()).format("YYYY-MM-DD"),

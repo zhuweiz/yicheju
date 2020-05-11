@@ -25,7 +25,7 @@
         <div style="width:100%;padding-top:15px;" class="orderTable" id="printBox">
           <el-table
             :data="tableData"
-            :max-height="maxHeight"
+            :max-height="450"
             highlight-current-row
             @current-change="handleCurrentChange"
             style="width: 100%"
@@ -33,7 +33,7 @@
             <el-table-column type="index" width="60"></el-table-column>
             <el-table-column prop="billNumber" label="单号"></el-table-column>
             <el-table-column prop="carNo" label="车牌号"></el-table-column>
-            <el-table-column prop="createdDate" label="收款时间"></el-table-column>
+            <el-table-column prop="settlementDate" label="收款时间"></el-table-column>
             <el-table-column prop="amountReceivable" label="应收"></el-table-column>
             <el-table-column prop="amountActual" label="实收"></el-table-column>
             <el-table-column prop="employeeName" label="操作">
@@ -72,7 +72,7 @@
             <el-table-column prop="percentageType" label="提成类别"></el-table-column>
             <el-table-column prop="percentageAmout" label="提成金额"></el-table-column>
             <el-table-column prop="percentagePoint" label="提成占比">
-              <template slot-scope="scope">{{scope.row.percentagePoint*100 + '%'}}</template>
+              <template slot-scope="scope">{{(scope.row.percentagePoint*100).toFixed(0) + '%'}}</template>
             </el-table-column>
             <el-table-column prop="percentageClassName" label="提成分类"></el-table-column>
             <el-table-column prop="nameArr" label="员工姓名"></el-table-column>
@@ -118,6 +118,7 @@
           <el-col :span="9">
             <el-cascader
               v-model="royaltyInfo.percentageClassId"
+             :placeholder="royaltyInfo.percentageClassName"
               @change="treeChange"
               :options="treeData"
               :show-all-levels="false"
@@ -264,7 +265,7 @@
         <el-table-column label="部门">
           <template
             slot-scope="scope"
-          >{{ scope.row.groupDutyList ? scope.row.groupDutyList.groupName + scope.row.groupDutyList.dutyName : '' }}</template>
+          >{{ scope.row.groupDutyList ? scope.row.groupDutyList[0].groupName : '' }}</template>
         </el-table-column>
         <el-table-column label="手机">
           <template slot-scope="scope">{{ scope.row.phone }}</template>
@@ -422,6 +423,7 @@ export default {
     getList(data) {
       queryOrderPercentageList(data).then(res => {
         this.tableData = res.data.data;
+        console.log(res.data.data)
       });
     },
     searchList() {
@@ -450,13 +452,15 @@ export default {
       this.royaltyForm.sourceType = type;
       this.royaltyForm.sourceId = info.sourceId;
       this.royaltyForm.percentages = [];
-
+  
+    console.log(info)
       getOrderPercentages({ sourceType: type, sourceId: info.sourceId }).then(
         res => {
           const data = res.data.data;
+             console.log(data)
+          console.log(info)
           if (data.length > 0) {
 			this.royaltyForm.percentages = data;
-	
             const typeName = ["业务", "工时", "配件"];
             const name = ["整单金额", "itemName", "partName"];
 
@@ -471,17 +475,24 @@ export default {
               price: info.sourceAmount,
               percentageClassId: percentageClassId
             };
-
-            queryPercentageClassOne({ id: percentageClassId }).then(res => {
+            console.log(this.royaltyInfo.percentageClassId)
+            // if(percentageClassId != null){
+     queryPercentageClassOne({ id: percentageClassId }).then(res => {
               this.royaltyInfo.percentage = res.data.data;
               this.royaltyInfo.percentageClassId = percentageClassId;
             });
+            // }
+       
           } else {
+         
             this.royaltyForm.percentages = info.employeeVOList;
+   
           }
+   
           this.royaltyVisible = true;
         }
       );
+        //  this.royaltyInfo.percentageClassId =info.percentageClassId
     },
     royaltySubmit() {
       this.royaltyForm.percentages.forEach(v => {
@@ -489,8 +500,10 @@ export default {
           v.percentageAmout =
             (parseInt(v.percentagePoint) * this.royaltyInfo.price) / 100;
         }
+         v.percentagePoint =v.percentagePoint*1
       });
       this.royaltyForm.percentageClassId = this.royaltyInfo.percentage.id;
+      console.log(this.treeData)
       addOrderPercentage(this.royaltyForm).then(res => {
         if (res.data.code == 200) {
           this.$message({
@@ -532,6 +545,7 @@ export default {
           return v;
         });
       });
+      console.log(this.tableData1)
     },
     deletePercentage(index) {
       this.royaltyForm.percentages.splice(index, 1);
@@ -542,6 +556,7 @@ export default {
       findAllGroupByRole().then(res => {
         const data = res.data.data.find(v => v.onJob == 1);
         this.userData = data.orgEmployeeDTOList;
+        // console.log(this.userData)
         this.userVisible = true;
       });
     },

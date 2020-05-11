@@ -6,9 +6,6 @@ import {
   put,
   deletes
 } from './http'
-const uplodeURL = 'http://47.96.248.209:8888/vehicle/file/uploadPicture';//测试
-// const uplodeURL = 'http://47.99.212.29:8888/vehicle/file/uploadPicture';//正式
-
 //登出
 const login = function (parmas) {
   return post("/vehicle/login", parmas)
@@ -535,6 +532,84 @@ const afterSaleDeliver = function (parmas) {
   return posts("/vehicle/afterSale/afterSaleDeliver", parmas)
 }
 
+//发起供应商议价
+const talkPrice = function (parmas) {
+  return posts("/vehicle/garageAskPrice/talkPrice", parmas)
+}
+
+
+//查询预付款详情
+const queryAdvanceDetail = function (parmas) {
+  return get("/vehicle/order/queryAdvanceDetail", parmas)
+}
+
+
+//支付预付款
+const payOrderAdvance = function (parmas) {
+  return posts("/vehicle/order/payOrderAdvance", parmas)
+}
+//退预付款
+const refundOrderAdvance = function (parmas) {
+  return posts("/vehicle/order/refundOrderAdvance", parmas)
+}
+
+//查询所有业务来源
+const yewulist = function (parmas) {
+  return get("/vehicle/system/bizSource/list", parmas)
+}
+
+//查询所有业务员
+const findAllSellMan = function (parmas) {
+  return get("/vehicle/org/employee/findAllSellMan", parmas)
+}
+//保存订单(工单)基本信息
+const saveBaseIno = function (parmas) {
+  return posts("/vehicle/order/saveBaseIno", parmas)
+}
+
+//初始化订单(工单)
+const CSinit = function (parmas) {
+  return post("/vehicle/order/init", parmas)
+}
+//新增保险信息
+const Baoxiansave = function (parmas) {
+  return posts("/vehicle/insurance/save", parmas)
+}
+
+//获取客户汽车信息详情
+const getDetails = function (parmas) {
+  return get("/vehicle/customer/car/getDetails", parmas)
+}
+//车牌模糊搜索获取车辆信息
+const carNoSearch = function (parmas) {
+  return get("/vehicle/customer/car/carNoSearch", parmas)
+}
+// 检查是否有未结算的订单(工单)
+const checkOrderUnfinish = function (parmas) {
+  return post("/vehicle/order/checkOrderUnfinish", parmas)
+}
+//询价单退回重报
+const rollbackAskPrice = function (parmas) {
+  return get("/vehicle/garageAskPrice/rollbackAskPrice", parmas)
+}
+// 修改客户汽车信息
+const Carupdate = function (parmas) {
+  return posts("/vehicle/customer/car/update", parmas)
+}
+//修改配件
+const XGcarupdatePart = function (parmas) {
+  return put(`/vehicle/insurance/update/${parmas.id}`, parmas)
+}
+
+//查询打印方式
+const getPrintType = function (parmas) {
+  return get("/vehicle/garage/getPrintType", parmas)
+}
+
+//修改打印方式
+const updatePrintType = function (parmas) {
+  return put(`/vehicle/garage/updatePrintType?printType=${parmas.printType}`, parmas)
+}
 export {
   login,
   logout,
@@ -654,5 +729,22 @@ export {
   askPricePull,
   unAskPriceList,
   afterSaleList,
-  afterSaleDeliver
+  afterSaleDeliver,
+  talkPrice,
+  queryAdvanceDetail,
+  payOrderAdvance,
+  refundOrderAdvance,
+  yewulist,
+  findAllSellMan,
+  saveBaseIno,
+  Baoxiansave,
+  getDetails,
+  carNoSearch,
+  CSinit,
+  checkOrderUnfinish,
+  rollbackAskPrice,
+  Carupdate,
+  XGcarupdatePart,
+  getPrintType,
+  updatePrintType
 }

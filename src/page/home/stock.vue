@@ -50,7 +50,7 @@
       </el-row>
     </div>
     <div style="width:100%;padding-top:15px;" class="orderTable" id="printBox">
-      <el-table :data="tableData" :max-height="maxHeight" style="width: 100%">
+      <el-table :data="tableData" :max-height="maxHeight" :height="500" style="width: 100%">
         <el-table-column type="index" label="序号"> </el-table-column>
         <el-table-column prop="partName" label="名称" width="150"></el-table-column>
         <el-table-column prop="model" label="规格型号" width="150"> </el-table-column>
@@ -78,7 +78,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- <div class="p-tb-10 text-center">
+      <div class="p-tb-10 text-center">
         <el-pagination
           :hide-on-single-page="pageLength === 0"
           background
@@ -88,7 +88,7 @@
           :total="pageLength"
         >
         </el-pagination>
-      </div> -->
+      </div>
     </div>
 
     <el-dialog :title="title" :visible.sync="editStatus" center width="30%" :modal="false">
@@ -135,7 +135,10 @@
         <el-form-item label="规格型号" label-width="100px">
           {{storeForm.model}}
         </el-form-item>
-        <el-form-item label="出库数量" label-width="100px">
+        <el-form-item label="出库数量" label-width="100px" v-if="title1 === '配件出库'">
+          <el-input v-model="storeForm.count"></el-input>
+        </el-form-item>
+          <el-form-item label="入库数量" label-width="100px" v-if="title1 === '配件入库'">
           <el-input v-model="storeForm.count"></el-input>
         </el-form-item>
         <el-form-item label="备注" label-width="100px">
@@ -271,7 +274,7 @@ export default {
       tableData: [],
       maxHeight: undefined,
       pageLength: null,
-      size: 1000,
+      size: 10,
       page: 0,
       title: '添加配件',
       editStatus: false,
@@ -314,7 +317,7 @@ export default {
       })
     },
     editFormSubmit() {
-              // console.log(this.editPartsForm)
+              console.log(this.editPartsForm)
       if(this.title === '添加配件'){
         addPart(this.editPartsForm).then(res => {
           if(res.data.code == 200){
@@ -389,6 +392,7 @@ export default {
                     gid: localStorage.getItem('gid'),
                     partNo: v['零件编码'],
                     partName: v['零件名'],
+                    unit: v['单位'],
                     model: v['规格型号'],
                     fitCars: v['车型'],
                     total: v['数量'],

@@ -95,9 +95,9 @@
                 <div>请上传凭证（最多6张）</div>
                 <el-form-item label label-width="120px">
                   <el-upload
+                     multiple
                      ref="uploadImg"
-                    :action="uplodeURL"
-                    :headers="headersObj"
+                     action="/api/vehicle/file/uploadPicture"
                     list-type="picture-card"
                     :limit="6"
                     :on-preview="handlePictureCardPreview"
@@ -202,9 +202,9 @@
                 <div>请上传凭证（最多6张）</div>
                 <el-form-item label label-width="120px">
                   <el-upload
+                    multiple
                     ref="uploadImg"
-                    :action="uplodeURL"
-                    :headers="headersObj"
+                     action="/api/vehicle/file/uploadPicture"
                     list-type="picture-card"
                     :limit="6"
                     :on-preview="handlePictureCardPreview"
@@ -276,9 +276,6 @@ export default {
   name: "formPageB_A",
   data() {
     return {
-      uplodeURL: uplodeURL,
-      //图片上传请求头对象
-      headersObj: { authorization: window.sessionStorage.getItem("token") },
       expend: [], //支出收入
       realName: null, //姓名筛选
       //表单验证支出
@@ -464,7 +461,6 @@ export default {
     },
     //删除上传图片
     handleRemove(file, fileList) {
-      // console.log(file);
       const filepath = file.response.data;
       //从pictureList数组中找到对应得索引值
       const i = this.editPartsForm.pictureList.findIndex(
@@ -550,7 +546,7 @@ export default {
     },
     // 添加收入记账
     dialogVisibleA() {
-      console.log(this.editPartsFormB);
+      // console.log(this.editPartsFormB);
       newlysave(this.editPartsFormB).then(res => {
         if (res.data.code == 200) {
           this.$message({
@@ -585,7 +581,7 @@ export default {
     getList(data) {
       enterprisefList(data).then(res => {
         var content = res.data.data;
-        console.log(content);
+        // console.log(content);
         // this.pageLength = res.data.data.totalElements;
         this.pageLength = res.data.pageInfo.total;
         // console.log(res.data.pageInfo.total);

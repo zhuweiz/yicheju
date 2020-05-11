@@ -234,7 +234,7 @@ html, body, #app {
   padding-left: 4px !important;
 }
 .chek /deep/.el-checkbox__input{
-  line-height: 50px;
+  /* line-height: 50px; */
 }
 .tbode /deep/table thead tr{
   border: 1px solid #dcdfe6 !important;
@@ -249,4 +249,27 @@ html, body, #app {
   background: #f2f2f2;
 
 }
-.el-table .cell{line-height: 100% !important;}
+.el-table .cell{
+  /* line-height: 100% !important;*/
+overflow: hidden;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical; 
+
+}
+.xund .el-table .cell{
+  display: inline-block;
+}
+.el-textarea /deep/ .el-textarea__inner{
+    height: 50px;
+}
+.ded /deep/ .el-table td{
+  padding: 5px 0;
+ }
+ .pilian  .el-textarea__inne{
+  height: 100px !important;
+}
+.el-checkbox__label{
+  vertical-align: middle;
+}

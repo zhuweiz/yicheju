@@ -21,7 +21,7 @@ export default {
 			{name:"公众号二维码",link:"/home/qrcode"},
 			{name:"项目设置",link:"/home/project_setting"},
 			{name:"配件设置",link:"/home/parts_setting"},
-			{name:"提成分类设置",link:"/home/royalty_setting"},
+			{name:"提成方案设置",link:"/home/royalty_setting"},
 	  ],
       orderNavActive: null,
         maxHeight:undefined
