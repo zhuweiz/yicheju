@@ -67,6 +67,7 @@
               <el-date-picker
                 v-model="xinzen.completeTime"
                 clear-icon
+                value-format="yyyy-MM-dd HH:mm:ss" format="yyyy-MM-dd HH:mm:ss"
                 type="datetime"
                 placeholder="选填"
               ></el-date-picker>
@@ -869,7 +870,7 @@
                 <template slot-scope="scope">
                   <el-select v-model="scope.row.groupName">
                     <el-option
-                      v-for="item in options"
+                      v-for="item in optionsname"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
@@ -1489,7 +1490,7 @@ export default {
       tableData5: [],
       data: "",
       valuename: "",
-      options: [
+      optionsname: [
         {
           value: "钣金",
           label: "钣金"
@@ -1901,7 +1902,7 @@ export default {
       "signUrl": xinzen.signUrl,
       "source": xinzen.source
       }
-      // console.log(data);
+      console.log(data);
       saveBaseIno(data).then(res => {
         if (res.data.code == 200) {
           this.$message({

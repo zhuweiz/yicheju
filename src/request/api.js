@@ -610,6 +610,11 @@ const getPrintType = function (parmas) {
 const updatePrintType = function (parmas) {
   return put(`/vehicle/garage/updatePrintType?printType=${parmas.printType}`, parmas)
 }
+
+//查询工单中未询价的配件
+const getOrderUnAskPart = function (parmas) {
+  return get("/vehicle/order/getOrderUnAskPart", parmas)
+}
 export {
   login,
   logout,
@@ -746,5 +751,6 @@ export {
   Carupdate,
   XGcarupdatePart,
   getPrintType,
-  updatePrintType
+  updatePrintType,
+  getOrderUnAskPart
 }

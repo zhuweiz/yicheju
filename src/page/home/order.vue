@@ -279,14 +279,14 @@
       <el-table-column label="进度" v-if="!show" width="330" align="center">
         <template slot-scope="scope">
           <div class="jindu">
-            <div class="yuan_a">
+            <div class="yuan_a" @click.stop="enquiry(scope.row)" style="cursor:pointer">
               <div
                 class="yuan"
                 :style="{'background' : scope.row.priceStatus >= 1 ? '#3AC29F' : '#f56c6c'}"
               >{{scope.row.askSupplierCount}}</div>
               <span class="span">采购询价</span>
             </div>
-            <div class="yuan_a">
+            <div class="yuan_a" @click.stop="editRow(scope.row)" style="cursor:pointer">
               <div
                 class="yuan"
                 :style="{'background' : scope.row.priceStatus >= 2 ? '#3AC29F' : '#f56c6c'}"
@@ -327,7 +327,8 @@
       </el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
-          <el-button v-if="!show" size="mini" plain @click.stop="editRow(scope.row)">商家报价</el-button>
+          <!-- <el-button v-if="!show" size="mini" plain @click.stop="editRow(scope.row)">商家报价</el-button> -->
+          <el-button v-if="!show" size="mini" plain @click.stop="ClickYj(scope.row)">一键询价</el-button>
           <el-button v-if="!show" size="mini" plain @click.stop="enquiry(scope.row)">询价</el-button>
           <!-- <el-button v-if="show" size="mini" plain @click.stop="toOrderX(scope.row)">查看</el-button> -->
           <!-- <template slot-scope="scope" v-if="show" > -->
@@ -379,7 +380,7 @@
     <el-dialog title="询价配置" :visible.sync="configuration" width="65%" :modal="false" center>
       <div class="lux">
         <div class="sdx">
-          车架号：
+          车架号:
           <span class="phon">{{chejia_list.vin}}</span>
         </div>
 
@@ -702,8 +703,41 @@
                     src="../../assets/gou.png"
                     alt
                   />
-                  {{items[2].partType==2 ?'其它件':''}}
+                  {{items[2].partType==2 ?'其它件1':''}}
                 </div>
+                <template v-if="items.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="items[3].price">
+                    <img
+                      v-if="items[3].status == 0 ||items[3].status == 1"
+                      class="gou"
+                      src="../../assets/gou.png"
+                      alt
+                    />
+                    {{items[3].partType==3 ?'其它件2':''}}
+                  </div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="items[4].price">
+                    <img
+                      v-if="items[4].status == 0 ||items[4].status == 1"
+                      class="gou"
+                      src="../../assets/gou.png"
+                      alt
+                    />
+                    {{items[4].partType==4 ?'其它件3':''}}
+                  </div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="items[5].price">
+                    <img
+                      v-if="items[5].status == 0 ||items[5].status == 1"
+                      class="gou"
+                      src="../../assets/gou.png"
+                      alt
+                    />
+                    {{items[5].partType==5 ?'其它件4':''}}
+                  </div>
+                </template>
               </td>
               <td class="td4">
                 <div style="border-bottom: 1px solid #dcdfe6;" @click="yijia(items[0])">
@@ -727,48 +761,186 @@
                   >{{items[2].talkPrice ?'￥':''}}{{items[2].talkPrice}}</span>
                   <span v-if="items[2].talkStatus !=1">{{items[2].price ?'￥':''}}{{items[2].price}}</span>
                 </div>
+                <template v-if="items.length > 3">
+                  <div
+                    @click="yijia(items[3])"
+                    style="border-top: 1px solid #dcdfe6;"
+                    v-if="items[3].price"
+                  >
+                    <span
+                      v-if="items[3].talkStatus ==1"
+                      :style="{'color': (items[3].talkStatus == 1 ? '#0D906E':'')}"
+                    >{{items[3].talkPrice ?'￥':''}}{{items[3].talkPrice}}</span>
+                    <span
+                      v-if="items[3].talkStatus !=1"
+                    >{{items[3].price ?'￥':''}}{{items[3].price}}</span>
+                  </div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div
+                    @click="yijia(items[4])"
+                    style="border-top: 1px solid #dcdfe6;"
+                    v-if="items[4].price"
+                  >
+                    <span
+                      v-if="items[4].talkStatus ==1"
+                      :style="{'color': (items[4].talkStatus == 1 ? '#0D906E':'')}"
+                    >{{items[4].talkPrice ?'￥':''}}{{items[4].talkPrice}}</span>
+                    <span
+                      v-if="items[4].talkStatus !=1"
+                    >{{items[4].price ?'￥':''}}{{items[4].price}}</span>
+                  </div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div
+                    style="border-top: 1px solid #dcdfe6;"
+                    @click="yijia(items[5])"
+                    v-if="items[5].price"
+                  >
+                    <span
+                      v-if="items[5].talkStatus ==1"
+                      :style="{'color': (items[5].talkStatus == 1 ? '#0D906E':'')}"
+                    >{{items[5].talkPrice ?'￥':''}}{{items[5].talkPrice}}</span>
+                    <span
+                      v-if="items[5].talkStatus !=1"
+                    >{{items[5].price ?'￥':''}}{{items[5].price}}</span>
+                  </div>
+                </template>
               </td>
               <td class="td5">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].price?items[0].arrivalTime:''}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].price?items[1].arrivalTime:''}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{items[0].price?items[0].arrivalTime:''}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{items[1].price?items[1].arrivalTime:''}}</div>
                 <div>{{items[2].price?items[2].arrivalTime:''}}</div>
+                <template v-if="items.length > 3">
+                  <div
+                    v-if="items[3].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{items[3].price?items[3].arrivalTime:''}}</div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div
+                    v-if="items[4].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{items[4].price?items[4].arrivalTime:''}}</div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div
+                    style="border-top: 1px solid #dcdfe6;"
+                    v-if="items[5].price"
+                  >{{items[5].price?items[5].arrivalTime:''}}</div>
+                </template>
               </td>
               <td class="td6">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[0].price?items[0].qualityTime:''}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{items[1].price?items[1].qualityTime:''}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{items[0].price?items[0].qualityTime:''}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{items[1].price?items[1].qualityTime:''}}</div>
                 <div>{{items[2].price?items[2].qualityTime:''}}</div>
+                <template v-if="items.length > 3">
+                  <div
+                    v-if="items[3].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{items[3].price?items[3].qualityTime:''}}</div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div
+                    v-if="items[4].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{items[4].price?items[4].qualityTime:''}}</div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div
+                    style="border-top: 1px solid #dcdfe6;"
+                    v-if="items[5].price"
+                  >{{items[5].price?items[5].qualityTime:''}}</div>
+                </template>
               </td>
               <td class="td7">
                 <div style="border-bottom: 1px solid #dcdfe6;">
                   <em>{{items[0].remark}}</em>
-                  <!-- <em v-if="items[0].status == 0 ||items[0].status == 1">（已下单）</em> -->
                 </div>
                 <div style="border-bottom: 1px solid #dcdfe6;">
                   <em>{{items[1].remark}}</em>
-                  <!-- <em v-if="items[1].status == 0 ||items[1].status == 1">（已下单）</em> -->
                 </div>
                 <div>
                   <em>{{items[2].remark}}</em>
-                  <!-- <em v-if="items[2].status == 0 ||items[2].status == 1">（已下单）</em> -->
                 </div>
+                <template v-if="items.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6; " v-if="items[3].price">
+                    <em>{{items[3].remark}}</em>
+                  </div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="items[4].price">
+                    <em>{{items[4].remark}}</em>
+                  </div>
+                </template>
+                <template v-if="items.length > 3">
+                  <div v-if="items[5].price" style="border-top: 1px solid #dcdfe6;">
+                    <em>{{items[5].remark}}</em>
+                  </div>
+                </template>
               </td>
               <td class="td9 radio_ccid" style="width: 3%">
+                <!-- <el-radio
+                  v-model="items[0].number"
+                  :label="items[0].id"
+                  @change="getValue(items[0])"
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >&nbsp;</el-radio>
                 <el-radio
+                  v-model="items[1].number"
+                  :label="items[1].id"
+                  @change="getValue(items[1])"
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >&nbsp;</el-radio>
+                <el-radio
+                  v-model="items[2].number"
+                  :label="items[2].id"
+                  @change="getValue(items[2])"
+                >&nbsp;</el-radio>
+                <template v-if="items.length > 3">
+                  <el-radio
+                    v-if=" items[3].price"
+                    v-model="items[3].number"
+                    :label="items[3].id"
+                    @change="getValue(items[3])"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >&nbsp;</el-radio>
+                </template>
+                <template v-if="items.length > 3">
+                  <el-radio
+                    v-if="items[4].price"
+                    v-model="items[4].number"
+                    :label="items[4].id"
+                    @change="getValue(items[4])"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >&nbsp;</el-radio>
+                </template>
+                <template v-if="items.length > 3">
+                  <el-radio
+                    style="border-top: 1px solid #dcdfe6;"
+                    v-if="items[5].price"
+                    v-model="items[5].number"
+                    :label="items[5].id"
+                    @change="getValue(items[5])"
+                  >&nbsp;</el-radio>
+                </template>-->
+                <el-radio
+                  v-if="itemd.price"
                   v-for="(itemd,idxd) in items"
                   :key="'itemd'+idxd"
-                  v-if="idxd<3"
                   v-model="items.number"
                   :label="itemd.id"
                   @change="getValue(itemd)"
-                  style="border-bottom: 1px solid #dcdfe6;"
+                  style="border-top: 1px solid #dcdfe6;"
                 >&nbsp;</el-radio>
-                <!-- <el-checkbox v-model="itemd.number"
-                style="border-bottom: 1px solid #dcdfe6;"
-                 v-for="(itemd,idxd) in items"
-                :key="'itemd'+idxd"
-                 @change="getValue(itemd)"
-                v-if="idxd<3">
-                </el-checkbox>-->
               </td>
             </tr>
           </table>
@@ -792,7 +964,13 @@
               <span>{{itemst.address}}</span>
             </div>
             <!-- <div class="right"> -->
-              <el-button class="right" style="margin-top: 7px;" size="mini" type="danger" @click="TuihuiClick(itemst.askPricePartDOS)">退回重报</el-button>
+            <el-button
+              class="right"
+              style="margin-top: 7px;"
+              size="mini"
+              type="danger"
+              @click="TuihuiClick(itemst.askPricePartDOS)"
+            >退回重报</el-button>
 
             <!-- </div> -->
           </div>
@@ -841,8 +1019,41 @@
                     src="../../assets/gou.png"
                     alt
                   />
-                  其它件
+                  其它件1
                 </div>
+                <template v-if="itemc.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="itemc[3].price">
+                    <img
+                      v-if="itemc[3].status == 0 ||itemc[3].status == 1"
+                      class="gou"
+                      src="../../assets/gou.png"
+                      alt
+                    />
+                    {{itemc[3].partType==3 ?'其它件2':''}}
+                  </div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="itemc[4].price">
+                    <img
+                      v-if="itemc[4].status == 0 ||itemc[4].status == 1"
+                      class="gou"
+                      src="../../assets/gou.png"
+                      alt
+                    />
+                    {{itemc[4].partType==4 ?'其它件3':''}}
+                  </div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="itemc[5].price">
+                    <img
+                      v-if="itemc[5].status == 0 ||itemc[5].status == 1"
+                      class="gou"
+                      src="../../assets/gou.png"
+                      alt
+                    />
+                    {{itemc[5].partType==5 ?'其它件4':''}}
+                  </div>
+                </template>
               </td>
               <td class="td4">
                 <div
@@ -874,16 +1085,105 @@
                   >{{itemc[2].talkPrice ?'￥':''}}{{itemc[2].talkPrice}}</span>
                   <span v-if="itemc[2].talkStatus !=1">{{itemc[2].price ?'￥':''}}{{itemc[2].price}}</span>
                 </div>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[3].price"
+                    @click="yijia(itemc[3])"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >
+                    <span
+                      v-if="itemc[3].talkStatus ==1"
+                      :style="{'color': (itemc[3].talkStatus == 1 ? '#0D906E':'')}"
+                    >{{itemc[3].talkPrice ?'￥':''}}{{itemc[3].talkPrice}}</span>
+                    <span
+                      v-if="itemc[3].talkStatus !=1"
+                    >{{itemc[3].price ?'￥':''}}{{itemc[3].price}}</span>
+                  </div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[4].price"
+                    @click="yijia(itemc[4])"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >
+                    <span
+                      v-if="itemc[4].talkStatus ==1"
+                      :style="{'color': (itemc[4].talkStatus == 1 ? '#0D906E':'')}"
+                    >{{itemc[4].talkPrice ?'￥':''}}{{itemc[4].talkPrice}}</span>
+                    <span
+                      v-if="itemc[4].talkStatus !=1"
+                    >{{itemc[4].price ?'￥':''}}{{itemc[4].price}}</span>
+                  </div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[5].price"
+                    @click="yijia(itemc[5])"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >
+                    <span
+                      v-if="itemc[5].talkStatus ==1"
+                      :style="{'color': (itemc[5].talkStatus == 1 ? '#0D906E':'')}"
+                    >{{itemc[5].talkPrice ?'￥':''}}{{itemc[5].talkPrice}}</span>
+                    <span
+                      v-if="itemc[5].talkStatus !=1"
+                    >{{itemc[5].price ?'￥':''}}{{itemc[5].price}}</span>
+                  </div>
+                </template>
               </td>
               <td class="td5">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].price?itemc[0].arrivalTime:""}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].price?itemc[1].arrivalTime:""}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{itemc[0].price?itemc[0].arrivalTime:""}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{itemc[1].price?itemc[1].arrivalTime:""}}</div>
                 <div>{{itemc[2].price?itemc[2].arrivalTime:""}}</div>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[3].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{itemc[3].price?itemc[3].arrivalTime:""}}</div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[4].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{itemc[4].price?itemc[4].arrivalTime:""}}</div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[5].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{itemc[5].price?itemc[5].arrivalTime:""}}</div>
+                </template>
               </td>
               <td class="td6">
-                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[0].price?itemc[0].qualityTime:""}}</div>
-                <div style="border-bottom: 1px solid #dcdfe6;">{{itemc[1].price?itemc[1].qualityTime:""}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{itemc[0].price?itemc[0].qualityTime:""}}</div>
+                <div
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >{{itemc[1].price?itemc[1].qualityTime:""}}</div>
                 <div>{{itemc[2].price?itemc[2].qualityTime:""}}</div>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[3].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{itemc[3].price?itemc[3].qualityTime:""}}</div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[4].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{itemc[4].price?itemc[4].qualityTime:""}}</div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div
+                    v-if="itemc[5].price"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >{{itemc[5].price?itemc[5].qualityTime:""}}</div>
+                </template>
               </td>
               <td class="td7" :style="{'width':switchActive == 1 ? '17%':''}">
                 <div style="border-bottom: 1px solid #dcdfe6;">
@@ -895,16 +1195,75 @@
                 <div>
                   <em>{{itemc[2].remark}}</em>
                 </div>
+                <template v-if="itemc.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="itemc[3].price">
+                    <em>{{itemc[3].remark}}</em>
+                  </div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="itemc[4].price">
+                    <em>{{itemc[4].remark}}</em>
+                  </div>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <div style="border-top: 1px solid #dcdfe6;" v-if="itemc[5].price">
+                    <em>{{itemc[5].remark}}</em>
+                  </div>
+                </template>
               </td>
               <td class="td9 radio_ccid">
+                <!-- <el-radio
+                  v-model="itemc[0].number"
+                  :label="itemc[0].id"
+                  @change="getValue(itemc[0])"
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >&nbsp;</el-radio>
                 <el-radio
+                  v-model="itemc[1].number"
+                  :label="itemc[1].id"
+                  @change="getValue(itemc[1])"
+                  style="border-bottom: 1px solid #dcdfe6;"
+                >&nbsp;</el-radio>
+                <el-radio
+                  v-model="itemc[2].number"
+                  :label="itemc[2].id"
+                  @change="getValue(itemc[2])"
+                >&nbsp;</el-radio>
+                <template v-if="itemc.length > 3">
+                  <el-radio
+                    v-if="itemc[3].price"
+                    v-model="itemc[3].number"
+                    :label="itemc[3].id"
+                    @change="getValue(itemc[3])"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >&nbsp;</el-radio>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <el-radio
+                    v-if="itemc[4].price"
+                    v-model="itemc[4].number"
+                    :label="itemc[4].id"
+                    @change="getValue(itemc[4])"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >&nbsp;</el-radio>
+                </template>
+                <template v-if="itemc.length > 3">
+                  <el-radio
+                    v-if="itemc[5].price"
+                    v-model="itemc[5].number"
+                    :label="itemc[5].id"
+                    @change="getValue(itemc[5])"
+                    style="border-top: 1px solid #dcdfe6;"
+                  >&nbsp;</el-radio>
+                </template>-->
+                <el-radio
+                  v-if="itemf.price"
                   v-for="(itemf,idxb) in itemc"
                   :key="'itemf'+idxb"
-                  v-model="itemc.purNumber"
-                  v-if="idxb<3"
+                  v-model="itemc.number"
                   :label="itemf.id"
                   @change="getValue2(itemf)"
-                  style="border-bottom: 1px solid #dcdfe6;"
+                  style="border-top: 1px solid #dcdfe6;"
                 >&nbsp;</el-radio>
               </td>
             </tr>
@@ -1032,7 +1391,10 @@
           <el-col :span="6">
             实收：
             <!-- payForm.amountActual 实收参数 -->
-            <font color="red">￥{{payForm.amountReceivable - detailForm.advance}}</font>
+            <!-- {{payForm.amountReceivable - detailForm.advance}} -->
+            <font
+              color="red"
+            >￥{{payForm.amountReceivable - detailForm.advance-payForm.discountPrice}}</font>
           </el-col>
         </el-row>
         <el-row
@@ -1187,7 +1549,8 @@ import {
   carNoSearch,
   CSinit,
   checkOrderUnfinish,
-  rollbackAskPrice
+  rollbackAskPrice,
+  getOrderUnAskPart
 } from "../../request/api.js";
 import moment from "moment";
 import router from "../../router";
@@ -1297,12 +1660,12 @@ export default {
   },
   methods: {
     //退回重报
-    TuihuiClick(e){
-      let data ={
-        supplierId:e[0][0].supplierId,
-        oid:this.oid
-      }
-            let tishi = e[0][0].supplierName+"的报价确定要退回重报价吗？";
+    TuihuiClick(e) {
+      let data = {
+        supplierId: e[0][0].supplierId,
+        oid: this.oid
+      };
+      let tishi = e[0][0].supplierName + "的报价确定要退回重报价吗？";
       this.$confirm(tishi, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -1314,7 +1677,7 @@ export default {
               type: "success",
               message: "退回重报价成功!"
             });
-            this.editRow()
+            this.editRow();
             // this.editFormStatus = false;
           }
         });
@@ -1383,8 +1746,8 @@ export default {
 
     // 新增工单
     XinzengGD() {
-      this.input3=""
-       this.Car_list = {}
+      this.input3 = "";
+      this.Car_list = {};
       this.XinzenVisible = true;
     },
 
@@ -1406,8 +1769,8 @@ export default {
     },
     //预付款
     delete_project(row, index) {
-      this.yufu_amount = ''
-      this.yufu_type = ''
+      this.yufu_amount = "";
+      this.yufu_type = "";
       this.payForm.payTypeList = [];
       this.oid = row.oid;
       queryAdvanceDetail({ oid: row.oid }).then(res => {
@@ -1510,6 +1873,7 @@ export default {
       }
       this.innerVisible = false;
     },
+    //询价配件
     Clicktijiao() {
       this.systemRecoList2 = [];
 
@@ -1528,6 +1892,103 @@ export default {
       }
       this.configuration_c = false;
       // console.log(this.systemRecoList2);
+    },
+    //一键询价
+    ClickYj(row) {
+      console.log(row);
+      this.tableData2 = [];
+      this.systemRecoList2 = [];
+      this.systemRecoList = [];
+      const data = {
+        gid: row.gid,
+        isMy: this.isMy,
+        oid: row.oid
+      };
+      systemReco(data).then(res => {
+        if (res.data.code == 200) {
+          this.systemRecoList = res.data.data;
+        }
+      });
+
+      getOrderListX(data).then(res => {
+        if (res.data.code == 200) {
+          this.chejia_list = res.data.data;
+          if (res.data.data.orderPictureList.length > 1) {
+            this.xunjialist.carPicUrl =
+              res.data.data.orderPictureList[0].picUrl;
+          }
+          this.xunjialist = {
+            carModel: res.data.data.standard,
+            carVin: res.data.data.vin,
+            gid: res.data.data.gid,
+            oid: res.data.data.oid,
+            partTotalCount: res.data.data.partTotalCount,
+            status: 0
+          };
+          var tableData1 = res.data.data.orderItemList;
+          tableData1.forEach((item, index) => {
+            item.orderPartList.forEach((items, indexs) => {
+              this.tableData2.push(items);
+            });
+          });
+          for (var i in this.tableData2) {
+            let ree = {
+              partCount: this.tableData2[i].counts,
+              partId: this.tableData2[i].partId,
+              partName: this.tableData2[i].partName,
+              partPicUrl: this.tableData2[i].imageUrl,
+              remark: this.tableData2[i].partRemark,
+              seq: 0
+            };
+            if (
+              this.tableData2[i].askPriceStatus == 0 &&
+              this.tableData2[i].ask == false
+            ) {
+              this.systemRecoList2.push(ree);
+            }
+          }
+          // console.log(this.tableData2);
+          // console.log(this.systemRecoList2);
+          if (this.systemRecoList.length < 1) {
+            return;
+          }
+          if (this.systemRecoList2.length < 1) {
+            this.$message.error("所有配件询过价，无法使用一键询价");
+            return;
+          }
+          let data_ls = {
+            askPricePart4GarageDTOList: this.systemRecoList2,
+            carModel: res.data.data.standard,
+            carPicUrl: this.xunjialist.carPicUrl,
+            carVin: res.data.data.vin,
+            gid: this.xunjialist.gid,
+            oid: this.xunjialist.oid,
+            partTotalCount: this.systemRecoList2.length,
+            status: this.xunjialist.status,
+            supplierList: this.systemRecoList
+          };
+          console.log(data_ls);
+
+          let tishi = "确定使用配件一键询价吗？";
+          this.$confirm(tishi, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            askPricePull(data_ls).then(res => {
+              if (res.data.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "一键询价成功!"
+                });
+                this.searchList();
+              }
+            });
+          });
+        }
+      });
+      console.log(this.xunjialist);
+      console.log(this.systemRecoList2);
     },
     //点击询价
     enquiry(row) {
@@ -1560,8 +2021,8 @@ export default {
             });
           });
         });
+        console.log(this.tableData2);
       });
-      //  console.log(tableData1);
       this.configuration = true;
     },
 
@@ -1656,7 +2117,7 @@ export default {
     },
     //点击单选框
     getValue(i) {
-      // console.log(i);
+      console.log(i);
       this.askPriceId = i.askPriceId;
     },
     getValue2(i) {
@@ -1675,9 +2136,9 @@ export default {
       } else if (this.switchActive == 1) {
         askPricePartIds = [];
         this.ceshi.map((v, i) => {
+          console.log(v);
           v.askPricePartDOS.map((c, i) => {
-            // console.log(c);
-            askPricePartIds.push(c.purNumber);
+            askPricePartIds.push(c.number);
           });
         });
       }
@@ -1687,7 +2148,7 @@ export default {
         askPriceId: this.askPriceId,
         askPricePartIds: askPricePartIds
       };
-      // console.log(data);
+      console.log(data);
       let tishi = "确认生成订货单？";
       this.$confirm(tishi, "提示", {
         confirmButtonText: "确定",
@@ -1822,9 +2283,9 @@ export default {
         var result = [];
         this.PriceList.map((v, i) => {
           v.askPricePartDOS.map((c, i) => {
-            var r = c.filter(function(s) {
-              return s && s.trim();
-            });
+            // var r = c.filter(function(s) {
+            //   return s && s.trim();
+            // });
             // console.log(r);
             c.map((d, i) => {
               this.$set(d, "number", 0);
@@ -1834,6 +2295,7 @@ export default {
             });
           });
         });
+        console.log(this.PriceList);
       });
 
       askPriceList({ oid: row.oid }).then(res => {
@@ -1885,8 +2347,8 @@ export default {
             askPricePartDOS: []
           });
           var cddd = [];
-          for (var i = 0; i < el.askPricePartDOS.length; i += 3) {
-            cddd.push(el.askPricePartDOS.slice(i, i + 3));
+          for (var i = 0; i < el.askPricePartDOS.length; i += 6) {
+            cddd.push(el.askPricePartDOS.slice(i, i + 6));
           }
           shangjia_lis.push(cddd);
         });
@@ -1904,6 +2366,7 @@ export default {
         });
 
         this.ceshi = ceshi;
+        console.log(ceshi);
         var result = [];
       });
 
@@ -1998,8 +2461,8 @@ export default {
             askPricePartDOS: []
           });
           var cddd = [];
-          for (var i = 0; i < el.askPricePartDOS.length; i += 3) {
-            cddd.push(el.askPricePartDOS.slice(i, i + 3));
+          for (var i = 0; i < el.askPricePartDOS.length; i += 6) {
+            cddd.push(el.askPricePartDOS.slice(i, i + 6));
           }
           shangjia_lis.push(cddd);
         });
@@ -2232,17 +2695,16 @@ export default {
     },
     pay(row) {
       getOrderListX({ oid: row.oid }).then(res => {
-        
         if (res.data.code == 200) {
           this.detailForm = res.data.data;
           this.detailForm.carNo = row.carNo;
-//  console.log(this.detailForm);
+          //  console.log(this.detailForm);
           let receivableItemAmount = 0;
           let receivablePartAmount = 0;
           this.detailForm.orderItemList.forEach(v => {
             receivableItemAmount += v.standPrice * v.counts;
             v.orderPartList.forEach(k => {
-              receivablePartAmount += k.price* k.counts;
+              receivablePartAmount += k.price * k.counts;
             });
           });
 
@@ -2282,7 +2744,7 @@ export default {
               }
             }
           });
-           this.discountCalc();
+          this.discountCalc();
           this.payVisible = true;
         }
         // console.log(this.payForm);
@@ -2294,8 +2756,8 @@ export default {
         parseFloat(this.payForm.receivableItemAmount) *
         parseFloat(this.payForm.discountItemRate / 10)
       ).toFixed(2);
-      this.payForm.actualPartAmount = (
-        // parseFloat(this.payForm.receivablePartAmount) *
+      this.payForm.actualPartAmount = // parseFloat(this.payForm.receivablePartAmount) *
+      (
         parseFloat(this.payForm.receivablePartAmount) *
         parseFloat(this.payForm.discountPartRate / 10)
       ).toFixed(2);
@@ -2372,7 +2834,11 @@ export default {
 
         if (
           sumPrice !=
-          Math.abs(this.payForm.amountReceivable - this.detailForm.advance)
+          Math.abs(
+            this.payForm.amountReceivable -
+              this.detailForm.advance -
+              this.payForm.discountPrice
+          )
         ) {
           return this.$message({
             message: "结算金额不等于实收金额，请修改",
@@ -2564,7 +3030,7 @@ table {
 .xuhao .xu8 {
   width: 10%;
 }
-.sdx{
+.sdx {
   float: left;
 }
 .tbbd tr td {
@@ -2680,7 +3146,7 @@ tr .td9 {
 }
 .phon {
   display: inline-block;
-  width: 150px;
+  width: 165px;
   font-size: 13px;
 }
 .configlist {
@@ -2716,7 +3182,7 @@ tr .td9 {
 .cc_img {
   vertical-align: middle;
   height: 50px;
-  width: 130px;
+  width: 110px;
 }
 .lux {
   vertical-align: middle;

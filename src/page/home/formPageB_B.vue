@@ -397,10 +397,25 @@ export default {
         });
         return;
       }
+      if(this.search.time[1] == undefined){
+         this.$message({
+          message: "请先选择导出日期",
+          type: "warning"
+        });
+        return;
+      }
+       if(this.search.time[0] == undefined){
+         this.$message({
+          message: "请先选择导出日期",
+          type: "warning"
+        });
+        return;
+      }
+      console.log(this.search.time[1])
       const data = {
         endTime: this.search.time[1],
         startTime: this.search.time[0],
-        type: 1 //支出流水
+        type: 11 //支出流水
       };
       excel(data, "员工薪资").then(() => {});
     }

@@ -6,7 +6,7 @@
           <el-col>
             <!-- 状态勾选 -->
             <el-form-item label class="m-b-0">
-              <div class="radio_ccid">
+              <div class="radio_ccidz">
                 <el-form-item label>
                   <el-radio v-model="expend" label="1" @change="selectchange">支出</el-radio>
                   <el-radio v-model="expend" label="0" @change="selectchange">收入</el-radio>
@@ -95,9 +95,9 @@
                 <div>请上传凭证（最多6张）</div>
                 <el-form-item label label-width="120px">
                   <el-upload
-                     multiple
-                     ref="uploadImg"
-                     action="/api/vehicle/file/uploadPicture"
+                    multiple
+                    ref="uploadImg"
+                    action="/api/vehicle/file/uploadPicture"
                     list-type="picture-card"
                     :limit="6"
                     :on-preview="handlePictureCardPreview"
@@ -204,7 +204,7 @@
                   <el-upload
                     multiple
                     ref="uploadImg"
-                     action="/api/vehicle/file/uploadPicture"
+                    action="/api/vehicle/file/uploadPicture"
                     list-type="picture-card"
                     :limit="6"
                     :on-preview="handlePictureCardPreview"
@@ -276,7 +276,7 @@ export default {
   name: "formPageB_A",
   data() {
     return {
-      expend: [], //支出收入
+      expend: null, //支出收入
       realName: null, //姓名筛选
       //表单验证支出
       editPartsForm: {
@@ -466,12 +466,12 @@ export default {
       const i = this.editPartsForm.pictureList.findIndex(
         x => x.picUrl === filepath
       );
-         const C = this.editPartsFormB.pictureList.findIndex(
+      const C = this.editPartsFormB.pictureList.findIndex(
         x => x.picUrl === filepath
       );
       //调用solice方法删除
       this.editPartsForm.pictureList.splice(i, 1);
-        this.editPartsForm.pictureListB.splice(C, 1);
+      this.editPartsForm.pictureListB.splice(C, 1);
       // console.log(this.editPartsForm);
     },
     handlePictureCardPreview(file) {
@@ -540,7 +540,7 @@ export default {
       this.$refs.addFormRef.resetFields();
       this.$refs.uploadImg.clearFiles();
       this.editPartsForm.pictureList = [];
-         this.editPartsFormB.pictureList = [];
+      this.editPartsFormB.pictureList = [];
       this.dialogVisible = false;
       this.dialogVisible2 = false;
     },
@@ -563,7 +563,6 @@ export default {
     },
     //添加支出记账
     dialogVisibleT() {
-  
       newlysave(this.editPartsForm).then(res => {
         if (res.data.code == 200) {
           this.$message({
@@ -696,12 +695,39 @@ export default {
         });
         return;
       }
+      if (this.search.time[1] == undefined) {
+        this.$message({
+          message: "请先选择导出日期",
+          type: "warning"
+        });
+        return;
+      }
+      if (this.search.time[0] == undefined) {
+        this.$message({
+          message: "请先选择导出日期",
+          type: "warning"
+        });
+        return;
+      }
+      console.log(this.expend)
+      var type = ''
+      var name = ''
+      if(this.expend == 0){
+        type = 15
+        name = '手工记账企业日常收入'
+      }else if(this.expend == 1){
+        type = 16
+        name = '手工记账企业日常支出'
+      }else if(this.expend == null){
+         type = 17
+        name = '手工记账企业日常全部'
+      }
       const data = {
         endTime: this.search.time[1],
         startTime: this.search.time[0],
-        type: 1 //挂账报表
+        type: type //挂账报表
       };
-      excel(data, "企业日常").then(() => {});
+      excel(data, name).then(() => {});
     }
   }
 };

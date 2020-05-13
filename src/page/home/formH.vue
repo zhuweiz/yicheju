@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import { getThirdPurOrder, paymentAccount, cancelPaymentAccount } from "../../request/api.js";
+import { getThirdPurOrder, paymentAccount, cancelPaymentAccount,excel } from "../../request/api.js";
 import moment from "moment";
 export default {
   name: "formH",
@@ -204,11 +204,11 @@ export default {
 	            type: "warning"
 	          });
 	          return
-	        }
+          }
     	const data = {
-    		endTime:this.search.time[1],
-    		beginTime:this.search.time[0],
-    		type:5 //配件采购供应商汇总
+    		endTime:this.search.month+'-31',
+    		beginTime:this.search.month+'-01',
+    		type:12 //配件采购供应商汇总
       }
     	excel(data,"配件采购供应商汇总报表").then(()=>{})
     }
