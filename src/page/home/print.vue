@@ -724,9 +724,6 @@ export default {
             };
             this.tableData1.push(c);
           }
-          console.log(this.tableData1);
-          console.log(this.tableData2.length);
-          console.log("456");
         }
       }
 

@@ -265,7 +265,7 @@
 
 <script>
 import moment from 'moment'
-import { getPurOrderSumReport, getPurOrderDetailReport, getPartPurOrderDetail, paymentAccount, batchPaymentAccount } from "../../request/api.js"
+import { getPurOrderSumReport, getPurOrderDetailReport, getPartPurOrderDetail, paymentAccount, batchPaymentAccount,excel } from "../../request/api.js"
 export default {
   name: "formG",
   data() {
@@ -457,11 +457,9 @@ export default {
         return
       }
     	const data = {
-    		endTime:this.search.time[1],
-    		startTime:this.search.time[0],
-    		type:4 //配件采购明细
+    		type:13 //库存配件帐报表
       }
-    	excel(data,"配件采购明细报表").then(()=>{})
+    	excel(data,"库存配件帐报表").then(()=>{})
     }
   }
 };

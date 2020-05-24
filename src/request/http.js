@@ -137,6 +137,23 @@ export function deletes(url, params = {}) {
       })
   })
 }
+export function deleteq(url, params = {}) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: "/api" + url,
+      method: 'delete',
+      data: params,
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then(response => {
+        resolve(response)
+      }).catch(err => {
+        reject(err)
+      })
+  })
+}
 
 
 export function open(url, params = {},title) {

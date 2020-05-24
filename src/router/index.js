@@ -10,6 +10,8 @@ Router.prototype.push = function push(location) {
 //首页管理
 import home from '@/page/home/home'
 import page from '@/page/home/page'
+import tuoke from '@/page/home/tuoke'
+import tuokeA from '@/page/home/tuokeA'
 import formPage from '@/page/home/formPage'
 import formPageB from '@/page/home/formPageB'
 import formPageB_A from '@/page/home/formPageB_A'
@@ -94,6 +96,24 @@ export default new Router({
             title: '易车驹',
             index: 0
           }
+        },
+        {
+          path: '/home/tuoke',
+          name: 'tuoke',
+          component: tuoke,
+          meta: {
+            title: '易车驹',
+            index: 0
+          },
+          children: [{
+            path: '/',
+            name: 'tuokeA',
+            component: tuokeA,
+            meta: {
+              title: '易车驹',
+              index: 0
+            }
+          }]
         },
         {
           path: '/home/formPage',

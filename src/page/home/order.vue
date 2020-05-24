@@ -276,7 +276,7 @@
       <el-table-column label="业务员" v-if="show">
         <template slot-scope="scope">{{scope.row.sellsMan}}</template>
       </el-table-column>
-      <el-table-column label="进度" v-if="!show" width="330" align="center">
+      <el-table-column label="进度" v-if="!show" width="330" align="center" class="jindude">
         <template slot-scope="scope">
           <div class="jindu">
             <div class="yuan_a" @click.stop="enquiry(scope.row)" style="cursor:pointer">
@@ -370,6 +370,8 @@
         :hide-on-single-page="pageLength === 0"
         background
         layout="prev, pager, next"
+        v-if="pageshow"
+        :current-page="currentPage"
         :page-size="size"
         @current-change="handleCurrentChange"
         :total="pageLength"
@@ -482,8 +484,8 @@
 
       <!-- 内层供应商弹窗 -->
       <el-dialog width="35%" center title="选择供应商" :visible.sync="innerVisible" append-to-body>
-        <div class="inputd">
-          <el-input style="width: 250px;" class="left" placeholder="输入相关关键字" v-model="seekgysname">
+        <!-- <div class="inputd">
+          <el-input style="width: 160px;" class="left" placeholder="输入相关关键字" v-model="seekgysname">
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
           <img
@@ -493,8 +495,35 @@
             alt
           />
           <div class="qipeic left" style="cursor:pointer" @click="Town">汽配城</div>
-          <el-button class="right" type="success" @click="seeksupplier">查 找</el-button>
-        </div>
+        </div> -->
+        <el-row class="inputd">
+          <el-col :span="11">
+            <el-input
+              style="width: 160px;"
+              class="left"
+              placeholder="输入相关关键字"
+              v-model="seekgysname"
+            >
+              <i slot="prefix" class="el-input__icon el-icon-search"></i>
+            </el-input>
+          </el-col>
+          <el-col :span="5">
+            <img
+              class="left"
+              style="width: 25px;height: 25px;margin-top: 5px;"
+              src="../../assets/saixuan.png"
+              alt
+            />
+            <div class="qipeic left" style="cursor:pointer" @click="Town">汽配城</div>
+          </el-col>
+          <el-col :span="4">
+            <el-checkbox class="luc" v-model="checkedAll2" @change="checkAllHandle2">全选</el-checkbox>
+          </el-col>
+          <el-col :span="4">
+            <el-button class="right" type="success" @click="seeksupplier">查 找</el-button>
+          </el-col>
+        </el-row>
+
         <div class="outbox">
           <div class="lines2" v-for="(items,idx) in supplierlist" :key="'supp'+idx">
             <div class="outlis">
@@ -745,21 +774,27 @@
                     v-if="items[0].talkStatus ==1"
                     :style="{'color': (items[0].talkStatus == 1 ? '#0D906E':'')}"
                   >{{items[0].talkPrice ?'￥':''}}{{items[0].talkPrice}}</span>
-                  <span v-if="items[0].talkStatus !=1">{{items[0].price ?'￥':''}}{{items[0].price}}</span>
+                  <span
+                    v-if="items[0].talkStatus !=1"
+                  >{{items[0].price ?'￥':''}}{{items[0].price ?items[0].price:''}}</span>
                 </div>
                 <div style="border-bottom: 1px solid #dcdfe6;" @click="yijia(items[1])">
                   <span
                     v-if="items[1].talkStatus ==1"
                     :style="{'color': (items[1].talkStatus == 1 ? '#0D906E':'')}"
                   >{{items[1].talkPrice ?'￥':''}}{{items[1].talkPrice}}</span>
-                  <span v-if="items[1].talkStatus !=1">{{items[1].price ?'￥':''}}{{items[1].price}}</span>
+                  <span
+                    v-if="items[1].talkStatus !=1"
+                  >{{items[1].price ?'￥':''}}{{items[1].price ?items[1].price:''}}</span>
                 </div>
                 <div @click="yijia(items[2])">
                   <span
                     v-if="items[2].talkStatus ==1"
                     :style="{'color': (items[2].talkStatus == 1 ? '#0D906E':'')}"
                   >{{items[2].talkPrice ?'￥':''}}{{items[2].talkPrice}}</span>
-                  <span v-if="items[2].talkStatus !=1">{{items[2].price ?'￥':''}}{{items[2].price}}</span>
+                  <span
+                    v-if="items[2].talkStatus !=1"
+                  >{{items[2].price ?'￥':''}}{{items[2].price ?items[2].price:''}}</span>
                 </div>
                 <template v-if="items.length > 3">
                   <div
@@ -933,13 +968,13 @@
                   >&nbsp;</el-radio>
                 </template>-->
                 <el-radio
-                  v-if="itemd.price"
+                  v-if="((itemd.partType == 3 || itemd.partType== 4 || itemd.partType== 5) && itemd.price > 0) || (itemd.partType == 0 || itemd.partType== 1 || itemd.partType== 2)"
                   v-for="(itemd,idxd) in items"
                   :key="'itemd'+idxd"
                   v-model="items.number"
                   :label="itemd.id"
                   @change="getValue(itemd)"
-                  style="border-top: 1px solid #dcdfe6;"
+                  class="bodeee"
                 >&nbsp;</el-radio>
               </td>
             </tr>
@@ -1065,7 +1100,9 @@
                     v-if="itemc[0].talkStatus ==1"
                     :style="{'color': (itemc[0].talkStatus == 1 ? '#0D906E':'')}"
                   >{{itemc[0].talkPrice ?'￥':''}}{{itemc[0].talkPrice}}</span>
-                  <span v-if="itemc[0].talkStatus !=1">{{itemc[0].price ?'￥':''}}{{itemc[0].price}}</span>
+                  <span
+                    v-if="itemc[0].talkStatus !=1"
+                  >{{itemc[0].price ?'￥':''}}{{itemc[0].price ?itemc[0].price:''}}</span>
                 </div>
                 <div
                   style="border-bottom: 1px solid #dcdfe6;"
@@ -1076,14 +1113,18 @@
                     v-if="itemc[1].talkStatus ==1"
                     :style="{'color': (itemc[1].talkStatus == 1 ? '#0D906E':'')}"
                   >{{itemc[1].talkPrice ?'￥':''}}{{itemc[1].talkPrice}}</span>
-                  <span v-if="itemc[1].talkStatus !=1">{{itemc[1].price ?'￥':''}}{{itemc[1].price}}</span>
+                  <span
+                    v-if="itemc[1].talkStatus !=1"
+                  >{{itemc[1].price ?'￥':''}}{{itemc[1].price ?itemc[1].price:''}}</span>
                 </div>
                 <div v-if="itemc[2]" @click="yijia(itemc[2])">
                   <span
                     v-if="itemc[2].talkStatus ==1"
                     :style="{'color': (itemc[2].talkStatus == 1 ? '#0D906E':'')}"
                   >{{itemc[2].talkPrice ?'￥':''}}{{itemc[2].talkPrice}}</span>
-                  <span v-if="itemc[2].talkStatus !=1">{{itemc[2].price ?'￥':''}}{{itemc[2].price}}</span>
+                  <span
+                    v-if="itemc[2].talkStatus !=1"
+                  >{{itemc[2].price ?'￥':''}}{{itemc[2].price ?itemc[2].price:''}}</span>
                 </div>
                 <template v-if="itemc.length > 3">
                   <div
@@ -1257,13 +1298,13 @@
                   >&nbsp;</el-radio>
                 </template>-->
                 <el-radio
-                  v-if="itemf.price"
+                  v-if="((itemf.partType == 3 || itemf.partType== 4 || itemf.partType== 5) && itemf.price > 0) || (itemf.partType == 0 || itemf.partType== 1 || itemf.partType== 2)"
                   v-for="(itemf,idxb) in itemc"
                   :key="'itemf'+idxb"
                   v-model="itemc.number"
                   :label="itemf.id"
+                  class="bodeee"
                   @change="getValue2(itemf)"
-                  style="border-top: 1px solid #dcdfe6;"
                 >&nbsp;</el-radio>
               </td>
             </tr>
@@ -1550,7 +1591,8 @@ import {
   CSinit,
   checkOrderUnfinish,
   rollbackAskPrice,
-  getOrderUnAskPart
+  getOrderUnAskPart,
+  oneKeyInquiry
 } from "../../request/api.js";
 import moment from "moment";
 import router from "../../router";
@@ -1559,6 +1601,7 @@ export default {
   data() {
     return {
       checkedAll: false,
+      checkedAll2: false,
       radio: 3,
       configuration_c: false,
       max: [],
@@ -1647,6 +1690,8 @@ export default {
       visible: false,
       width: 600,
       height: 300,
+      currentPage: 1,
+      pageshow: true,
       Car_list: {},
       list_car: []
     };
@@ -1793,6 +1838,12 @@ export default {
         this.tableData2[i].checked = e;
       });
     },
+      //全选
+    checkAllHandle2(e) {
+      this.supplierlist.forEach((item, i) => {
+        this.supplierlist[i].checked = e;
+      });
+    },
 
     //议价
     yijia(e) {
@@ -1847,14 +1898,14 @@ export default {
     Clickinquiry() {
       this.systemRecoList = [];
       var arr = this.supplierlist.filter(item => item.checked === true);
-      if (arr.length > 6) {
-        this.$message({
-          showClose: true,
-          message: "最多选择6家供应商~",
-          type: "error"
-        });
-        return;
-      }
+      // if (arr.length > 6) {
+      //   this.$message({
+      //     showClose: true,
+      //     message: "最多选择6家供应商~",
+      //     type: "error"
+      //   });
+      //   return;
+      // }
       for (var i in this.supplierlist) {
         let list = {
           address: this.supplierlist[i].address,
@@ -1901,10 +1952,9 @@ export default {
       this.systemRecoList = [];
       const data = {
         gid: row.gid,
-        isMy: this.isMy,
         oid: row.oid
       };
-      systemReco(data).then(res => {
+      oneKeyInquiry(data).then(res => {
         if (res.data.code == 200) {
           this.systemRecoList = res.data.data;
         }
@@ -1928,7 +1978,9 @@ export default {
           var tableData1 = res.data.data.orderItemList;
           tableData1.forEach((item, index) => {
             item.orderPartList.forEach((items, indexs) => {
-              this.tableData2.push(items);
+              if (items.source == 1) {
+                this.tableData2.push(items);
+              }
             });
           });
           for (var i in this.tableData2) {
@@ -1942,13 +1994,13 @@ export default {
             };
             if (
               this.tableData2[i].askPriceStatus == 0 &&
-              this.tableData2[i].ask == false
+              this.tableData2[i].source == 1
             ) {
               this.systemRecoList2.push(ree);
             }
           }
-          // console.log(this.tableData2);
-          // console.log(this.systemRecoList2);
+          console.log(this.tableData2.length);
+          console.log(this.systemRecoList2.length);
           if (this.systemRecoList.length < 1) {
             return;
           }
@@ -1967,9 +2019,14 @@ export default {
             status: this.xunjialist.status,
             supplierList: this.systemRecoList
           };
-          console.log(data_ls);
+          // console.log(data_ls);
+          let tishi = "";
+          if (this.tableData2.length > this.systemRecoList2.length) {
+            tishi = "因有些配件已询过价，只有一部分配件发起询价";
+          } else {
+            tishi = "确定所有配件一键询价吗？";
+          }
 
-          let tishi = "确定使用配件一键询价吗？";
           this.$confirm(tishi, "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
@@ -1992,6 +2049,8 @@ export default {
     },
     //点击询价
     enquiry(row) {
+      console.log(row)
+      this.seekgysname = row.carBrand
       this.systemRecoList = [];
       this.systemRecoList2 = [];
       this.tableData2 = [];
@@ -2081,6 +2140,7 @@ export default {
       const data = {
         gid: this.gid,
         isMy: this.isMy,
+        standard: this.seekgysname,
         page: 0,
         size: 999
       };
@@ -2233,12 +2293,14 @@ export default {
         status: this.xunjialist.status,
         supplierList: this.systemRecoList
       };
+      console.log(data);
       askPricePull(data).then(res => {
         if (res.data.code == 200) {
           this.$message({
             type: "success",
             message: "询价成功!"
           });
+          this.searchList();
           this.configuration = false;
         } else {
           // this.$message.error(res.data.message);
@@ -2250,7 +2312,8 @@ export default {
       const data = {
         gid: this.gid,
         isMy: this.isMy,
-        oid: this.oid
+        oid: this.oid,
+
       };
       // console.log(data);
       systemReco(data).then(res => {
@@ -2286,7 +2349,8 @@ export default {
             // var r = c.filter(function(s) {
             //   return s && s.trim();
             // });
-            // console.log(r);
+
+            // console.log(c);
             c.map((d, i) => {
               this.$set(d, "number", 0);
               if (d.supplierId == d.supplierId) {
@@ -2297,13 +2361,14 @@ export default {
         });
         console.log(this.PriceList);
       });
-
+      var les = "";
       askPriceList({ oid: row.oid }).then(res => {
         let listArr = [];
         // console.log(res.data.data);
         res.data.data.map((v, i) => {
           // console.log(v.askPricePartDOList);
           var data = v.askPricePartDOList;
+          les = data.length;
           //  console.log(data);
           data.forEach(function(el, index) {
             for (var i = 0; i < listArr.length; i++) {
@@ -2347,8 +2412,13 @@ export default {
             askPricePartDOS: []
           });
           var cddd = [];
-          for (var i = 0; i < el.askPricePartDOS.length; i += 6) {
-            cddd.push(el.askPricePartDOS.slice(i, i + 6));
+          if (les == 3) {
+            les = 3;
+          } else if (les > 3) {
+            les = 6;
+          }
+          for (var i = 0; i < el.askPricePartDOS.length; i += les) {
+            cddd.push(el.askPricePartDOS.slice(i, i + les));
           }
           shangjia_lis.push(cddd);
         });
@@ -2412,13 +2482,15 @@ export default {
     shangjia() {
       var _this = this;
       this.ceshi = [];
+      var les = "";
       askPriceList({ oid: this.oid }).then(res => {
         let listArr = [];
         // console.log(res.data.data);
         res.data.data.map((v, i) => {
           // console.log(v.askPricePartDOList);
           var data = v.askPricePartDOList;
-          //  console.log(data);
+
+          les = data.length;
           data.forEach(function(el, index) {
             for (var i = 0; i < listArr.length; i++) {
               if (listArr[i].supplierName == el.supplierName) {
@@ -2461,8 +2533,13 @@ export default {
             askPricePartDOS: []
           });
           var cddd = [];
-          for (var i = 0; i < el.askPricePartDOS.length; i += 6) {
-            cddd.push(el.askPricePartDOS.slice(i, i + 6));
+          if (les == 3) {
+            les = 3;
+          } else if (les > 3) {
+            les = 6;
+          }
+          for (var i = 0; i < el.askPricePartDOS.length; i += les) {
+            cddd.push(el.askPricePartDOS.slice(i, i + les));
           }
           shangjia_lis.push(cddd);
         });
@@ -2561,6 +2638,11 @@ export default {
       this.getOrderList2(data);
     },
     orderTab(i) {
+      this.page = 0;
+      this.pageshow = false;
+      this.$nextTick(() => {
+        this.pageshow = true;
+      });
       if (i == 1) {
         this.show = false;
       } else {
@@ -2756,8 +2838,7 @@ export default {
         parseFloat(this.payForm.receivableItemAmount) *
         parseFloat(this.payForm.discountItemRate / 10)
       ).toFixed(2);
-      this.payForm.actualPartAmount = // parseFloat(this.payForm.receivablePartAmount) *
-      (
+      this.payForm.actualPartAmount = ( // parseFloat(this.payForm.receivablePartAmount) *
         parseFloat(this.payForm.receivablePartAmount) *
         parseFloat(this.payForm.discountPartRate / 10)
       ).toFixed(2);
@@ -2792,6 +2873,10 @@ export default {
       }
     },
     selectPayment(event) {
+      // if(event.name == '挂账'){
+
+      // }
+      console.log(event)
       this.payForm.difference = 0;
       this.payForm.payTypeList = event.map(v => {
         this.$set(v, "amount", 0);
@@ -3077,7 +3162,7 @@ tr td span {
   vertical-align: middle;
 }
 tr .td1 {
-  width: 4%;
+  width: 5%;
 }
 tr .td2 {
   /* width: 15%; */
@@ -3184,6 +3269,12 @@ tr .td9 {
   height: 50px;
   width: 110px;
 }
+.bodeee {
+  border-top: 1px solid #dcdfe6;
+}
+.bodeee:nth-child(1) {
+  border-top: none;
+}
 .lux {
   vertical-align: middle;
   margin-left: 25px;
@@ -3194,7 +3285,9 @@ tr .td9 {
 
   overflow: hidden;
 }
-
+.luc {
+  display: inline-block;
+}
 /* .lulux {
   position: absolute;
   top: 0;
@@ -3203,6 +3296,7 @@ tr .td9 {
 
   overflow: hidden;
 }
+
 .lulu2 {
   font-weight: 500;
   float: right;

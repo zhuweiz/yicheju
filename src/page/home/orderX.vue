@@ -360,8 +360,18 @@
             </el-form-item>
           </el-row>
           <el-row class="bodv">
-            <el-form-item label="车型:" class="m-b-0" style="width: 100%;">
-              <el-input v-model="CLzl_list.standard" placeholder="请输入" style="width: 160px;"></el-input>
+            <el-form-item label="车型:" class="m-b-0 cas" style="width: 100%;">
+              <!-- <el-input v-model="CLzl_list.standard" placeholder="请输入" style="width: 160px;"></el-input> -->
+              <el-cascader
+              ref="cascaderAddr"
+              @blur="handleAddressFun"
+              clearable
+               filterable
+              v-model="CLzl_list.carSeriesId"
+              @change="treeChan"
+              :options="car_listname"
+              :show-all-levels="false"
+            ></el-cascader>
             </el-form-item>
           </el-row>
           <el-row class="bodv">
@@ -1454,7 +1464,8 @@ import {
   saveBaseIno,
   Carupdate,
   Baoxiansave,
-  XGcarupdatePart
+  XGcarupdatePart,
+  findCarDataList
 } from "../../request/api.js";
 import moment from "moment";
 
@@ -1471,8 +1482,6 @@ export default {
   data() {
     return {
       textarea: "",
-         fileList: [{url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
-       {url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       szpeijian: [],
       piliang: false,
       pjprice: [],
@@ -1645,6 +1654,7 @@ export default {
         insureCompanyName:'',
         insureBillNumber:''
       },
+         car_listname:[],
       options: [
         {
           value: "1",
@@ -1721,8 +1731,24 @@ export default {
   methods: {
     // 车辆资料
     Carziliao() {
+      findCarDataList().then(res => {
+      this.car_listname = res.data.data.map(v => {
+        v.value = v.brandId;
+        v.label = v.brandName;
+        
+         v.children = v.carSeriesInfoList
+        // if (v.carSeriesInfoList)
+        v.children.forEach(k => {
+            k.label = k.seriesName;
+            k.value = k.seriesId;
+          });
+        return v;
+      });
+         console.log(this.car_listname)
+    });
       getDetails({ carNo: this.data.carNo }).then(res => {
         this.CLzl_list = res.data.data;
+        console.log(res.data.data)
         this.CLzl_list.url = JSON.parse(JSON.stringify(this.CLzl_list.picturesList))
       });
       this.CLVisible = true;
@@ -1730,16 +1756,18 @@ export default {
     //保存车辆资料
     Carbaocun(row){
         row.picturesList = row.url
-      // console.log(row);
+      console.log(row);
       Carupdate(row).then(res => {
         if (res.data.code == 200) {
           this.$message({
             type: "success",
             message: "保存成功"
           });
+            this.ccd();
           this.CLVisible = false;
         }
            this.$refs.uploadImg.clearFiles();
+          
       });
     },
     handleAvatarSuccess(e){
@@ -2862,7 +2890,21 @@ export default {
       queryPercentageClassOne({ id: id }).then(res => {
         this.royaltyInfo.percentage = res.data.data;
       });
-    }
+    },
+     treeChan(event) {
+       console.log(event)
+      this.CLzl_list.carSeriesId= event.slice(-1)[0];
+       console.log(this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels)
+       this.CLzl_list.carBrand= this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels[0]
+        this.CLzl_list.carSeriesName= this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels[1]
+         this.CLzl_list.standard= this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels[1]
+    },
+
+      handleAddressFun: function(item){
+      console.log(this.$refs.cascaderAddr.getCheckedNodes())
+		}
+      
+
   }
 };
 </script>
@@ -2905,6 +2947,9 @@ export default {
   text-align: right;
   border: none;
   padding: 0px;
+}
+.bodv .cas /deep/ .el-input__inner {
+  padding: 0px 30px;
 }
 .bodv /deep/ .el-input__prefix {
   display: none;

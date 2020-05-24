@@ -58,12 +58,26 @@
                     style="width: 300px"
                   ></el-input>
                 </el-form-item>
-                <el-form-item label="收入项目" label-width="80px" prop="customerId">
-                  <el-input
+                <el-form-item label="收入项目" label-width="80px" prop="feeType">
+                  <!-- <el-input
                     v-model="editPartsFormB.customerId"
                     placeholder="请输入"
                     style="width: 300px"
-                  ></el-input>
+                  ></el-input> -->
+               <el-select
+                    v-model="editPartsFormB.feeType"
+                    placeholder="请选择"
+                    style="width: 300px"
+                  >
+                    <el-option
+                      v-for="item in options4"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-select>
+
+
                 </el-form-item>
                 <el-form-item label="金额" label-width="80px" prop="amount">
                   <el-input v-model="editPartsFormB.amount" placeholder="请输入" style="width: 300px"></el-input>
@@ -170,7 +184,11 @@
                   </el-select>
                 </el-form-item>
                 <el-form-item label="类型" prop="feeType">
-                  <el-select v-model="editPartsForm.feeType" placeholder="请选择" style="width: 300px">
+                  <el-select
+                    v-model="editPartsForm.groupName"
+                    placeholder="请选择"
+                    style="width: 300px"
+                  >
                     <el-option
                       v-for="item in options2"
                       :key="item.value"
@@ -236,7 +254,7 @@
         <el-table-column prop="createdDate" label="日期" width="180"></el-table-column>
         <el-table-column prop="type" label="收/支" :formatter="formatSex"></el-table-column>
         <el-table-column prop="receiveSide" label="付（收）款方"></el-table-column>
-        <el-table-column prop="reason" label="事由" :formatter="formatSex3"></el-table-column>
+        <el-table-column prop="feeType" label="事由" :formatter="formatSex3"></el-table-column>
         <el-table-column prop="amount" label="金额"></el-table-column>
         <el-table-column prop="payType" label="付（收）款方式" :formatter="formatSex2"></el-table-column>
         <el-table-column prop="agentName" label="经手人"></el-table-column>
@@ -283,12 +301,14 @@ export default {
         bizDate: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         type: 1,
         gid: localStorage.getItem("gid"),
+        sourceBillType:1,
         //图片的数组
         pictureList: []
       }, //表单验证收入
       editPartsFormB: {
         bizDate: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         type: 0,
+        sourceBillType:1,
         gid: localStorage.getItem("gid"),
         //图片的数组
         pictureList: []
@@ -335,6 +355,15 @@ export default {
         { value: "207", label: "房租费" },
         { value: "208", label: "配件费" },
         { value: "209", label: "其他" }
+      ],
+      options4: [
+        { value: "101", label: "服务项目 " },
+        { value: "102", label: "套餐" },
+        { value: "103", label: "保险" },
+        { value: "104", label: "挂账" },
+        { value: "105", label: "定金" },
+        { value: "106", label: "减免" },
+        { value: "107", label: "其它" },
       ],
       visible: {
         photoVisible: false //查看照片
@@ -439,7 +468,6 @@ export default {
     },
     //点击查看凭证
     viewPhoto(url) {
-      // console.log(url.pictureList[0]);
       if (url.pictureList[0] != undefined) {
         this.photoUrl = url.pictureList;
         this.visible.photoVisible = true;
@@ -534,6 +562,8 @@ export default {
         return "配件费";
       } else if (cellValue == 209) {
         return "其他";
+      } else if (cellValue == 99) {
+        return "事由";
       }
     },
     dialogVisibleQ() {
@@ -709,18 +739,18 @@ export default {
         });
         return;
       }
-      console.log(this.expend)
-      var type = ''
-      var name = ''
-      if(this.expend == 0){
-        type = 15
-        name = '手工记账企业日常收入'
-      }else if(this.expend == 1){
-        type = 16
-        name = '手工记账企业日常支出'
-      }else if(this.expend == null){
-         type = 17
-        name = '手工记账企业日常全部'
+      console.log(this.expend);
+      var type = "";
+      var name = "";
+      if (this.expend == 0) {
+        type = 15;
+        name = "手工记账企业日常收入";
+      } else if (this.expend == 1) {
+        type = 16;
+        name = "手工记账企业日常支出";
+      } else if (this.expend == null) {
+        type = 17;
+        name = "手工记账企业日常全部";
       }
       const data = {
         endTime: this.search.time[1],

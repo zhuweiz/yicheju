@@ -207,10 +207,10 @@ export default {
           }
     	const data = {
     		endTime:this.search.month+'-31',
-    		beginTime:this.search.month+'-01',
+    		startTime:this.search.month+'-01',
     		type:12 //配件采购供应商汇总
       }
-    	excel(data,"配件采购供应商汇总报表").then(()=>{})
+    	excel(data,"其它配件账总报表").then(()=>{})
     }
   }
 };

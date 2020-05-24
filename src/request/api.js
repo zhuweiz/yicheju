@@ -4,7 +4,8 @@ import {
   posts,
   open,
   put,
-  deletes
+  deletes,
+  deleteq
 } from './http'
 //登出
 const login = function (parmas) {
@@ -615,6 +616,56 @@ const updatePrintType = function (parmas) {
 const getOrderUnAskPart = function (parmas) {
   return get("/vehicle/order/getOrderUnAskPart", parmas)
 }
+//提供一键询价商家
+const oneKeyInquiry = function (parmas) {
+  return get("/vehicle/garageAskPrice/oneKeyInquiry", parmas)
+}
+
+//汽车品牌及车系数据列表
+const findCarDataList = function (parmas) {
+  return get("/vehicle/config/brand/carSeries/findCarDataList", parmas)
+}
+
+//维修厂的所拓客用户信息
+const tuokepage = function (parmas) {
+  return get("/vehicle/toker/page", parmas)
+}
+//修理厂审核拓客申请
+const tuokestatus = function (parmas) {
+  return get("/vehicle/toker/update/status", parmas)
+}
+
+// 拓客提成设置
+const tuokeupdatePercentage = function (parmas) {
+  return posts("/vehicle/toker/updatePercentage", parmas)
+}
+// 查询提成设置/审核结果
+const tuokegetResult = function (parmas) {
+  return get("/vehicle/toker/getResult", parmas)
+}
+//拓客用户拓客车辆信息
+const tuokecarList = function (parmas) {
+  return get("/vehicle/toker/carList", parmas)
+}
+
+//删除拓客用户推荐用户
+const tuokedelete = function (parmas) {
+  return deleteq("/vehicle/toker/delete", parmas)
+}
+
+// 拓客提成设置
+const tuokerecommended = function (parmas) {
+  return posts("/vehicle/toker/recommended", parmas)
+}
+
+//拓客车辆维修记录
+const tuokeinCome = function (parmas) {
+  return get("/vehicle/toker/inCome", parmas)
+}
+//挂帐客户列表
+const queryBillerCustomer = function (parmas) {
+  return get("/vehicle/biller/queryBillerCustomer", parmas)
+}
 export {
   login,
   logout,
@@ -752,5 +803,16 @@ export {
   XGcarupdatePart,
   getPrintType,
   updatePrintType,
-  getOrderUnAskPart
+  getOrderUnAskPart,
+  oneKeyInquiry,
+  findCarDataList,
+  tuokepage,
+  tuokestatus,
+  tuokeupdatePercentage,
+  tuokegetResult,
+  tuokecarList,
+  tuokedelete,
+  tuokerecommended,
+  tuokeinCome,
+  queryBillerCustomer
 }
