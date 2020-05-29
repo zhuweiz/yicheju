@@ -26,7 +26,7 @@
 				</el-form>
 		</div>
     <div style="width:100%;padding-top:15px;" class="orderTable" id="printBox">
-      <el-table :data="tableData" :max-height="maxHeight" style="width: 100%">
+      <el-table :data="tableData" :max-height="500" style="width: 100%">
         <el-table-column type="index" width="60">
           <template slot-scope="scope">
 	            {{scope.row.index}}
@@ -45,6 +45,7 @@
         <el-table-column prop="settleMan" label="收款人"> </el-table-column>
         <el-table-column prop="settleDate" label="收款时间"> </el-table-column>
         <el-table-column prop="item" label="消费项目" width="150"> </el-table-column>
+        <el-table-column prop="remark" label="摘要"> </el-table-column>
         <el-table-column prop="payableAmount" label="应收"> </el-table-column>
         <el-table-column prop="deductAmount" label="减免"> </el-table-column>
         <el-table-column prop="actualAmount" label="实收"> </el-table-column>

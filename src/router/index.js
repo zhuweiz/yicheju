@@ -10,6 +10,12 @@ Router.prototype.push = function push(location) {
 //首页管理
 import home from '@/page/home/home'
 import page from '@/page/home/page'
+import huiyuan from '@/page/home/huiyuan'
+import huiyuan_A from '@/page/home/huiyuan_A'
+import huiyuan_B from '@/page/home/huiyuan_B'
+import huiyuan_C from '@/page/home/huiyuan_C'
+import kehu from '@/page/home/kehu'
+import kehuA from '@/page/home/kehuA'
 import tuoke from '@/page/home/tuoke'
 import tuokeA from '@/page/home/tuokeA'
 import formPage from '@/page/home/formPage'
@@ -96,6 +102,69 @@ export default new Router({
             title: '易车驹',
             index: 0
           }
+        },
+        {
+          path: '/home/huiyuan',
+          name: 'huiyuan',
+          component: huiyuan,
+          meta: {
+            title: '易车驹',
+            index: 0
+          },
+          // children: [{
+          //   path: '/home/huiyuan_A',
+          //   name: 'huiyuan_A',
+          //   component: huiyuan_A,
+          //   meta: {
+          //     title: '易车驹',
+          //     index: 0
+          //   }
+          // }]
+        },
+        {
+          path: '/home/huiyuan_A',
+          name: 'huiyuan_A',
+          component: huiyuan_A,
+          meta: {
+            title: '易车驹',
+            index: 0
+          },
+        },
+        {
+          path: '/home/huiyuan_B',
+          name: 'huiyuan_B',
+          component: huiyuan_B,
+          meta: {
+            title: '易车驹',
+            index: 0
+          },
+        },
+        {
+          path: '/home/huiyuan_C',
+          name: 'huiyuan_C',
+          component: huiyuan_C,
+          meta: {
+            title: '易车驹',
+            index: 0
+          },
+        },
+        {
+          path: '/home/kehu',
+          name: 'kehu',
+          component: kehu,
+          meta: {
+            title: '易车驹',
+            index: 0
+          },
+          children: [{
+            path: '/',
+            name: 'kehuA',
+            component: kehuA,
+            meta: {
+              title: '易车驹',
+              index: 0
+            }
+          }]
         },
         {
           path: '/home/tuoke',

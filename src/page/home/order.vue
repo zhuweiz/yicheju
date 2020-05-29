@@ -495,7 +495,7 @@
             alt
           />
           <div class="qipeic left" style="cursor:pointer" @click="Town">汽配城</div>
-        </div> -->
+        </div>-->
         <el-row class="inputd">
           <el-col :span="11">
             <el-input
@@ -598,9 +598,9 @@
               >{{item}}</li>
             </ul>
             <div class="left orlist" v-if="PriceList != ''">
-              <div>车牌：{{PriceList[0].carNo}}</div>
-              <div>工单号：{{PriceList[0].billNumber}}</div>
-              <div>询价日期：{{PriceList[0].askPriceTime}}</div>
+              <div>车牌：{{carNoname}}</div>
+              <div>工单号：{{billNumber}}</div>
+              <div>询价日期：{{createdDate}}</div>
             </div>
             <div class="right" @click="editRow2">
               <img class="shaimg" src="../../assets/shaxin.png" alt />
@@ -1461,7 +1461,10 @@
           v-for="item in payForm.payTypeList"
           :key="item.type"
         >
-          <el-col :span="12">{{item.name}}</el-col>
+          <el-col :span="12">
+            <span style>{{item.name}}</span>
+            <span style="color: #ff0000; margin-left: 40px;">{{item.billname}}</span>
+          </el-col>
           <el-col :span="12">
             <el-input v-model="item.amount" @change="changeAmount">
               <template slot="append">元</template>
@@ -1523,14 +1526,63 @@
         :show-header="false"
         style="width: 100%"
         @selection-change="selectPayment"
+        @select="onTableSelect"
       >
         <el-table-column prop="name" label></el-table-column>
         <el-table-column type="selection" width="50"></el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" @click="paymentVisible = false">取 消</el-button>
-        <el-button type="success" @click="paymentVisible = false">确 定</el-button>
+        <el-button type="success" @click="zhifuQD">确 定</el-button>
       </div>
+      <!-- 挂账 -->
+      <el-dialog title="选择挂账客户" :visible.sync="GZVisibleL" center width="45%" append-to-body>
+        <div class="right XZGZ" @click="XZGZVisibleL = true">
+          <i class="el-icon-plus"></i>
+          <span class="mis2">新增</span>
+        </div>
+        <el-table :data="GZlist" :height="300" style="width: 100%">
+          <el-table-column label="序号" type="index"></el-table-column>
+          <el-table-column prop="name" label="姓名"></el-table-column>
+          <el-table-column prop="phone" label="手机号码" width="120"></el-table-column>
+          <el-table-column prop="count" label="以挂账笔数"></el-table-column>
+          <el-table-column prop="totalAmount" label="以挂账金额"></el-table-column>
+          <el-table-column prop="promiseUser" label="担保人" width="80"></el-table-column>
+          <el-table-column type width="50">
+            <template slot-scope="scope">
+              <el-radio v-model="GZradio" :label="scope.row.id" @change="getList(scope.row)">&nbsp;</el-radio>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="danger" @click="GZVisibleL = false">取 消</el-button>
+          <el-button type="success" @click="QDguazhang">确 定</el-button>
+        </div>
+        <el-dialog width="30%" title="创建挂账客户" :visible.sync="XZGZVisibleL" center append-to-body>
+          <el-form
+            :model="ruleForm"
+            status-icon
+            :rules="rules"
+            ref="ruleForm"
+            label-width="100px"
+            class="demo-ruleForm"
+          >
+            <el-form-item label="客户名称" prop="name">
+              <el-input v-model="ruleForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="联系电话" prop="phone">
+              <el-input v-model="ruleForm.phone"></el-input>
+            </el-form-item>
+            <el-form-item label="担 保 人" prop="promiseUser">
+              <el-input v-model="ruleForm.promiseUser"></el-input>
+            </el-form-item>
+            <el-form-item center>
+              <el-button type="success" @click="submitForm('ruleForm')">提交</el-button>
+              <el-button @click="resetForm('ruleForm')">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
+      </el-dialog>
     </el-dialog>
     <!-- 议价 -->
     <el-dialog
@@ -1592,7 +1644,9 @@ import {
   checkOrderUnfinish,
   rollbackAskPrice,
   getOrderUnAskPart,
-  oneKeyInquiry
+  oneKeyInquiry,
+  queryBillerCustomerSum,
+  addBillerCustomer
 } from "../../request/api.js";
 import moment from "moment";
 import router from "../../router";
@@ -1605,6 +1659,8 @@ export default {
       radio: 3,
       configuration_c: false,
       max: [],
+      billerCustomerId: "", //挂账id
+      billname: "", //挂账name
       yufuName: "",
       Townlist: [],
       isMy: false,
@@ -1617,12 +1673,17 @@ export default {
       seekgysname: "", //搜索供应商
       partList: [], //询价数据
       supplierlist: [], //供应商列表
+      billNumber: "", //订单号
       lensg: null,
       show: false,
       configuration: false, //询价弹窗
       innerVisible: false, //询价弹窗内层
       innerVisible2: false, //询价弹窗内层再内窗
       PjVisibleL: false, //询价配件弹窗
+      GZVisibleL: false, //选择支付
+      XZGZVisibleL: false,
+      GZlist: [],
+      GZradio: "",
       radioID: [],
       ceshi: [],
       askPriceId: "",
@@ -1664,6 +1725,7 @@ export default {
       discountForm: {},
       yufuVisible: false,
       yufuForm: {},
+      JZlist: [],
       paymentVisible: false,
       carNoname: "",
       yufu_type: "",
@@ -1693,7 +1755,20 @@ export default {
       currentPage: 1,
       pageshow: true,
       Car_list: {},
-      list_car: []
+      list_car: [],
+      ruleForm: {
+        gid: localStorage.getItem("gid"),
+        name: "",
+        phone: "",
+        promiseUser: ""
+      },
+      rules: {
+        name: [{ required: true, message: "请输入客户名称", trigger: "blur" }],
+        phone: [{ required: true, message: "请输入联系电话", trigger: "blur" }],
+        promiseUser: [
+          { required: true, message: "请输入担保人名称", trigger: "blur" }
+        ]
+      }
     };
   },
   created() {
@@ -1704,6 +1779,34 @@ export default {
     this.show = true;
   },
   methods: {
+    //新增挂账客户
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          addBillerCustomer(this.ruleForm).then(res => {
+            if (res.data.code == 200) {
+              this.$message({
+                type: "success",
+                message: "提交成功"
+              });
+              queryBillerCustomerSum({ isDebt: 0 }).then(res => {
+                if (res.data.code == 200) {
+                  this.GZlist = res.data.data;
+                }
+              });
+              this.$refs[formName].resetFields();
+              this.XZGZVisibleL = false;
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    //重置表单
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
     //退回重报
     TuihuiClick(e) {
       let data = {
@@ -1838,7 +1941,7 @@ export default {
         this.tableData2[i].checked = e;
       });
     },
-      //全选
+    //全选
     checkAllHandle2(e) {
       this.supplierlist.forEach((item, i) => {
         this.supplierlist[i].checked = e;
@@ -2034,10 +2137,16 @@ export default {
           }).then(() => {
             askPricePull(data_ls).then(res => {
               if (res.data.code == 200) {
-                this.$message({
-                  type: "success",
-                  message: "一键询价成功!"
-                });
+                console.log(res);
+                if (res.data.data == 0) {
+                  this.$message.error("所有配件询过价，无法使用一键询价");
+                } else {
+                  this.$message({
+                    type: "success",
+                    message: "已向" + res.data.data + "家供应商发送询价单!"
+                  });
+                }
+
                 this.searchList();
               }
             });
@@ -2049,8 +2158,8 @@ export default {
     },
     //点击询价
     enquiry(row) {
-      console.log(row)
-      this.seekgysname = row.carBrand
+      console.log(row);
+      this.seekgysname = row.carBrand;
       this.systemRecoList = [];
       this.systemRecoList2 = [];
       this.tableData2 = [];
@@ -2312,8 +2421,7 @@ export default {
       const data = {
         gid: this.gid,
         isMy: this.isMy,
-        oid: this.oid,
-
+        oid: this.oid
       };
       // console.log(data);
       systemReco(data).then(res => {
@@ -2335,8 +2443,9 @@ export default {
     //查看商家报价
     editRow(row) {
       this.ceshi = [];
-      // console.log(row);
+      console.log(row);
       this.carNoname = row.carNo;
+      this.billNumber = row.billNumber;
       this.oid = row.oid;
       var _this = this;
       let listArr = [];
@@ -2780,7 +2889,7 @@ export default {
         if (res.data.code == 200) {
           this.detailForm = res.data.data;
           this.detailForm.carNo = row.carNo;
-          //  console.log(this.detailForm);
+          console.log(this.detailForm);
           let receivableItemAmount = 0;
           let receivablePartAmount = 0;
           this.detailForm.orderItemList.forEach(v => {
@@ -2873,15 +2982,60 @@ export default {
       }
     },
     selectPayment(event) {
-      // if(event.name == '挂账'){
-
-      // }
-      console.log(event)
       this.payForm.difference = 0;
-      this.payForm.payTypeList = event.map(v => {
-        this.$set(v, "amount", 0);
-        return v;
+      this.JZlist = event;
+    },
+    onTableSelect(rows, row) {
+      console.log(rows);
+      console.log(row);
+      let selected = rows.length && rows.indexOf(row) !== -1;
+      if (row.type == 5 && selected == true) {
+        queryBillerCustomerSum({ isDebt: 0 }).then(res => {
+          if (res.data.code == 200) {
+            console.log(res.data.data);
+            this.GZlist = res.data.data;
+          }
+          this.GZVisibleL = true;
+        });
+      }
+      console.log(selected); // true就是选中，0或者false是取消选中
+    },
+    //挂账
+    QDguazhang() {
+      for (var i in this.JZlist) {
+        if (this.JZlist[i].type == 5) {
+          this.JZlist[i].billerCustomerId = this.billerCustomerId;
+          this.JZlist[i].billname = this.billname;
+        }
+      }
+      this.GZVisibleL = false;
+      console.log(this.JZlist);
+    },
+    getList(row) {
+      //  this.JZlist = event;
+      this.billerCustomerId = row.id;
+      this.billname = row.name;
+    },
+    //支付选择确定
+    zhifuQD() {
+      var ding = "0";
+      this.JZlist.map(v => {
+        console.log(v);
+        if (v.type == 5) {
+          console.log(v.billerCustomerId);
+          if (v.billerCustomerId === undefined || v.billerCustomerId === "") {
+            this.$message({ message: "请先选择挂账客户", type: "error" });
+            ding = 1;
+          }
+        }
       });
+      if (ding == 0) {
+        this.payForm.payTypeList = this.JZlist.map(v => {
+          this.$set(v, "amount", 0);
+          return v;
+        });
+        this.paymentVisible = false;
+      }
     },
     selectPayment2(event) {
       this.payForm.difference = 0;
@@ -2890,6 +3044,7 @@ export default {
         return v;
       });
     },
+    //计算差额
     changeAmount() {
       const sumPrice = this.payForm.payTypeList.reduce(function(
         accumulator,
@@ -2916,10 +3071,10 @@ export default {
           return accumulator + parseFloat(currentValue.amount);
         },
         0);
-
+// Math.abs(
         if (
           sumPrice !=
-          Math.abs(
+         (
             this.payForm.amountReceivable -
               this.detailForm.advance -
               this.payForm.discountPrice
@@ -2932,12 +3087,15 @@ export default {
         }
       }
 
+this.payForm.amountActual = this.payForm.amountReceivable - this.detailForm.advance-this.payForm.discountPrice
+this.payForm.amountDiscount = this.payForm.discountPrice
       const data = {
         ...this.payForm,
         discountItemRate: parseFloat(this.payForm.discountItemRate),
         discountPartRate: parseFloat(this.payForm.discountPartRate),
         advance: this.detailForm.advance
       };
+      console.log(data);
       settlement(data).then(res => {
         if (res.data.code == 200) {
           this.$message({
@@ -2952,6 +3110,7 @@ export default {
     //预付款保存
     paySubmit2() {
       var _this = this;
+      console.log(_this.yufu_type);
       if (!_this.yufuForm.advanceMoney) {
         // if (this.payForm.amountActual != 0) {
         if (this.yufu_amount == "") {
@@ -2966,7 +3125,7 @@ export default {
             type: "error"
           });
         }
-        if (this.yufu_type == "") {
+        if (this.yufu_type === "") {
           return this.$message({
             message: "请选择支付方式",
             type: "error"
@@ -3609,7 +3768,19 @@ th {
   background: rgba(0, 0, 0, 0.1);
   transition: 0.5s;
 }
-
+.XZGZ {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 30px;
+  margin-top: 45px;
+  font-size: 13px;
+  border: 1.5px solid #dcdfe6;
+  border-radius: 2px;
+  padding: 1px 8px 1px 4px;
+  cursor: pointer;
+  /* font-weight: 600; */
+}
 .orderUl li.active {
   background: #3ac29f;
   color: #fff;

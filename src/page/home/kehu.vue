@@ -5,19 +5,10 @@
         class="left f-18"
         style="width: 150px;color: #0D906E;padding-top:12px;font-weight: normal;"
       >
-
-          <span class="el-dropdown-link">| 拓客</span>
-
+          <span class="el-dropdown-link">| 客户</span>
       </div>
-
-      <!-- <h2 class="left f-18" style="width: 150px;color: #0D906E;padding-top:12px;font-weight: normal;">| 财务报表</h2> -->
       <ul class="left orderUl" style="width:80%;padding-top: 5px;">
-        <!-- <li
-          :class="index==orderNavActive?'active':''"
-          v-for="(item,index) in orderList"
-          :key="index"
-          @click="orderTab(index,item.link)"
-        >{{item.name}}</li>-->
+
       </ul>
       <div class="clear"></div>
     </div>
@@ -27,28 +18,24 @@
 
 <script>
 export default {
-  name: "tuoke",
+  name: "kehu",
   data() {
     return {
-      //   orderList: [
-      //     { name: "拓客", link: "../home/tuokeA" },
-
-      //   ],
       orderNavActive: null,
       maxHeight: undefined
     };
   },
   created() {},
   mounted() {
-    if (this.$route.path == "/home/tuoke") {
-      this.orderNavActive = 0;
-    }
+    // if (this.$route.path == "/home/kehu") {
+    //   this.orderNavActive = 0;
+    // }
   },
   methods: {
-    orderTab(i, link) {
-      this.orderNavActive = i;
-      this.$router.push({ path: link });
-    }
+    // orderTab(i, link) {
+    //   this.orderNavActive = i;
+    //   this.$router.push({ path: link });
+    // }
   }
 };
 </script>

@@ -330,6 +330,7 @@ export default {
           }
         })
       }else{
+        console.log(this.editPartsForm)
         updatePart(this.editPartsForm).then(res => {
           if(res.data.code == 200){
             this.$message({

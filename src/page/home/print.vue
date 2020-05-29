@@ -111,7 +111,7 @@
                   >{{item.itemName}}</el-col>
                   <el-col class="bord_p" :span="4">{{item.groupName}}</el-col>
                   <el-col class="bord_p" style="text-align: right; padding-right: 3px;" :span="4">
-                    <em v-if="item.standPrice != 'zz'">{{item.standPrice}}.00</em>
+                    <em v-if="item.standPrice != 'zz'">{{item.standPrice*item.counts}}.00</em>
                   </el-col>
                   <el-col
                     class="bord_p"
@@ -121,8 +121,8 @@
                     <em v-if="item.standPrice != 'zz'">
                       <em
                         v-if="data.discountItemRate"
-                      >{{((data.discountItemRate/10) * item.standPrice)}}.00</em>
-                      <em v-else>{{item.standPrice}}.00</em>
+                      >{{((data.discountItemRate/10) * (item.standPrice*item.counts))}}.00</em>
+                      <em v-else>{{item.standPrice*item.counts}}.00</em>
                     </em>
                   </el-col>
                 </el-row>
@@ -662,7 +662,7 @@ export default {
             ).toFixed(1)
           );
         } else {
-          this.zhekou += item.standPrice;
+          this.zhekou += item.standPrice * item.counts;
         }
         console.log(item);
         item.orderPartList.forEach((items, indexs) => {

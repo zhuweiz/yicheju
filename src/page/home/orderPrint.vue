@@ -19,15 +19,15 @@
               >{{data.carNo}}</li>
               <li style="width:22%;">车型</li>
             </div>
-            <div class="list">
+            <div class="list" style="  width: 330px;">
               <li class="bold" style="height: 39px;line-height: 39px;">维修项目</li>
-              <div v-for="(item, index) in list" :key="index">
+              <!-- <div v-for="(item, index) in list" :key="index">
                 <li class="bold" style="text-align:left;text-indent: 10px;">{{item.groupName}}</li>
                 <li
                   v-for="v in item.itemDataVOList"
                   :key="v.itemId"
                 >{{v.itemName}} {{v.quantity ? '*'+v.quantity : ''}}</li>
-              </div>
+              </div>-->
             </div>
           </div>
           <div class="fr">
@@ -40,7 +40,7 @@
               <li class="bold" style="height: 39px;line-height: 39px;">更换零件</li>
             </div>
             <!--  -->
-            <div class="fr_list">
+            <!-- <div class="fr_list">
               <div v-for="(item, index) in list" :key="index">
                 <li class="bold ddd" style="text-align:left;text-indent: 10px;" >{{''}}</li>
                 <li v-for="v in item.itemDataVOList" :key="v.itemId" ref="box">
@@ -50,69 +50,30 @@
                   </span>
                 </li>
               </div>
+            </div>-->
+          </div>
+        </div>
+        <div class="mains2" style>
+          <div class="pejlist" v-for="(item, index) in datalist" :key="index">
+            <div class="dt">
+              <div class="lst_A">{{item.groupName}}</div>
+              <div class="rstd"></div>
             </div>
-            <!--  -->
-            <!-- <div class="fr_list">
-                    <div>
-                      <li style="width:100%;text-align:left;text-indent: 10px;" v-for="(item, index) in arrList" :key="index">{{item ? item.partName : ''}} {{item ? '*'+item.quantity : ''}}</li>
-                      
-                    </div>
-            </div> -->
-            <!--  -->
+            <div class="dt" v-for="(items, index) in item.itemDataVOList" :key="index">
+              <div class="lst">{{items.itemName}}</div>
+              <div class="rst">
+                <span class="sdsd" v-for="(itemd, index) in items.partDataVOList" :key="index">
+                  {{itemd.partName}}
+                  <span>/</span>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="autograph">
           <p style="font-weight:bold;float:left;">接待：{{data.serviceMan}}</p>
           <p style="font-weight:bold;float:left;padding-left:20px;">业务：{{data.sellsMan}}</p>
         </div>
-        <!-- <div class="text item p-tb-30">
-              <table id="table" border="1">
-                  <tr>
-                      <td width="10%">车牌</td>
-                      <td width="20%">{{data.carNo}}</td>
-                      <td width="10%">车型</td>
-                      <td width="30%">{{data.standard}}</td>
-                      <td width="10%">日期</td>
-                      <td width="20%">{{data.bizDate}}</td>
-                  </tr>
-                  <tr>
-                      <td colspan="3" class="title_bold">维修项目</td>
-                      <td colspan="3" class="title_bold">更换零件</td>
-                  </tr>
-                  <div v-for="(item, index) in list" :key="index" style="display: table-row-group;">
-                      <tr>
-                          <td colspan="3" style="text-align:left;font-weight:bold;">{{item.groupName}}</td>
-                          <td v-if="index == 0">名称</td>
-                          <td v-if="index == 0" colspan="2">名称</td>
-                          <td v-if="index > 0"></td>
-                          <td v-if="index > 0" colspan="2"></td>
-                      </tr>
-                      <tr v-for="v in item.itemDataVOList" :key="v.itemId">
-                          <td colspan="3" style="vertical-align: middle;">{{v.itemName}}</td>
-                          <td colspan="3" style="padding:0;border:none;">
-                              <div class="lists">
-                                  <div v-for="data in v.partDataVOList" :key="data.id">
-                                      <p>{{data.partName}} *{{data.quantity}}</p>
-                                  </div>
-                                  <div>
-                                      <p>3434</p>
-                                  </div>
-                                  <div v-if="v.type == 0">
-                                      <p></p>
-                                  </div>
-                              </div>
-                          </td>
-                      </tr>
-                  </div>
-
-                  <tr class="noborder">
-                      <td class="fl">接待：</td>
-                      <td class="fl">{{data.serviceMan}}</td>
-                      <td class="fl">业务：</td>
-                      <td class="fl" colspan="6">{{data.sellsMan}}</td>
-                  </tr>
-              </table>
-        </div>-->
       </el-card>
     </div>
   </div>
@@ -127,6 +88,7 @@ export default {
       data: "",
       list: [],
       partList: [],
+      datalist: [],
       arrList: []
     };
   },
@@ -136,15 +98,16 @@ export default {
     };
     getDispatchByOId(data).then(res => {
       this.data = res.data.data;
+      this.datalist = res.data.data.dispatchItemList;
       console.log(res.data.data);
       this.list = this.data.dispatchItemList;
-    //   for (var i = 0; i < this.list.length; i++) {
-    //     console.log(this.list[i]);
-    //     for (var j = 0; j < this.list[i].itemDataVOList.length; i++) {
-    //          console.log(this.list[i].itemDataVOList);
-    //       this.list[i].itemDataVOList.push({})
-    //     }
-    //   }
+      //   for (var i = 0; i < this.list.length; i++) {
+      //     console.log(this.list[i]);
+      //     for (var j = 0; j < this.list[i].itemDataVOList.length; i++) {
+      //          console.log(this.list[i].itemDataVOList);
+      //       this.list[i].itemDataVOList.push({})
+      //     }
+      //   }
       this.partList = this.data.partList || [];
       let leng = this.list.length;
       this.list.forEach(v => {
@@ -170,8 +133,7 @@ export default {
         window.print();
       }, 500);
     });
-    console.log(this.$refs['box'].text.offsetHeight)
-    
+    console.log(this.$refs["box"].text.offsetHeight);
   },
   mounted() {},
   methods: {}
@@ -236,6 +198,13 @@ export default {
   border: 1px solid #000;
   margin-top: 20px;
 }
+.mains2 {
+  width: 820px;
+  overflow: hidden;
+  border: 1px solid #000;
+  border-top: none;
+  border-bottom: none;
+}
 .fl {
   width: 330px;
   border-right: 1px solid #000;
@@ -270,8 +239,67 @@ li {
   font-weight: bold;
 }
 .ddd {
-    min-height: 49px;
+  min-height: 49px;
 }
+.dt {
+  overflow: hidden;
+  min-height: 49px;
+  text-align: left;
+  text-indent: 10px;
+  /* line-height: 49px; */
+}
+.pejlist {
+  overflow: hidden;
+}
+.list {
+}
+.lst_A {
+  font-weight: 700;
+  min-height: 49px;
+  line-height: 49px;
+  float: left;
+  width: 331px;
+  border-right: 1px solid #000;
+  border-top: 1px solid #000;
+}
+.lst {
+  float: left;
+  border-top: 1px solid #000;
+  line-height: 49px;
+  text-align: center;
+  min-height: 49px;
+  width: 330px;
+}
+.sdsd {
+  line-height: 18px;
+}
+.rst {
+  border-left: 1px solid #000;
+  border-top: 1px solid #000;
+  /* float: right; */
+  display: inline-block;
+  display: inline;
+  zoom: 1;
+  clear: both;
+  height: 49px;
+  display: table-cell;
+  width: 489px;
+  vertical-align: top;
+}
+.rstd {
+  border-top: 1px solid #000;
+  /* float: right; */
+  min-height: 49px;
+  display: table-cell;
+  width: 489px;
+  vertical-align: top;
+}
+/* .rstd:nth-child(1){
+  border-top: none
+}
+.lst_A:nth-child(1){
+  border-top: none
+} */
 .autograph {
   border-top: 1px solid #000;
   padding-left: 10px;
@@ -299,7 +327,10 @@ li {
   /* line-height: 49px; */
   border-top: 1px solid #000;
 }
-.fr_list li span:last-child em{
+.fr_list li span:last-child em {
+  display: none;
+}
+.sdsd:last-child span {
   display: none;
 }
 .fr_list li:nth-of-type(even) {

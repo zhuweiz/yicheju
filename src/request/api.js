@@ -666,6 +666,74 @@ const tuokeinCome = function (parmas) {
 const queryBillerCustomer = function (parmas) {
   return get("/vehicle/biller/queryBillerCustomer", parmas)
 }
+//挂帐汇总列表(isDebt 1是欠账，0不欠账)
+const queryBillerCustomerSum = function (parmas) {
+  return get("/vehicle/biller/queryBillerCustomerSum", parmas)
+}
+// 添加挂帐客户
+const addBillerCustomer = function (parmas) {
+  return posts("/vehicle/biller/addBillerCustomer", parmas)
+}
+// 挂账收款
+const debtPay = function (parmas) {
+  return posts("/vehicle/biller/debtPay", parmas)
+}
+// 保存工单图片至车辆信息图片
+const saveToCarPic = function (parmas) {
+  return posts("/vehicle/order/saveToCarPic", parmas)
+}
+//查询客户列表
+const kehulist = function (parmas) {
+  return get("/vehicle/customer/info/list", parmas)
+}
+
+// 修改用户名和手机号码
+const updateCustomerInfo = function (parmas) {
+  return post("/vehicle/customer/info/updateCustomerInfo", parmas)
+}
+
+//查询客户详情
+const getDetailByCarNo = function (parmas) {
+  return get("/vehicle/customer/info/getDetailByCarNo", parmas)
+}
+//根据客户套餐id查询套餐剩余可使用信息
+const findItemByComboCustomerId = function (parmas) {
+  return get("/vehicle/customer/combo/findItemByComboCustomerId", parmas)
+}
+//根据客户套餐id查询套餐使用情况
+const findRecordByComboCustomerId = function (parmas) {
+  return get("/vehicle/customer/combo/findRecordByComboCustomerId", parmas)
+}
+//查询客户详情
+const TCgetDetailByCarNo = function (parmas) {
+  return get("/vehicle/customer/info/getDetailByCarNo", parmas)
+}
+
+//查询客户详情
+const listRepairHistory = function (parmas) {
+  return get("/vehicle/order/listRepairHistory", parmas)
+}
+
+//查询所有会员等级
+const HYdengji = function (parmas) {
+  return get("/vehicle/system/gradeType/list", parmas)
+}
+//查询所有会员等级
+const TClist = function (parmas) {
+  return get("/vehicle/member/combo/list", parmas)
+}
+// 添加会员
+const addMember = function (parmas) {
+  return posts("/vehicle/customer/member/addMember", parmas)
+}
+//办理套餐开卡
+const TCsave = function (parmas) {
+  return posts("/vehicle/customer/member/save", parmas)
+}
+//储值卡充值
+const memberStoreSave = function (parmas) {
+  return posts("/vehicle/customer/member/memberStoreSave", parmas)
+}
 export {
   login,
   logout,
@@ -814,5 +882,21 @@ export {
   tuokedelete,
   tuokerecommended,
   tuokeinCome,
-  queryBillerCustomer
+  queryBillerCustomer,
+  queryBillerCustomerSum,
+  addBillerCustomer,
+  debtPay,
+  saveToCarPic,
+  kehulist,
+  updateCustomerInfo,
+  getDetailByCarNo,
+  findItemByComboCustomerId,
+  findRecordByComboCustomerId,
+  TCgetDetailByCarNo,
+  listRepairHistory,
+  HYdengji,
+  TClist,
+  addMember,
+  TCsave,
+  memberStoreSave
 }

@@ -132,7 +132,7 @@
         <el-row class="bod" style="border:none">
           <el-col :span="24">
             <el-form-item label label-width="120px">
-              <div class="yinye">外观留图（最多40张）</div>
+              <div class="yinye"><div class="fuzhi2">外观留图（最多40张）</div> <div class="fuzhi" @click="FZzhiliao">复制到车辆资料</div></div>
               <div class="imggg" v-for="(item,index) in xinzen.orderPictureList" :key="index">
                 <el-image 
             class="img_lis"
@@ -364,7 +364,6 @@
               <!-- <el-input v-model="CLzl_list.standard" placeholder="请输入" style="width: 160px;"></el-input> -->
               <el-cascader
               ref="cascaderAddr"
-              @blur="handleAddressFun"
               clearable
                filterable
               v-model="CLzl_list.carSeriesId"
@@ -583,6 +582,14 @@
           </el-table-column>
           <el-table-column prop="counts" label="数量">
             <template slot-scope="scope">{{scope.row.counts}}</template>
+          </el-table-column>
+            <el-table-column prop="" label="施工员">
+            <template slot-scope="scope"  >
+                <span v-for="item in scope.row.orderDispatchList" :key="item">
+                  {{item.workerName}}
+                </span>
+              
+              </template>
           </el-table-column>
           <!-- <el-table-column prop="percentage" label="提成">
             <template slot-scope="scope">{{scope.row.percentage}}</template>
@@ -948,8 +955,8 @@
 				</div>
     </el-dialog>-->
 
-    <el-dialog title="派工" :visible.sync="visible.deliverVisible" center :modal="false" width="40%">
-      <el-checkbox-group v-model="deliverCheck">
+    <el-dialog title="派工" :visible.sync="visible.deliverVisible" center :modal="false" width="40%" class="paigong">
+      <el-checkbox-group v-model="deliverCheck" style="position: relative;">
         <el-card
           class="box-card"
           style="margin-top:10px;"
@@ -965,8 +972,12 @@
             </el-col>
           </el-row>
         </el-card>
+         
       </el-checkbox-group>
+     <div class="zhipai"><el-checkbox v-model="checkedSG" @change="Zpai">指派给所有{{groupName}}项目</el-checkbox></div>
+       
       <div slot="footer" class="dialog-footer">
+        
         <el-button type="danger" @click="visible.deliverVisible = false">取 消</el-button>
         <el-button type="success" @click="deliverSubmit">提 交</el-button>
       </div>
@@ -1465,7 +1476,8 @@ import {
   Carupdate,
   Baoxiansave,
   XGcarupdatePart,
-  findCarDataList
+  findCarDataList,
+  saveToCarPic
 } from "../../request/api.js";
 import moment from "moment";
 
@@ -1485,6 +1497,7 @@ export default {
       szpeijian: [],
       piliang: false,
       pjprice: [],
+      groupName:'',//派工组名名字
       treeData: [],
       tableData1: [],
       tableData2: [],
@@ -1617,6 +1630,7 @@ export default {
       lossPartSearch: "",
       userData: [],
       checked: 0,
+      checkedSG:false,
       source: 1, //询价 库存
       clerkOrder: "", //接待员
       selectedUser: [],
@@ -1763,7 +1777,8 @@ export default {
             type: "success",
             message: "保存成功"
           });
-            this.ccd();
+            // this.ccd();
+                 this.reload();
           this.CLVisible = false;
         }
            this.$refs.uploadImg.clearFiles();
@@ -1899,6 +1914,44 @@ export default {
  
 
     },
+    //复制图片到车辆资料
+    FZzhiliao(){
+      var _this = this
+         this.xinzen.url.forEach(function(v, index) {
+           console.log(v)
+           v.carNo = _this.xinzen.carNo
+      });
+    let data = {
+  "address":this.xinzen.address,
+	"appearance": this.xinzen.appearance,
+	"carNo": this.xinzen.carNo,
+	"customerId": this.xinzen.customerId,
+	"driveMiles": this.xinzen.driveMiles,
+	"engineNo": this.xinzen.engineNo,
+	"garageName": this.xinzen.garageName,
+	"gid": this.xinzen.gid,
+	"id":localStorage.getItem("oid"),
+	"ownerName": this.xinzen.ownerName,
+	"phone": this.xinzen.phone,
+	"pictures": this.xinzen.url.length,
+	"picturesList": this.xinzen.url,
+	"remark":this.xinzen.remark,
+	"standard":this.xinzen.standard,
+	"star": this.xinzen.star,
+	"suggestMaintenanceDate": this.xinzen.suggestMaintenanceDate,
+	"vin": this.xinzen.vin,
+	"vinPic": this.xinzen.vinPic,
+}
+    saveToCarPic(data).then(res => {
+        if (res.data.code == 200) {
+          this.$message({
+            type: "success",
+            message: "复制到车辆资料成功"
+          });
+        }
+      });
+ console.log(data)
+    },
     //订单资料保存
     Billing() {
       var xinzen =this.xinzen
@@ -1907,6 +1960,7 @@ export default {
         }else if(this.xinzen.sex == '男'){
           this.xinzen.sex = 1
         }
+       
       let data ={
     	"advance": xinzen.advance,
       "appearance": xinzen.appearance,
@@ -1937,7 +1991,7 @@ export default {
             type: "success",
             message: "保存成功"
           });
-          this.ccd();
+          this.reload();
           this.XinzenVisible = false;
         }
            this.$refs.uploadImg.clearFiles();
@@ -2032,18 +2086,22 @@ export default {
         pageListPC({
           garageId: localStorage.getItem("gid"),
           // itemId: this.citemId,
+          size:500,
           source: 0
         }).then(res => {
           this.partList = this.partLists = res.data.data;
+          
         });
       } else {
         this.source = 1;
         pageListPC({
           garageId: localStorage.getItem("gid"),
+          size:500,
           // itemId: this.citemId,
           source: 1
         }).then(res => {
           this.partList = this.partLists = res.data.data;
+          console.log(res.data.data)
         });
       }
     },
@@ -2054,7 +2112,7 @@ export default {
       getOrderListX(data).then(res => {
         this.data = res.data.data;
         this.tableData1 = res.data.data.orderItemList;
-          // console.log( res.data.data)
+         
 
         if (this.tableData1) {
           this.tableData1.forEach((item, index) => {
@@ -2084,6 +2142,7 @@ export default {
           this.url = imgList[0].picUrl;
         }
         this.srcList = imgList.map(v => v.picUrl);
+         console.log(this.tableData1)
       });
     },
     getProject() {
@@ -2095,6 +2154,7 @@ export default {
       pageListPC({
         garageId: localStorage.getItem("gid"),
         // itemId: this.citemId,
+        size:500,
         source: this.source
       }).then(res => {
         this.partList = this.partLists = res.data.data;
@@ -2185,9 +2245,13 @@ export default {
 
     handleCommand2(command) {},
     send_work(row) {
+      console.log(row)
+      this.checkedSG = false
+      this.groupName = row.groupName
       if (this.workList.length == 0) {
         groupWorksInfo({ gid: this.data.gid }).then(res => {
           const arr = res.data.data;
+         
           var map = {},
             dest = [];
           for (var i = 0; i < arr.length; i++) {
@@ -2214,6 +2278,7 @@ export default {
 
           this.itemDispatchId = row.id;
           this.workList = dest;
+           console.log(dest)
         });
       } else {
         this.itemDispatchId = row.id;
@@ -2221,6 +2286,7 @@ export default {
           v => v.itemId == this.itemDispatchId
         );
       }
+      
 
       this.visible.deliverVisible = true;
     },
@@ -2262,7 +2328,12 @@ export default {
         })
         .catch(() => console.log("已取消"));
     },
+    Zpai(e){
+      console.log(e)
+      console.log(this.checkedSG)
+    },
     deliverSubmit() {
+      this.itemDispatch =[]
       if (this.deliverCheck.length == 0) {
         return this.$message({ message: "请先选择派工人员", type: "error" });
       }
@@ -2282,8 +2353,28 @@ export default {
           this.itemDispatch.push(v);
         }
       });
+      this.tableData1.map(v => {
+        v.isCombo = v.ciId ? 0 : 1;
 
+        this.itemDispatch.forEach(c => {
+         
+       if(this.checkedSG){
+          if(v.groupName == this.groupName){
+            v.orderDispatchList.push(c) 
+          }
+        }else{
+           if(v.id == c.itemId){
+              v.orderDispatchList.push(c) 
+          }
+      }
+      });
+
+        v.orderPartList = this.tableData2.filter(item => item.itemId == v.id);
+        return v;
+      });
+      console.log(this.tableData1)
       this.deliverCheck = [];
+      // this.saveWorkInfo()
       this.visible.deliverVisible = false;
     },
     viewPhoto(url) {
@@ -2464,6 +2555,7 @@ export default {
 
       this.visible.addPartsVisible = false;
       this.saveWorkInfo();
+      this.ccd();
       this.reload();
     },
     selectMealProject(event) {
@@ -2604,15 +2696,18 @@ export default {
         amountReceivable: this.data.amountReceivable,
         orderItems: []
       };
+      // data.orderItems = this.tableData1
       data.orderItems = this.tableData1.map(v => {
         v.isCombo = v.ciId ? 0 : 1;
         v.orderDispatchList = this.itemDispatch.filter(
           item => item.itemId == v.id
         );
+        // console.log(v.orderDispatchList)
         // v.itemDispatch = this.itemDispatch.filter(item => item.itemId == v.id)
         v.orderPartList = this.tableData2.filter(item => item.itemId == v.id);
         return v;
       });
+      console.log(data)
       saveWorkInfo(data).then(res => {
         if (res.data.code == 200) {
           this.$message({
@@ -2886,6 +2981,7 @@ export default {
       this.visible.userVisible = false;
     },
     treeChange(event) {
+      console.log(event)
       let id = event.slice(-1)[0];
       queryPercentageClassOne({ id: id }).then(res => {
         this.royaltyInfo.percentage = res.data.data;
@@ -2894,16 +2990,14 @@ export default {
      treeChan(event) {
        console.log(event)
       this.CLzl_list.carSeriesId= event.slice(-1)[0];
-       console.log(this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels)
-       this.CLzl_list.carBrand= this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels[0]
+this.$nextTick(() => {
+     this.CLzl_list.carBrand= this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels[0]
         this.CLzl_list.carSeriesName= this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels[1]
          this.CLzl_list.standard= this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels[1]
+          console.log(this.$refs['cascaderAddr'].getCheckedNodes()[0].pathLabels)
+})
+    
     },
-
-      handleAddressFun: function(item){
-      console.log(this.$refs.cascaderAddr.getCheckedNodes())
-		}
-      
 
   }
 };
@@ -3170,6 +3264,15 @@ export default {
   position: relative;
     float: left;
 }
+.zhipai{
+  
+  /* position: absolute;
+  bottom: 0;
+  left: 0; */
+  margin-top: 15px;
+  /* padding-top: 15px; */
+}
+
 .img_lis{
   width: 80px;
   height: 80px;
@@ -3185,10 +3288,33 @@ export default {
   color: #fff;
   cursor:pointer
 }
+.fuzhi{
+  overflow: hidden;
+  display: inline-block;
+  background: #f9fafc;
+  color:#1989fa;
+  cursor: pointer;
+  /* height: 25px; */
+  padding: 0px 2px;
+  line-height: 30px;
+  border-radius: 5px;
+}
+.fuzhi2{
+  overflow: hidden;
+  display: inline-block;
+  line-height: 30px;
+}
+
 </style>
 
 
 <style>
+.paigong .el-dialog--center .el-dialog__body{
+  padding: 5px 25px 5px
+}
+.zhipai .el-checkbox__label{
+color: #000;
+}
 .taocanTable .el-table tr td {
   background: #e5f6f7;
 }

@@ -1,0 +1,44 @@
+{
+  "id": "1844572",
+  "name": "no name",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "tubiao",
+  "glyphs": [
+    {
+      "icon_id": "10460752",
+      "name": "设 置",
+      "font_class": "shezhi",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "3252917",
+      "name": "配件",
+      "font_class": "peijian",
+      "unicode": "e9ec",
+      "unicode_decimal": 59884
+    },
+    {
+      "icon_id": "2066093",
+      "name": "客户",
+      "font_class": "kehu",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "4425845",
+      "name": "拓客",
+      "font_class": "tuoke",
+      "unicode": "e6ad",
+      "unicode_decimal": 59053
+    },
+    {
+      "icon_id": "5891305",
+      "name": "会员",
+      "font_class": "huiyuan",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    }
+  ]
+}

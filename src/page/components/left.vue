@@ -32,11 +32,13 @@ export default {
         { name: "财务", icon: "icon-caiwuguanli", link: "../home/formPage" },
         {
           name: "配件",
-          icon: "icon-2wodezhangdan18x20",
+          icon: "iconpeijian",
           link: "../home/stock"
         },
-        { name: "拓客", icon: "icon-caiwuguanli", link: "../home/tuoke" },
-        { name: "设置", icon: "icon-caiwuguanli", link: "../home/setting" }
+        { name: "会员", icon: "iconhuiyuan", link: "../home/huiyuan" },
+        { name: "客户", icon: "iconkehu", link: "../home/kehu" },
+        { name: "拓客", icon: "icontuoke", link: "../home/tuoke" },
+        { name: "设置", icon: "iconshezhi", link: "../home/setting" }
       ]
     };
   },
@@ -83,8 +85,15 @@ export default {
       this.$route.path == "/home/parts_setting" ||
       this.$route.path == "/home/royalty_setting"
     ) {
-      this.orderNavActive = 5;
+      this.orderNavActive = 7;
     } else if (this.$route.path == "/home/tuoke") {
+      this.orderNavActive = 6;
+    } else if (this.$route.path == "/home/kehu") {
+      this.orderNavActive = 5;
+    }else if (this.$route.path == "/home/huiyuan" ||
+      this.$route.path == "/home/huiyuan_A" ||
+      this.$route.path == "/home/huiyuan_B" ||
+      this.$route.path == "/home/huiyuan_C") {
       this.orderNavActive = 4;
     }
   },

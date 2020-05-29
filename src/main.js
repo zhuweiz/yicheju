@@ -20,6 +20,7 @@ Vue.use(ElementUI);
   
 import 'animate.css'
 import './assets/font/iconfont.css'
+import './assets/font2/iconfont.css'
 import './assets/css/pc.css'
 import './assets/css/style.css'
 

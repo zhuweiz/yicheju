@@ -285,3 +285,6 @@ html, body, #app {
 .el-checkbox__label{
   vertical-align: middle;
 }
+.el-checkbox__inner{
+  border: 1px solid #999999;
+}
